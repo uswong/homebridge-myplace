@@ -28,7 +28,9 @@ This plugin is a result of blending together, with modifications to make it more
 ### Raspbian/HOOBS/macOS/NAS:
 1. Install Homebridge via these instructions for [Raspbian](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian), [HOOBS](https://support.hoobs.org/docs) or [macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS), if you have not already.
 
-2. Install `homebridge-myplace` plug-in via the Homebridge UI 'plugins' tab search function.
+2. Install `homebridge-myplace` plug-in via the Homebridge UI 'Plugins' tab search function.
+  
+   *Please note that this plugin is using the same engine as in `homebridge-cmd4` plugin. As such, if you have `homebridge-cmd4` installed, you have to uninstall it before installing this plugin, otherwise there will be some conflicts and one of them will not run. If you do use `homebridge-cmd4` for some other purposes, you can include the same config in `homebridge-myplace` and it will still run as if it is in `homebridge-cmd4`.*
 
      <p align="left">
      <img width="800px" src="Screenshots/myPlaceInstall.png">
@@ -56,14 +58,14 @@ apk add <jq or curl>
 ```
 
 
-4. Create your Homebridge `config.json`
+5. Create your Homebridge `config.json`
    
-  Go to the 'Plugins' tab in Homebridge UI, locate your newly installed `Homebridge Myplace` plugin and click the three dots on the bottom right, select `Plugin Config` and it should launch the 'Configuration Creator and Checker' and `Device Settings` page.
+  Go to the 'Plugins' tab in Homebridge UI, locate your newly installed `Homebridge Myplace` plugin and click the three dots on the bottom right, select `Plugin Config` and it should launch the <B>Configuration Creator and Checker</B> and <B>Device Settings</B> page.
      <p align="left">
      <img width="800px" src="Screenshots/AdvAirConfigCreator.png">
      </p>
 
-   In 'Device Settings' area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the checkboxes for `extra timers` and `debug`. Then press the `Create CONFIGURATION` button to create the required configuration file.  On a sucess, click `CHECK CONFIGURATION`to check the configuration file just created to make sure everything is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed.
+   In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the checkboxes for `extra timers` and `debug`. Then press the `CREATE CONFIGURATION` button to create the required configuration file.  On a sucess, click `CHECK CONFIGURATION`to check the configuration file just created to make sure everything is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed.
 
      <p align="left">
      <img width="300px" src="Screenshots/AdvAirShellCheckPassed.png">
@@ -80,7 +82,7 @@ apk add <jq or curl>
 ```
   then follow the on-screen instructions.
 
-6. Restart Homebridge to get your Homebridge Myplace plugin up and running for you.
+6. Restart Homebridge to get your <B>Homebridge Myplace</B> plugin up and running for you.
    
 ## How You Can Help:
 * Report Bugs/Errors by opening Issues/Tickets.
@@ -88,8 +90,8 @@ apk add <jq or curl>
 
 
 ## Special Thanks
-1. Many thanks to [John Talbot](https://github.com/ztalbot2000) for his fantastic [homebridge-cmd4](https://github.com/mitch7391/homebridge-cmd4) plugin which I have forked and used it as the main engine for this plugin.
-2. Many thanks also to [Mitch Williams](https://github.com/mitch7391) who has created the wonderful [homebridge-cmd4-AdvantageAir](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir) plugin and has allowed me to participate in its development. 
+1. Many thanks to [Mitch Williams](https://github.com/mitch7391) who has created the wonderful [homebridge-cmd4-AdvantageAir](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir) plugin and has allowed me to participate in its development and in the process I have leant a lot on **bash** and **javascript** coding in homebridge environment.
+2. Many thanks also to [John Talbot](https://github.com/ztalbot2000) for his fantastic [homebridge-cmd4](https://github.com/mitch7391/homebridge-cmd4) plugin which I have forked and used it as the main engine for this plugin.
 3. And never forget to thank my beautiful wife who has put up with my obsession on this.....
 
 
