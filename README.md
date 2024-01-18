@@ -85,8 +85,7 @@ apk add curl
   <Plugin path>/homebridge-myplace/ConfigCreator.sh
   
 ## How You Can Help:
-* Open Issues/Tickets.
-* Report Bugs/Errors.
+* Report Bugs/Errors by opening Issues/Tickets.
 * Suggest Improvements and Features you would like to see!
 
 
