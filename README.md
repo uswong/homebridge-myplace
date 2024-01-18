@@ -24,17 +24,12 @@ A Plugin bringing Advanatge Air MyPlace system to Homekit
 
 ## Installation:
 ### Raspbian/HOOBS/macOS/NAS:
-1. Install Homebridge via these instructions for [Raspbian](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian), [HOOBS](https://support.hoobs.org/docs) or [macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS).
-2. Install the [homebridge-cmd4](https://github.com/ztalbot2000/homebridge-cmd4) plug-in via the Homebridge UI ['plugins'](https://github.com/oznu/homebridge-config-ui-x#plugin-screen) tab search function. Once installed, a pop-up box with a small config in it will appear. Do not edit anything and make sure you click `SAVE`.
+1. Install Homebridge via these instructions for [Raspbian](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian), [HOOBS](https://support.hoobs.org/docs) or [macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS), if you have not already.
+
+2. Install `homebridge-myplace` plug-in via the Homebridge UI 'plugins' tab search function.
 
      <p align="left">
-     <img width="800px" src="Screenshots/cmd4Install.png">
-     </p>
-
-3. Install `homebridge-cmd4-AdvantageAir` plug-in via the Homebridge UI 'plugins' tab search function.
-
-     <p align="left">
-     <img width="800px" src="Screenshots/cmd4AdvAirInstall.png">
+     <img width="800px" src="Screenshots/myPlaceInstall.png">
      </p>
 
 4. Install <B>jq</B> via your Homebridge UI terminal or through ssh: 
@@ -69,62 +64,13 @@ apt-get install curl
 # QNAP NAS:
 apk add curl
 ``` 
-7. Automatically create your Homebridge `config.json`:
-* Homebridge users with access to the Homebridge web UI can jump ahead to `Step 8`.
-* Homebridge users without access to the Homebridge web UI can use the following [terminal instructions](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir/wiki/Config-Creation#homebridge-terminal-instructions).
-* HOOBS users do not have access to our Homebridge UI (for now!) and will have to use the following [terminal instructions](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir/wiki/Config-Creation#hoobs-terminal-instructions).
-
-8. Go to the 'plugins' tab in Homebridge UI and locate your newly installed `homebridge-cmd4-AdvantageAir`. Click `SETTINGS > Config` and it should launch the 'Advantage Air Configuration Creator'.
+6. Create your Homebridge `config.json`:
+  Go to the 'plugins' tab in Homebridge UI and locate your newly installed `Homebridge Myplace`. Click the three dots on the bottom right, select `Plugin Config` and it should launch the 'Configuration Creator and Checker' and `Device Setting` page.
      <p align="left">
      <img width="800px" src="Screenshots/AdvAirConfigCreator.png">
      </p>
 
-9. Scroll down to the 'AdvantageAir Device Settings' area and fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ). If you have more than one Advantage Air tablet, you can click `Add new device` to setup the others. Click `SAVE` when done editing, it will close the UI and you will need to open it once more as per Step 8 before proceding further.
-10. Check/uncheck the the following checkboxes/radio-buttons to select your preferred setup options, then press the `CONFIG CREATOR` button to create your Advantage Air config.
-    - [x] Use a "Switch" accessory as "On/Off" control for "Fan" state:
-    
-    "FanSwitch" setup allows the current fanSpeed to be displayed on Homekit tile when the Aircon is On and is in Cool, Heat or Dry (Auto) mode.
-    
-    <p align="left">
-    <img width="420px" src="Screenshots/FanSwitch_setup.png">
-    </p>
-
-    - [x] Include fancy timers to turn-on the Aircon in specific mode: Cool, Heat or Vent:
-  
-    This will generate extra timers to turn-on the Aircon in specidic mode: Heat, Cool or Vent.
-
-     ### Zone Control setup options:
-    * Use "Lightbulb/Switch" * accessory with standalone temperature and myZone switch (legacy):
-    
-         For systems with Temperature Sensors, this option will use the `Switch` accessory for Zone Control and a separate `TemperatureSensor` for the temperature info.  If myZone is defined, a standalone myZone switch will also be configured.
-    
-         For systems without Temperature Sensors, this option will use the `Lightbulb` accessory for Zone Control.
-    
-    *  Use "Lightbulb/Switch" * accessory with integrated temperature but standalone myZone switch:
-    
-         For systems with Temperature Sensors, this option will use the `Switch` accessory for Zone Control and integrate a linked `TemperatureSensor` for the temperature info. The advantage of this option is to be able to see the zone temperature displayed on the zone itself. If myZone is defined, a standalone myZone switch will also be configured.
-    
-         For systems without Temperature Sensors, this option will use the `Lightbulb` accessory for Zone Control.
-
-    * Use "Lightbulb" accessory with integrated temperature but standalone myZone switch:
-    
-         For systems with Temperature Sensors, this option will use the `Lightbulb` accessory for Zone Control and integrate a linked `TemperatureSensor` for the temperature info. The advantage of this option is to have the temperature info and the "zone % open" displayed on the zone itself. _Please note that the `Brightness` which is a proxy for "zone % open" is not user controllable as per AdvantageAir design._ If myZone is defined, a standalone myZone switch will also be configured.
-    
-         For systems without Temperature Sensors, this option will use the `Lightbulb` accessory for Zone Control and the `Brightness` which is a proxy for "zone % open" is user controllable.
-
-    * Use "Fan" accessory with integrated temperature and myZone switch (recommended):
-    
-        For systems with Temperature Sensors, this option will use the `Fanv2` accessory for Zone Control with `Fanv2`'s `RotationDirection` charateristic being repurposed as the myZone switch and integrate a linked `TemperatureSensor` for the temperature info. The advantage of this option is to have the temperature info & the "zone % open" displayed on the zone itself and able to set this zone as myZone if it hasn't been set yet. _Please note that the `Speed` which is a proxy for "zone % open" is not user controllable as per AdvantageAir design. Please also note that once myZone is set, you cannot unset it. You have to set another zone as myZone to unset it._
-    
-    <p align="left">
-    <img width="600px" src="Screenshots/Fanv2_as_integrated_zoneControl2.png">
-    </p>
-
-    For systems with no Temperature Sensors, there will be no `button switch` and no temperature info but the `Speed` which is a proxy for "zone % open" is user controllable.
-
-
-    
-11. Click `CHECK CONFIGURATION`. It will check over your installation and config to make sure you have everything correct. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what it is that you have missed and need to fix.
+   In 'Device Settings' area and fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck your preferred setup options, then press the `Create CONFIGURATION` button to create the required configuration file. then click `CHECK CONFIGURATION`to check over the configuration file just created to make sure you have everything correct. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed.
 
      <p align="left">
      <img width="300px" src="Screenshots/AdvAirShellCheckPassed.png">
@@ -133,7 +79,10 @@ apk add curl
      <p align="left">
      <img width="600px" src="Screenshots/AdvAirShellCheckError.png">
      </p>
+     
+* HOOBS users do not have access to our Homebridge UI (for now!) and will have to use the following [terminal instructions](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir/wiki/Config-Creation#hoobs-terminal-instructions).
 
+8. 
 12. If you have Cmd4 v7.0.0-beta2 or v7.0.1 or v7.0.2 installed, an optimised version of `Cmd4PriorityPollingQueue.js` module which will give you some improvements in performance, will be installed as part of the ConfigCreator process at step 10.
     
     A feedback messages from ConfigCreator of "COPIED and DONE!" is an indication of sucessful installation.
