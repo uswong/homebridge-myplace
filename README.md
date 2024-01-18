@@ -31,46 +31,37 @@ A Plugin bringing Advanatge Air MyPlace system to Homekit
      <p align="left">
      <img width="800px" src="Screenshots/myPlaceInstall.png">
      </p>
-
-4. Install <B>jq</B> via your Homebridge UI terminal or through ssh: 
+3. Check if <B>jq</B> and <B>curl</B> are installed (<B>curl</B> should already be):
 ```shell
-# Raspbian/Hoobs:
-sudo apt-get install jq
-
-# macOS:
-brew install jq
-
-# Synology NAS:
-apt-get install jq
-
-# QNAP NAS:
-apk add jq
-```
-5. Check if <B>curl</B> is installed (it should already be):
-```
+jq -V
 curl -V
 ```
-6. If <B>curl</B> does not return a version number, install via:
+If they are installed, the above command should return a version number.
+
+4. If not already, install <B>jq</B> and <B>curl</B> via your Homebridge UI terminal or through ssh: 
 ```shell
 # Raspbian/Hoobs:
-sudo apt-get install curl
+sudo apt-get install <jq or curl>
 
 # macOS:
-brew install curl
+brew install <jq or curl>
 
 # Synology NAS:
-apt-get install curl
+apt-get install <jq or curl>
 
 # QNAP NAS:
-apk add curl
-``` 
-6. Create your Homebridge `config.json`:
-  Go to the 'plugins' tab in Homebridge UI and locate your newly installed `Homebridge Myplace`. Click the three dots on the bottom right, select `Plugin Config` and it should launch the 'Configuration Creator and Checker' and `Device Setting` page.
+apk add <jq or curl>
+```
+
+
+4. Create your Homebridge `config.json`
+   
+  Go to the 'Plugins' tab in Homebridge UI, locate your newly installed `Homebridge Myplace` plugin and click the three dots on the bottom right, select `Plugin Config` and it should launch the 'Configuration Creator and Checker' and `Device Settings` page.
      <p align="left">
      <img width="800px" src="Screenshots/AdvAirConfigCreator.png">
      </p>
 
-   In 'Device Settings' area and fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck your preferred setup options, then press the `Create CONFIGURATION` button to create the required configuration file. then click `CHECK CONFIGURATION`to check over the configuration file just created to make sure you have everything correct. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed.
+   In 'Device Settings' area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the checkboxes for `extra timers` and `debug`. Then press the `Create CONFIGURATION` button to create the required configuration file.  On a sucess, click `CHECK CONFIGURATION`to check the configuration file just created to make sure everything is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed.
 
      <p align="left">
      <img width="300px" src="Screenshots/AdvAirShellCheckPassed.png">
@@ -80,10 +71,15 @@ apk add curl
      <img width="600px" src="Screenshots/AdvAirShellCheckError.png">
      </p>
      
-* HOOBS users do not have access to our Homebridge UI (for now!) and will have to use the following terminal instructions:
-  cd
-  <Plugin path>/homebridge-myplace/ConfigCreator.sh
-  
+* HOOBS users who do not have access to Homebridge UI (for now!) will have to run the Config Creator on a terminal:
+```shell
+   cd
+   <Plugin path>/homebridge-myplace/ConfigCreator.sh
+```
+  then follow the on-screen instructions.
+
+6. Restart Homebridge to get your Homebridge Myplace plugin up and running for you.
+   
 ## How You Can Help:
 * Report Bugs/Errors by opening Issues/Tickets.
 * Suggest Improvements and Features you would like to see!
