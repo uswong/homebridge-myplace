@@ -13,7 +13,7 @@
 </span>
 
 # homebridge-myplace
-A Plugin bringing Advanatge Air MyPlace system to Homekit
+A Plugin bringing Advanatge Air MyPlace System to Homekit
 
 ## Supported Advantage Air Control Units:
   * [MyPlace](https://apps.apple.com/au/app/myplace/id996398299)
