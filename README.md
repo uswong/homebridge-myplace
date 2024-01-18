@@ -1,5 +1,4 @@
-# homebridge-myplace
-A Plugin bringing Advanatge Air MyPlace system to Homekit
+
 <p align="center">
 <img src="https://github.com/homebridge/branding/blob/latest/logos/homebridge-wordmark-logo-vertical.png" width="150">
 <img src="Screenshots/AdvAirLogo.png" width="220">
@@ -13,66 +12,15 @@ A Plugin bringing Advanatge Air MyPlace system to Homekit
   
 </span>
 
-# homebridge-cmd4-AdvantageAir
+# homebridge-myplace
+A Plugin bringing Advanatge Air MyPlace system to Homekit
 
-Catered shell script to integrate air conditioner control units by Advantage Air into Homekit using the plug-in [homebridge-cmd4](https://github.com/ztalbot2000/homebridge-cmd4). 
-
-No affiliation with Advantage Air.
-
-## Supported Control Units:
-* Air Conditioning:
-  * [e-zone](https://apps.apple.com/au/app/e-zone/id925994857)
-  * [MyAir](https://apps.apple.com/au/app/myair/id481563583)
+## Supported Advantage Air Control Units:
+  * [MyPlace](https://apps.apple.com/au/app/myplace/id996398299)
   * [MyAir4](https://apps.apple.com/au/app/myair4/id925994861)
-  * MyAir5 - Appears to use the same app as MyPlace.
-  * [MyPlace](https://apps.apple.com/au/app/myplace/id996398299)
-  * [zone10e](https://apps.apple.com/au/app/zone10e/id1076850364)
+  * [MyAir](https://apps.apple.com/au/app/myair/id481563583)
+  * [E-zone](https://apps.apple.com/au/app/e-zone/id925994857)
   * [Fujitsu anywAIR](https://apps.apple.com/au/app/anywair/id1509639853)
-
-<I><B> Note: </B> [zone10](https://apps.apple.com/au/app/zone10/id510581478) and [MyAir3](https://apps.apple.com/au/app/myair3/id645762642) do not appear to work with this plug-in. </I>
-
-* Extras:
-  * [MyPlace](https://apps.apple.com/au/app/myplace/id996398299)
-     - [x] Lights 
-     - [x] Garage Door
-     - [x] Gate
-     - [ ] Motion Sensors
-     - [ ] Blinds
-
-<I><B> Note: </B> Config for these extras can be found [here](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir/wiki/Config-Creation#myplace-extras). </I>
-
-
-## How It Looks:
-### Air Conditioning - Thermostat Mode (with Fan Speed) and Fan or FanSwitch Mode:
-<p align="left">
-<img src="Screenshots/Aircon.png" width="295" height="640">
-<img src="Screenshots/Fan.png" width="295" height="640">
-<img src="Screenshots/Aircon_fanSwitch.png" width="295" height="640">
-</p>
-
-### Air Conditioning - Zone Control and Temperature Sensors:
-<p align="left">
-<img src="Screenshots/Room.png" width="295" height="640">
-<img src="Screenshots/Sensors.png" width="295" height="640">
-</p>
-
-### Air Conditioning - Zone Control without Temperature Sensors: 
-<p align="left">
-<img src="Screenshots/NoSensors.png" width="295" height="640">
-<img src="Screenshots/ZoneControl.png" width="295" height="640">
-</p>
-
-### MyPlace Extras - Lights: 
-<p align="left">
-<img src="Screenshots/MyPlaceLights.png" width="295" height="640">
-<img src="Screenshots/MyPlaceLightsControl.png" width="295" height="640">
-</p>
-
-### MyPlace Extras - Garage Door / Gate: 
-<p align="left">
-<img src="Screenshots/GarageDoorControl.png" width="295" height="640">
-</p>
-<I><B> Note: </B> Garage Door / Gate will appear in Apple CarPlay. </I>
 
 ## Installation:
 ### Raspbian/HOOBS/macOS/NAS:
