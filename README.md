@@ -57,16 +57,18 @@ apk add <jq or curl>
      <img width="600px" src="Screenshots/MyPlaceConfigCreator.png">
      </p>
 
-   In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the checkboxes for `Include extra timers` and `Enable detailed debug log`, then click `SAVE`. 
+   In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the checkboxes for `Include extra timers` and `Enable detailed debug log`, then click `SAVE`. This is to save your system parameters. Click `CLOSE` if a pop up urging you to `RESTART HOMEBRIDGE`.
    
-   Go back to the `Plugin Config` again and press the `CREATE CONFIGURATION` button to create the required configuration file.  On a sucess, click `CHECK CONFIGURATION`to check the configuration file just created to make sure everything is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed. Click `CLOSE` then restart Homebridge.
+   Go back to `Plugin Config` again and press the `CREATE CONFIGURATION` button to create the required configuration file.  On a sucess, click `CHECK CONFIGURATION`to check the configuration file just created is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed. Click `CLOSE` then restart Homebridge.
 
 * HOOBS users who do not have access to Homebridge UI (for now!) will have to run the Config Creator on a terminal:
 ```shell
    cd
-   <Plugin path>/homebridge-myplace/ConfigCreator.sh
+   <Plugin Path>/node_modules/homebridge-myplace/ConfigCreator.sh
 ```
   then follow the on-screen instructions.
+  
+  *typical `<Plugin Path>` is `/var/lib/hoobs/<bridge>` 
 
 ## How You Can Help:
 * Report Bugs/Errors by opening Issues/Tickets.
