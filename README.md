@@ -20,7 +20,7 @@ This plugin is a result of blending together, with modifications to make it more
 ### Raspbian/HOOBS/macOS/NAS:
 1. Install Homebridge via these instructions for [Raspbian](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian), [HOOBS](https://support.hoobs.org/docs) or [macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS), if you have not already.
 
-2. Install `homebridge-myplace` plug-in via the Homebridge UI 'Plugins' tab search function.
+2. Find the `homebridge-myplace` plugin via the Homebridge UI 'Plugins' tab search function, once found, click the blue down arrow at the bottom right to install.
   
    *Please note that this plugin is using the same engine as in `homebridge-cmd4` plugin. As such, if you have `homebridge-cmd4` installed, you have to uninstall it before installing this plugin, otherwise there will be some conflicts and one of them will not run. If you do use `homebridge-cmd4` for some other purposes, you can include the same config in `homebridge-myplace` and it will still run as if it is in `homebridge-cmd4`.*
 
