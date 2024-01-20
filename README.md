@@ -1,16 +1,8 @@
 
 <p align="center">
-<img src="https://github.com/homebridge/branding/blob/latest/logos/homebridge-wordmark-logo-vertical.png" width="150">
-<img src="Screenshots/AdvAirLogo.png" width="220">
+<img src="Screenshots/HomebridgeLogo.png" width="200">
+<img src="Screenshots/MyPlace.png" width="220">
 </p>
-
-<span align="center">
-  
-[![npm](https://badgen.net/npm/v/homebridge-cmd4-advantageair/latest?icon=npm&label)](https://www.npmjs.com/package/homebridge-cmd4-advantageair)
-[![npm](https://badgen.net/npm/dt/homebridge-cmd4-advantageair?label=downloads)](https://www.npmjs.com/package/homebridge-cmd4-advantageair)
-[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
-  
-</span>
 
 # homebridge-myplace
 An independent plugin bringing Advanatge Air MyPlace System to Homekit.
@@ -33,7 +25,7 @@ This plugin is a result of blending together, with modifications to make it more
    *Please note that this plugin is using the same engine as in `homebridge-cmd4` plugin. As such, if you have `homebridge-cmd4` installed, you have to uninstall it before installing this plugin, otherwise there will be some conflicts and one of them will not run. If you do use `homebridge-cmd4` for some other purposes, you can include the same config in `homebridge-myplace` and it will still run as if it is in `homebridge-cmd4`.*
 
      <p align="left">
-     <img width="800px" src="Screenshots/myPlaceInstall.png">
+     <img width="600px" src="Screenshots/MyPlaceInstall.png">
      </p>
 3. Check if <B>jq</B> and <B>curl</B> are installed (<B>curl</B> should already be):
 ```shell
@@ -62,21 +54,13 @@ apk add <jq or curl>
    
   Go to the 'Plugins' tab in Homebridge UI, locate your newly installed `Homebridge Myplace` plugin and click the three dots on the bottom right, select `Plugin Config` and it should launch the <B>Configuration Creator and Checker</B> and <B>Device Settings</B> page.
      <p align="left">
-     <img width="800px" src="Screenshots/AdvAirConfigCreator.png">
+     <img width="600px" src="Screenshots/MyPlaceConfigCreator.png">
      </p>
 
-   In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the checkboxes for `extra timers` and `debug`, the click `SAVE`. 
+   In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the checkboxes for `Include extra timers` and `Enable detailed debug log`, then click `SAVE`. 
    
-   Go back to the `Plugin Config` again and press the `CREATE CONFIGURATION` button to create the required configuration file.  On a sucess, click `CHECK CONFIGURATION`to check the configuration file just created to make sure everything is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed.
+   Go back to the `Plugin Config` again and press the `CREATE CONFIGURATION` button to create the required configuration file.  On a sucess, click `CHECK CONFIGURATION`to check the configuration file just created to make sure everything is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed. Click `CLOSE` then restart Homebridge.
 
-     <p align="left">
-     <img width="300px" src="Screenshots/AdvAirShellCheckPassed.png">
-     </p>
-
-     <p align="left">
-     <img width="600px" src="Screenshots/AdvAirShellCheckError.png">
-     </p>
-     
 * HOOBS users who do not have access to Homebridge UI (for now!) will have to run the Config Creator on a terminal:
 ```shell
    cd
@@ -84,8 +68,6 @@ apk add <jq or curl>
 ```
   then follow the on-screen instructions.
 
-6. Restart Homebridge to get your <B>Homebridge Myplace</B> plugin up and running for you.
-   
 ## How You Can Help:
 * Report Bugs/Errors by opening Issues/Tickets.
 * Suggest Improvements and Features you would like to see!
