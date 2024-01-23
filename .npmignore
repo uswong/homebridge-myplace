@@ -1,0 +1,8 @@
+# Ignore any swap files
+*.swp
+
+# Ignore node_modules as it gets installed via npm
+node_modules
+
+# Development files
+*.[0-9]*
