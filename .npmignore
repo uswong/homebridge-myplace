@@ -1,8 +1,10 @@
-# Ignore any swap files
-*.swp
+# This file is inclusive of .gitignore
 
-# Ignore node_modules as it gets installed via npm
-node_modules
+# test does not get distributed to the client
+test
 
-# Development files
-*.[0-9]*
+# tools does not get distributed to the client
+tools
+
+# Screenshots does not get distributed to the client
+Screenshots
