@@ -7,7 +7,7 @@
 # homebridge-myplace
 An independent plugin bringing Advanatge Air MyPlace System to Homekit.
 
-This plugin is a result of blending together, with modifications to make it more efficient, the [homebridge-cmd4-AdvantageAir](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir) plugin v3.11.0 and the [homebridge-cmd4](https://github.com/mitch7391/homebridge-cmd4) plugin v7.0.2. 
+This plugin is a result of blending together, with modifications to make it more efficient, the [homebridge-cmd4-AdvantageAir](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir) plugin v3.11.0 and the [homebridge-cmd4](https://github.com/ztalbot2000/homebridge-cmd4) plugin v7.0.2. 
 
 ## Supported Advantage Air Control Units:
   * [MyPlace](https://apps.apple.com/au/app/myplace/id996398299)
