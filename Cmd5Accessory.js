@@ -811,12 +811,12 @@ class Cmd5Accessory
              let props = accessory.configHasCharacteristicProps( accTypeEnumIndex );
              if ( props )
              {
-                //if ( settings.cmd5Dbg ) accessory.log.debug( "Overriding characteristic %s props for: %s ", CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].type, this.displayName );
                 if ( settings.cmd5Dbg ) accessory.log.debug( "Overriding characteristic %s props for: %s ", uCCharacteristicString, this.displayName );
                   accessory.service.getCharacteristic( CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].
                          characteristic )
                   .setProps(
-                    props
+                     // props is an object of name value pairs (characteristics)
+                     props
                 );
              }
 
