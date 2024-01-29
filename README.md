@@ -82,4 +82,4 @@ apk add <jq or curl>
 
 
 ## LICENSE:
-This plugin is distributed under the MIT license. See [LICENSE](https://github.com/mitch7391/cmd4-E-Zone-MyAir/blob/master/LICENSE) for details.
+This plugin is distributed under the MIT license. See [LICENSE](https://github.com/uswong/homebridge-myplace/LICENSE) for details.
