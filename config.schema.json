@@ -1,92 +1,379 @@
 {
-   "pluginAlias": "MyPlace",
-   "pluginType": "platform",
-   "singular": true,
-   "customUi": true,
-   "headerDisplay": "Homebridge plugin for AdvantageAir devices",
-   "schema": {
-      "debug": {
-         "title": "debug",
-         "type": "boolean",
-         "description": "Enables additional output in the log.",
-         "required": false,
-         "placeholder": false
+  "pluginAlias": "MyPlace",
+  "pluginType": "platform",
+  "singular": true,
+  "customUi": true,
+  "headerDisplay": "Homebridge plugin for AdvantageAir devices",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "default": "MyPlace",
+        "required": true
       },
-      "type": "object",
-      "properties": {
-         "name": {
-           "title": "Name",
-           "type": "string",
-           "default": "MyPlace",
-           "required": true
-         },
-         "devices": {
-            "type": "array",
-            "items": {
-               "title": "AdvantageAir device",
-               "type": "object",
-               "properties": {
-                  "name": {
-                     "title": "Name",
-                     "description": "The name of the AdvantageAir device, default=Aircon",
-                     "type": "string",
-                     "required": true,
-                     "default": "Aircon"
-                  },
-                  "ipAddress": {
-                     "title": "IP Address",
-                     "description": "The device's IP address. It is recommended to set a static IP for this device.",
-                     "type": "string",
-                     "format": "ipv4",
-                     "required": true,
-                     "placeholder": "192.168.0.1"
-                  },
-                  "port": {
-                     "title": "PORT used",
-                     "description": "The PORT number used for this device, default=2025.",
-                     "type": "number",
-                     "required": true,
-                     "default": "2025"
-                  },
-                  "extraTimers": {
-                     "title": "Include extra timers",
-                     "description": "Include extra timers to turn on the Aircon in specific mode: Cool, Heat or Vent.",
-                     "type": "boolean",
-                     "required": false,
-                     "default": false
-                  },
-                  "debug": {
-                     "title": "Enable detailed debug log",
-                     "description": "Enables a detailed debug log. Useful when trying to figure out issues with the plugin.",
-                     "type": "boolean",
-                     "required": false,
-                     "default": false
-                  }
-               }
+      "devices": {
+        "type": "array",
+        "items": {
+          "title": "AdvantageAir device",
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "description": "The name of the AdvantageAir device, default=Aircon",
+              "type": "string",
+              "required": true,
+              "default": "Aircon"
+            },
+            "ipAddress": {
+              "title": "IP Address",
+              "description": "The device's IP address. It is recommended to set a static IP for this device.",
+              "type": "string",
+              "format": "ipv4",
+              "required": true,
+              "placeholder": "192.168.0.1"
+            },
+            "port": {
+              "title": "PORT used",
+              "description": "The PORT number used for this device, default=2025.",
+              "type": "number",
+              "required": true,
+              "default": "2025"
+            },
+            "extraTimers": {
+              "title": "Include extra timers",
+              "description": "Include extra timers to turn on the Aircon in specific mode: Cool, Heat or Vent.",
+              "type": "boolean",
+              "required": false,
+              "default": false
+            },
+            "debug": {
+              "title": "Enable detailed debug log",
+              "description": "Enables a detailed debug log. Useful when trying to figure out issues with the plugin.",
+              "type": "boolean",
+              "required": false,
+              "default": false
             }
-         }
+          }
+        }
+      },
+      "title": {
+        "type": "string"
+      },
+      "debug": {
+        "type": "boolean"
+      },
+      "outputConstants": {
+        "type": "boolean"
+      },
+      "statusMsg": {
+        "type": "boolean"
+      },
+      "timeout": {
+        "type": "number"
+      },
+      "stateChangeResponseTime": {
+        "type": "number"
+      },
+      "constants": {
+        "type": "array",
+        "required": false,
+        "items": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "queueTypes": {
+        "type": "array",
+        "required": false,
+        "items": {
+          "type": "object",
+          "properties": {
+            "queue": {
+              "type": "string"
+            },
+            "queueType": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "accessories": {
+        "type": "array",
+        "required": false,
+        "items": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "displayName": {
+              "type": "string"
+            },
+            "active": {
+              "type": "number"
+            },
+            "brightness": {
+              "type": "number"
+            },
+            "on": {
+              "type": "boolean"
+            },
+            "rotationSpeed": {
+              "type": "number"
+            },
+            "rotationDirection": {
+              "type": "number"
+            },
+            "currentHeatingCoolingState": {
+              "type": "string"
+            },
+            "targetHeatingCoolingState": {
+              "type": "string"
+            },
+            "currentPosition": {
+              "type": "number"
+            },
+            "targetPosition": {
+              "type": "number"
+            },
+            "currentTemperature": {
+              "type": "number"
+            },
+            "targetTemperature": {
+              "type": "number"
+            },
+            "temperatureDisplayUnits": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "manufacturer": {
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            },
+            "serialNumber": {
+              "type": "string"
+            },
+            "queue": {
+              "type": "string"
+            },
+            "polling": {
+              "type": "boolean"
+            },
+            "polling": {
+              "type": "array",
+              "required": false,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "characteristic": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "props": {
+              "type": "object",
+              "required": false,
+              "properties": {
+                "brightness": {
+                  "type": "object",
+                  "properties": {
+                    "minStep": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "currentTemperature": {
+                  "type": "object",
+                  "properties": {
+                    "maxValue": {
+                      "type": "number"
+                    },
+                    "minValue": {
+                      "type": "number"
+                    },
+                    "minStep": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "rotationSpeed": {
+                  "type": "object",
+                  "properties": {
+                    "minStep": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "targetTemperature": {
+                  "type": "object",
+                  "properties": {
+                    "maxValue": {
+                      "type": "number"
+                    },
+                    "minValue": {
+                      "type": "number"
+                    },
+                    "minStep": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            },
+            "state_cmd": {
+              "type": "string"
+            },
+            "state_cmd_suffix": {
+              "type": "string"
+            },
+            "linkedTypes": {
+              "type": "array",
+              "required": false,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "displayName": {
+                    "type": "string"
+                  },
+                  "active": {
+                    "type": "number"
+                  },
+                  "on": {
+                    "type": "boolean"
+                  },
+                  "brightness": {
+                    "type": "number"
+                  },
+                  "rotationSpeed": {
+                    "type": "number"
+                  },
+                  "rotationDirection": {
+                    "type": "number"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "manufacturer": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "serialNumber": {
+                    "type": "string"
+                  },
+                  "queue": {
+                    "type": "string"
+                  },
+                  "polling": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "characteristic": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "props": {
+                    "type": "object",
+                    "properties": {
+                      "brightness": {
+                        "type": "object",
+                        "properties": {
+                          "minStep": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "currentTemperature": {
+                        "type": "object",
+                        "properties": {
+                          "maxValue": {
+                            "type": "number"
+                          },
+                          "minValue": {
+                            "type": "number"
+                          },
+                          "minStep": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "rotationSpeed": {
+                        "type": "object",
+                        "properties": {
+                          "minStep": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "targetTemperature": {
+                        "type": "object",
+                        "properties": {
+                          "maxValue": {
+                            "type": "number"
+                          },
+                          "minValue": {
+                            "type": "number"
+                          },
+                          "minStep": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "state_cmd": {
+                    "type": "string"
+                  },
+                  "state_cmd_suffix": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
-   },
-   "layout": [
-      {
+    }
+  },
+  "layout": [
+    {
       "type": "fieldset",
       "title": "Device Settings",
       "description": "Enter below the name and IP address of your AdvantageAir device.",
-      "items": [
-         ]
-      },
-      {
+      "items": []
+    },
+    {
       "key": "devices",
       "type": "tabarray",
       "title": "{{ value.name || 'new device' }}",
       "description": "Note: only a maximum of 3 AdvantageAir devices can be processed by Config Creator.",
       "items": [
-         "devices[].name",
-         "devices[].ipAddress",
-         "devices[].port",
-         "devices[].extraTimers",
-         "devices[].debug"
-         ]
-      }
-   ]
+        "devices[].name",
+        "devices[].ipAddress",
+        "devices[].port",
+        "devices[].extraTimers",
+        "devices[].debug"
+      ]
+    }
+  ]
 }
