@@ -91,9 +91,13 @@ Both the <B>Thermostat</B> and <B>Fan</B> switch has associated fan speed contro
 <img width="240px" src="Screenshots/Timer_homekit_UI.png">
 </p>
 
-A timer is repurposed from <B>Lightbulb</B> accessory where the <B>%-brightness</B> is a proxy for duration with 6 minutes per 1%. 10%-timer is then a 60-minutes or 1-hour timer and 25%-timer is a 2.5-hours timer. This timer will turn ON or OFF the Aircon system.
+A timer is repurposed from <B>Lightbulb</B> accessory where the <B>%-brightness</B> is a proxy for duration with 6 minutes per 1%. 10%-timer is then a 60-minutes or 1-hour timer and 25%-timer is a 2.5-hours timer. YOu can set up to a maximum of 10-hour timer (100%-timer). This timer will turn ON or OFF the Aircon system. 
 
-If <B>Include fancy timers</B> is checked during the setup process, 3 more timers will be created- a <B>Fan Timer</B>, a <B>Cool Timer</B> and a <B>Heat Timer</B>.  These timers will turn ON the Aircon system in specific mode as their names suggest.
+<p align="left">
+<img width="300px" src="Screenshots/FancyTimers_homekit_tiles.png">
+</p>
+
+If <B>Include fancy timers</B> is checked during the setup process, 3 more timers will be created- a <B>Fan Timer</B>, a <B>Cool Timer</B> and a <B>Heat Timer</B>.  These timers will turn ON the Aircon system in specific mode as their names suggest. *Please note that the icon on the Timer tiles in the example above has been changed manually to distinguish it from lights.*
 
 #### (iii) Zone Control
 <p align="left">
@@ -107,7 +111,7 @@ For zones with temperature sensors and with myZone defined, a <B>myZone</B> swit
 
 For zone current temperature info, click the setting button.
 
-### (B) Light
+### (B) Lights
 <p align="left">
 <img width="300px" src="Screenshots/Lights_homekit_tiles.png">
 </p>
@@ -119,8 +123,15 @@ For zone current temperature info, click the setting button.
 
 Light with dimmer has a slider to control its brightness while a light without dimmer just has a simple ON/OFF light switch.
 
-### (C) Garage Door
-### (D) Blinds
+### (C) Garage Door and Blinds
+<p align="left">
+<img width="300px" src="Screenshots/Garage&Blinds_homekit_tiles.png">
+</p>
+
+<p align="left">
+<img width="240px" src="Screenshots/Garage_homekit_UI.png">
+<img width="240px" src="Screenshots/Blinds_homekit_UI.png">
+</p>
 
 ## How You Can Help:
 * Report Bugs/Errors by opening Issues/Tickets.
