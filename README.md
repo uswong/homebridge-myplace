@@ -73,7 +73,7 @@ apk add <jq or curl>
 ## How it Looks and Functions:
 ### (A) Aircon System (MyAir, E-zone, etc) has the following typical Homekit tiles (Thermostat, Fan switch, Timer and Zone Control):
 <p align="left">
-<img width="240px" src="Screenshots/Aircon_homekit_tiles.png">
+<img width="300px" src="Screenshots/Aircon_homekit_tiles.png">
 </p>
 
 #### (i) Thermostat, Fan Switch and Fan Speed Control
@@ -86,12 +86,12 @@ apk add <jq or curl>
 
 Both the <B>Thermostat</B> and <B>Fan</B> switch has associated fan speed control and either one can be used. It is duplicated only for convenience. The fan speed control has 4 tiers - <B>low</B>, <B>mid</B>, <B>high</B> and <B>auto</B> or <B>ezfan</B> and the %-rotationSpeed is snapped to 25% for <B>low</B>, 50% for <B>mid</B>, 90% for <B>high</B> and 100% for <B>auto</B> or <B>ezfan</B>.
 
-#### (ii) Timer
+#### (ii) Timers
 <p align="left">
 <img width="240px" src="Screenshots/Timer_homekit_UI.png">
 </p>
 
-Timer is repurposed from <B>Lightbulb</B> accessory where the <B>%-brightness</B> is a proxy for duration with 6 minutes per 1%. 10%-timer is then a 60-minutes or 1-hour timer and 25%-timer is a 2.5-hours timer. This timer will turn ON or OFF the Aircon system.
+A timer is repurposed from <B>Lightbulb</B> accessory where the <B>%-brightness</B> is a proxy for duration with 6 minutes per 1%. 10%-timer is then a 60-minutes or 1-hour timer and 25%-timer is a 2.5-hours timer. This timer will turn ON or OFF the Aircon system.
 
 If <B>Include fancy timers</B> is checked during the setup process, 3 more timers will be created- a <B>Fan Timer</B>, a <B>Cool Timer</B> and a <B>Heat Timer</B>.  These timers will turn ON the Aircon system in specific mode as their names suggest.
 
@@ -108,6 +108,17 @@ For zones with temperature sensors and with myZone defined, a <B>myZone</B> swit
 For zone current temperature info, click the setting button.
 
 ### (B) Light
+<p align="left">
+<img width="300px" src="Screenshots/Lights_homekit_tiles.png">
+</p>
+
+<p align="left">
+<img width="240px" src="Screenshots/LightWithDimmer_homekit_UI.png">
+<img width="240px" src="Screenshots/LightSwitch_homekit_UI.png">
+</p>
+
+Light with dimmer has a slider to control its brightness while a light without dimmer just has a simple ON/OFF light switch.
+
 ### (C) Garage Door
 ### (D) Blinds
 
