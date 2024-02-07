@@ -70,8 +70,8 @@ apk add <jq or curl>
   
   *typical `<Plugin Path>` is `/var/lib/hoobs/<bridge>` 
 
-## How it Looks and Functions:
-### (A) Aircon System (MyAir, E-zone, etc) has the following typical Homekit tiles (Thermostat, Fan switch, Timer and Zone Control):
+## How it Looks and Works:
+### (A) Aircon System (MyAir, E-zone, etc) has the following typical Homekit tiles:
 <p align="left">
 <img width="300px" src="Screenshots/Aircon_homekit_tiles.png">
 </p>
@@ -82,22 +82,22 @@ apk add <jq or curl>
  <img width="240px" src="Screenshots/FanSwitch_homekit_UI.png">
 </p>
 
-<B>Thermostat</B> is where the target temperature can be set.  Unfortunately, it has only 4 modes- <B>Off</B>, <B>Cool</B>, <B>Heat</B> and <B>Auto</B>. It does not have <B>dry</B> and <B>fan</B> modes.  As such, the <B>Thermostat Auto</B> mode is programed as <B>dry</B> mode in this plugin and a separate <B>Fan</B> switch is used for <B>fan</B> mode.
+<B>Thermostat</B> is where the target temperature can be set.  Unfortunately, it has only 4 modes- <B>Off</B>, <B>Cool</B>, <B>Heat</B> and <B>Auto</B>. It does not have <B>dry</B> and <B>fan</B> modes.  As such, the <B>Thermostat Auto</B> mode is repurposed as <B>dry</B> mode in this plugin and a separate <B>Fan</B> switch is used for <B>fan</B> mode.
 
-Both the <B>Thermostat</B> and <B>Fan</B> switch has associated fan speed control and either one can be used. It is duplicated only for convenience. The fan speed control has 4 tiers - <B>low</B>, <B>mid</B>, <B>high</B> and <B>auto</B> or <B>ezfan</B> and the %-rotationSpeed is snapped to 25% for <B>low</B>, 50% for <B>mid</B>, 90% for <B>high</B> and 100% for <B>auto</B> or <B>ezfan</B>.
+Both the <B>Thermostat</B> and <B>Fan</B> switch has associated fan speed control and either one can be used to set the fan speed. It is duplicated only for convenience. The fan speed control has 4 tiers - <B>low</B>, <B>mid</B>, <B>high</B> and <B>auto</B> or <B>ezfan</B> and the %-rotationSpeed is snapped to 25% for <B>low</B>, 50% for <B>mid</B>, 90% for <B>high</B> and 100% for <B>auto</B> or <B>ezfan</B>.
 
 #### (ii) Timers
 <p align="left">
 <img width="240px" src="Screenshots/Timer_homekit_UI.png">
 </p>
 
-A timer is repurposed from <B>Lightbulb</B> accessory where the <B>%-brightness</B> is a proxy for duration with 6 minutes per 1%. 10%-timer is then a 60-minutes or 1-hour timer and 25%-timer is a 2.5-hours timer. YOu can set up to a maximum of 10-hour timer (100%-timer). This timer will turn ON or OFF the Aircon system. 
+A timer is repurposed from <B>Lightbulb</B> accessory where the <B>%-brightness</B> is a proxy for duration with 6 minutes per 1%. 10%-timer is then a 60-minutes or 1-hour timer and 25%-timer is a 2.5-hours timer. A maximum of 10-hour timer (100%-timer) can be set. This timer will turn ON or OFF the Aircon system. 
 
 <p align="left">
 <img width="300px" src="Screenshots/FancyTimers_homekit_tiles.png">
 </p>
 
-If <B>Include fancy timers</B> is checked during the setup process, 3 more timers will be created- a <B>Fan Timer</B>, a <B>Cool Timer</B> and a <B>Heat Timer</B>.  These timers will turn ON the Aircon system in specific mode as their names suggest. *Please note that the icon on the Timer tiles in the example above has been changed manually to distinguish it from lights.*
+If <B>Include fancy timers</B> is checked during the setup process, 3 more timers will be created- a <B>Fan Timer</B>, a <B>Cool Timer</B> and a <B>Heat Timer</B>.  These timers will turn ON the Aircon system in specific mode as their names suggest. *Please note that the icons on the Timer tiles in the example above have been deliberately changed to distinguish them from lights.*
 
 #### (iii) Zone Control
 <p align="left">
@@ -132,6 +132,8 @@ Light with dimmer has a slider to control its brightness while a light without d
 <img width="240px" src="Screenshots/Garage_homekit_UI.png">
 <img width="240px" src="Screenshots/Blinds_homekit_UI.png">
 </p>
+
+Garage Door is either Opened or Closed, hence it appears as a simple switch while Blinds can be partially open, as such, it has a slider to set the %-open.
 
 ## How You Can Help:
 * Report Bugs/Errors by opening Issues/Tickets.
