@@ -5,9 +5,9 @@
 </p>
 
 # homebridge-myplace
-An independent plugin bringing [Advanatge Air](https://www.advantageair.com.au/) MyPlace System and its smaller siblings (E-zone, MyAir, MyAir4, etc) to Homekit.
+An independent plugin bringing [Advanatge Air](https://www.advantageair.com.au/) MyPlace System and its smaller siblings (E-zone, MyAir, MyAir4, etc) and cousins (e.g. Fujitsu AnywAir) to Homekit.
 
-This plugin is a result of my intensive involvement in the development of [homebridge-cmd4-AdvantageAir](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir) plugin in the past two years together with its original author and having made myself quite familiar with [homebridge-cmd4](https://github.com/ztalbot2000/homebridge-cmd4) through many discussions with its author.  <B>homebridge-cmd4-AdvantageAir</B> depends on <B>homebridge-cmd4</B> to run but this <B>homebridge-myplace</B> does not.
+This plugin is a result of blending together, with modifications to make it more efficient, the [homebridge-cmd4-AdvantageAir](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir) v3.11.0 and the [homebridge-cmd4](https://github.com/ztalbot2000/homebridge-cmd4) v7.0.3 plugins. 
 
 ## Supported Advantage Air Control Units:
   * [MyPlace](https://apps.apple.com/au/app/myplace/id996398299)
@@ -22,7 +22,7 @@ This plugin is a result of my intensive involvement in the development of [homeb
 
 2. Find the `homebridge-myplace` plugin via the Homebridge UI 'Plugins' tab search function, once found, click the blue down arrow at the bottom right to install.
   
-   *Please note that this plugin is using the same engine as in `homebridge-cmd4` plugin. As such, if you have `homebridge-cmd4` installed, you have to uninstall it before installing this plugin, otherwise there will be some conflicts and one of them will not run. If you do use `homebridge-cmd4` for some other purposes, you can include the same config in `homebridge-myplace` and it will still run as if it is in `homebridge-cmd4`.*
+   *Please note that if you have `homebridge-cmd4` installed, you have to uninstall it before installing this plugin, otherwise there will be some conflicts and one of them will not run. If you do use `homebridge-cmd4` for some other purposes, you can include the same config in `homebridge-myplace` and it will still run as if it is in `homebridge-cmd4`.*
 
      <p align="left">
      <img width="600px" src="Screenshots/MyPlaceInstall.png">
@@ -141,7 +141,7 @@ Garage Door is either Opened or Closed, hence it appears as a simple switch whil
 
 
 ## Special Thanks
-1. Many thanks to [Mitch Williams](https://github.com/mitch7391) who has created the wonderful [homebridge-cmd4-AdvantageAir](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir) plugin and has allowed me to participate in its development and in the process I have leant a lot on **bash** and **javascript** coding in homebridge environment.
+1. Many thanks to [Mitch Williams](https://github.com/mitch7391) who has created the wonderful [homebridge-cmd4-AdvantageAir](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir) plugin and has allowed me to participate in its development and in the process I have leant a lot about GitHub and on **bash** and **javascript** coding in homebridge environment.
 2. Many thanks also to [John Talbot](https://github.com/ztalbot2000) for his fantastic [homebridge-cmd4](https://github.com/mitch7391/homebridge-cmd4) plugin which I have forked and used it as the main engine for this plugin.
 3. And never forget to thank my beautiful wife who has put up with my obsession on this.....
 
