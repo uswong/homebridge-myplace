@@ -77,6 +77,15 @@ apk add <jq or curl>
 </p>
 
 #### (i) Thermostat, Fan Speed Control
+<p align="left">
+<img width="240px" src="Screenshots/Thermostat_homekit_UI.png">
+ <img width="240px" src="Screenshots/FanSwitch_homekit_UI.png">
+</p>
+
+<B>Thermostat</B> is where the target temperature can be set.  Unfortunately, it has only 4 modes- <B>Off</B>, <B>Cool</B>, <B>Heat</B> and <B>Auto</B>. It does not have <B>dry</B> and <B>fan</B> modes.  As such, the <B>Thermostat Auto</B> mode is programed as <B>dry</B> mode in this plugin and a separate switch is used for <B>fan</B> mode.
+
+Both the <B>Thermostat</B> and <B>Fan</B> has assicated fan speed control and either one can be used. It is duplicated only for convenience. The fan speed control has 4 tiers - <B>low</B>, <B>mid</B>, <B>high</B> and <B>auto</B> or <B>ezfan</B> and the %-rotationSpeed is snapped to 25% for <B>low</B>, 50% for <B>mid</B>, 90% for <B>high</B> and 100% for <B>auto</B> or <B>ezfan</B>.
+
 #### (ii) Timers
 #### (iii) Zone Control
 
