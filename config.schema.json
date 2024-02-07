@@ -138,6 +138,12 @@
             "targetHeatingCoolingState": {
               "type": "string"
             },
+            "currentDoorState": {
+              "type": "number"
+            },
+            "targetDoorState": {
+              "type": "number"
+            },
             "currentPosition": {
               "type": "number"
             },
@@ -153,6 +159,9 @@
             "temperatureDisplayUnits": {
               "type": "string"
             },
+            "obstructionDetected": {
+              "type": "boolean"
+            },
             "name": {
               "type": "string"
             },
@@ -161,6 +170,9 @@
             },
             "model": {
               "type": "string"
+            },
+            "positionState": {
+              "type": "number"
             },
             "serialNumber": {
               "type": "string"
@@ -258,6 +270,9 @@
                     "type": "boolean"
                   },
                   "brightness": {
+                    "type": "number"
+                  },
+                  "currentTemperature": {
                     "type": "number"
                   },
                   "rotationSpeed": {
