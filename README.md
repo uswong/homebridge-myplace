@@ -90,11 +90,26 @@ Both the <B>Thermostat</B> and <B>Fan</B> switch has associated fan speed contro
 <p align="left">
 <img width="240px" src="Screenshots/Timer_homekit_UI.png">
 </p>
+
 Timer is repurposed from <B>Lightbulb</B> accessory where the <B>%-brightness</B> is a proxy for duration with 6 minutes per 1%. 10%-timer is then a 60-minutes or 1-hour timer and 25%-timer is a 2.5-hours timer. This timer will turn ON or OFF the Aircon system.
 
-If <B>Include fancy timers</B> is checked during the setup process, 3 more timers will be created- a <B>Fan Timer</B>, a <B>Cool Timer</B> and a <B>Heat Timer</B>.  These timers will turn ON the Aircon system in specific mode as its names suggest.
+If <B>Include fancy timers</B> is checked during the setup process, 3 more timers will be created- a <B>Fan Timer</B>, a <B>Cool Timer</B> and a <B>Heat Timer</B>.  These timers will turn ON the Aircon system in specific mode as their names suggest.
 
 #### (iii) Zone Control
+<p align="left">
+<img width="240px" src="Screenshots/ZoneNoMyZone_homekit_UI.png">
+ <img width="530px" src="Screenshots/ZoneWithMyZone2_homekit_UI.png">
+</p>
+
+Zone control is repurposed from <B>Fan</B> accessory with its <B>%-rotationSpeed</B> as proxy for zone %-open.  
+
+For zones with temperature sensors and with myZone defined, a <B>myZone</B> switch, repurposed from <B>rotationDirection</B> will appear as a round button. Turn this button <B>ON</B> to set this zone as myZone.  *Please note that as per Advantage Air system design, myZone cannot be turned <B>OFF</B>. It can only be turned <B>OFF</B> for this zone by setting another zone as myZone.  Moreover, %-open for those zones with temperature sensors cannot be set.  It is set automatically by the system.*
+
+For zone current temperature info, click the setting button.
+
+### (B) Light
+### (C) Garage Door
+### (D) Blinds
 
 ## How You Can Help:
 * Report Bugs/Errors by opening Issues/Tickets.
