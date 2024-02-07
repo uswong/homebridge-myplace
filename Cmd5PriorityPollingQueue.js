@@ -141,12 +141,22 @@ class Cmd5PriorityPollingQueue
             {
                this.service.getCharacteristic( 'Active' ).updateValue( 1 );
             }
-            // set the value to 25% if value <= 33% else 50% if value <=67% else 90% if value <=99% for Aircon RotationSpeed
-            else if ( this.displayName.match( / FanSpeed$/ ) && characteristicString == 'RotationSpeed' && value < 100 )
-            {
-               value = Math.ceil( value / 33.8 ) * 25;
-               value = value >= 75 ? 90 : value;
-               this.service.getCharacteristic( CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].characteristic ).updateValue( value );
+            else if ( this.displayName.match( / FanSpeed$/ ) )
+            {  
+               // Abort if 'on' or 'rotationSpeed' value = 0, this accessory is always on
+               if ( value == 0 )
+               {
+                  let storedValue = this.cmd5Storage.getStoredValueForIndex( accTypeEnumIndex );
+                  this.service.getCharacteristic( CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].characteristic ).updateValue( storedValue );
+                  return;
+               }
+               // set the value to 25% if value <= 33% else 50% if value <=67% else 90% if value <=99% for Aircon RotationSpeed
+               else if ( characteristicString == 'RotationSpeed' && value < 100 )
+               {
+                  value = Math.ceil( value / 33.8 ) * 25;
+                  value = value >= 75 ? 90 : value;
+                  this.service.getCharacteristic( CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].characteristic ).updateValue( value );
+               }
             }
          }
       }
