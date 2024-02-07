@@ -70,6 +70,16 @@ apk add <jq or curl>
   
   *typical `<Plugin Path>` is `/var/lib/hoobs/<bridge>` 
 
+## How it Looks and Functions:
+### (A) Aircon System (MyAir, E-zone, etc) has the following typical Homekit tiles:
+<p align="left">
+<img width="240px" src="Screenshots/Aircon_homekit_tiles.png">
+</p>
+
+#### (i) Thermostat, Fan Speed Control
+#### (ii) Timers
+#### (iii) Zone Control
+
 ## How You Can Help:
 * Report Bugs/Errors by opening Issues/Tickets.
 * Suggest Improvements and Features you would like to see!
