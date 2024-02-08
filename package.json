@@ -11,7 +11,7 @@
       "url": "git://github.com/uswong/homebridge-myplace.git"
    },
    "homepage": "https://github.com/uswong/homebridge-myplace#readme",   
-   "changelog": "https://github.com/uswong/homebridge-myplace/blob/master/ChangeLog.md",
+   "changelog": "https://github.com/uswong/homebridge-myplace/blob/master/CHANGELOG.md",
    "bugs": {
       "url": "https://github.com/uswong/homebridge-myplace/issues",
       "email": "uswong@gmail.com"
