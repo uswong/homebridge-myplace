@@ -116,27 +116,24 @@ class Cmd5PriorityPollingQueue
          if ( settings.cmd5Dbg ) this.log.debug(`prioritySetValue for ${ this.displayName }, homebridgeCallback returning default success 0`);
          homebridgeCallback( 0 );
 
-         // For AdvantageAir users only
-         // Reject Set requests (change Fanv2 rotationSpeed or turn off myZone) for zones with temperature sensors
+         // For homebridge-myplace users only
          if ( this.state_cmd.match( /MyPlace.sh'$/ ) )
          {
+            // Reject Set requests to change Fanv2 rotationSpeed or to turn off myZone for zones with temperature sensors
             if ( this.typeIndex == 20 && this.displayName.match ( / Zone$/ ) && 
                   ( characteristicString == 'RotationSpeed' || 
-                    ( characteristicString == 'SwingMode' && value == 0) ||
-                    ( characteristicString == 'RotationDirection' && value == 1) 
+                    ( characteristicString == 'RotationDirection' && value == 1 ) 
                   ) 
                )
             {
                let storedValue = this.cmd5Storage.getStoredValueForIndex( accTypeEnumIndex );
                this.service.getCharacteristic( CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].characteristic ).updateValue( storedValue );
-               // Do not allow the setting of % zone open or turning off of myZone, so abort this Set request
+               // Abort this Set request
                return;
             }
             // Turn on the Zone when this Zone is set as myZone
             else if ( this.typeIndex == 20 && this.displayName.match ( / Zone$/ ) &&
-                    (  ( characteristicString == 'SwingMode' && value == 1) ||
-                       ( characteristicString == 'RotationDirection' && value == 0)
-                    )
+                      characteristicString == 'RotationDirection' && value == 0 
                  )
             {
                this.service.getCharacteristic( 'Active' ).updateValue( 1 );
