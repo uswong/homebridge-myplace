@@ -5,7 +5,7 @@
 </p>
 
 # homebridge-myplace
-An independent plugin bringing [Advanatge Air](https://www.advantageair.com.au/) MyPlace System and its smaller siblings (E-zone, MyAir, MyAir4, etc) and cousins (e.g. Fujitsu AnywAir) to Homekit.
+An independent plugin bringing [Advanatge Air](https://www.advantageair.com.au/) MyPlace System and its smaller siblings (E-zone, MyAir, MyAir4, etc) and its cousins (e.g. Fujitsu AnywAir) to Homekit.
 
 This plugin is a result of blending together, with modifications to make it more efficient, the [homebridge-cmd4-AdvantageAir](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir) v3.11.0 and the [homebridge-cmd4](https://github.com/ztalbot2000/homebridge-cmd4) v7.0.3 plugins. 
 
@@ -94,11 +94,13 @@ Both the <B>Thermostat</B> and <B>Fan</B> switch has associated fan speed contro
 </p>
 
 A timer is repurposed from <B>Lightbulb</B> accessory and its <B>%-brightness</B> as proxy for duration configured to represent 6 minutes per 1%. 10%-timer is then a 60-minutes or 1-hour timer and 25%-timer is a 2.5-hours timer. A maximum of 10-hour timer (100%-timer) can be set. This timer will turn ON or OFF the Aircon system.
+
+If <B>Include extra timers</B> is checked during the setup process, 3 more timers would have been created- a <B>Fan Timer</B>, a <B>Cool Timer</B> and a <B>Heat Timer</B>:
 <p align="left">
 <img width="300px" src="Screenshots/FancyTimers_homekit_tiles.png">
 </p>
 
-If <B>Include extra timers</B> is checked during the setup process, 3 more timers would have been created- a <B>Fan Timer</B>, a <B>Cool Timer</B> and a <B>Heat Timer</B>.  These timers will turn ON the Aircon system in specific mode as their names suggest. *Please note that the icons on the Timer tiles in the example above have been deliberately changed to distinguish them from lights. All timers are repurposed from <B>Lightbulb</B> accessory.*
+These timers will turn ON the Aircon system in specific mode as their names suggest. *Please note that the icons on the Timer tiles in the example above have been deliberately changed to distinguish them from lights. All timers are repurposed from <B>Lightbulb</B> accessory.*
 
 #### (iii) Zone Control
 <p align="left">
