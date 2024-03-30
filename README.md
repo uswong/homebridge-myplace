@@ -4,8 +4,10 @@
 <img src="Screenshots/MyPlace.png" width="220">
 </p>
 
+[![verified-by-homebridge](https://img.shields.io/badge/homebridge-verified-blueviolet?color=%23491F59&style=for-the-badge&logoColor=%23FFFFFF&logo=homebridge)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
+
 # homebridge-myplace
-An independent plugin bringing [Advanatge Air](https://www.advantageair.com.au/) MyPlace System and its smaller siblings (E-zone, MyAir, MyAir4, etc) and its cousins (e.g. Fujitsu AnywAir) to Homekit.
+An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/) MyPlace System and its smaller siblings (E-zone, MyAir, MyAir4, etc) and its cousins (e.g. Fujitsu AnywAir) to Homekit.
 
 This plugin is a result of blending together, with modifications to make it more efficient, the [homebridge-cmd4-AdvantageAir](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir) v3.11.0 and the [homebridge-cmd4](https://github.com/ztalbot2000/homebridge-cmd4) v7.0.3 plugins. 
 
