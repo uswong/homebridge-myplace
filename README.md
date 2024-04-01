@@ -1,7 +1,7 @@
 <span align="center">
 
 <p align="center">
-<img src="Screenshots/Homebridge-myplace.png" width="200">
+<img src="Screenshots/homebridge-myplace.png" width="220">
 </p>
 
 # homebridge-myplace
@@ -15,17 +15,17 @@
 
 </span>
 
-An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/) MyPlace System and its smaller siblings (E-zone, MyAir, MyAir4, etc) and its cousins (e.g. Fujitsu AnywAir) to Homekit.
+An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/) MyPlace System, its smaller siblings (E-zone, MyAir, MyAir4, etc) and its cousins (e.g. Fujitsu AnywAir) to Homekit.
 
-## Supported Advantage Air Control Units:
+## Supported Advantage Air Control Units
   * [MyPlace](https://apps.apple.com/au/app/myplace/id996398299)
   * [MyAir4](https://apps.apple.com/au/app/myair4/id925994861)
   * [MyAir](https://apps.apple.com/au/app/myair/id481563583)
   * [E-zone](https://apps.apple.com/au/app/e-zone/id925994857)
   * [Fujitsu anywAIR](https://apps.apple.com/au/app/anywair/id1509639853)
 
-## Installation:
-### Raspbian/HOOBS/macOS/NAS:
+## Installation
+### Raspbian/HOOBS/macOS/NAS
 1. Install Homebridge via these instructions for [Raspbian](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian), [HOOBS](https://support.hoobs.org/docs) or [macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS), if you have not already.
 
 2. Find the `homebridge-myplace` plugin via the Homebridge UI 'Plugins' tab search function, once found, click the blue down arrow at the bottom right to install.
@@ -33,7 +33,7 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
    *Please note that if you have `homebridge-cmd4` installed, you have to uninstall it before installing this plugin, otherwise there will be some conflicts and one of them will not run. If you do use `homebridge-cmd4` for some other purposes, you can include the same config in `homebridge-myplace` and it will still run as if it is in `homebridge-cmd4`.*
 
      <p align="left">
-     <img width="600px" src="Screenshots/MyPlaceInstall.png">
+     <img width="400px" src="Screenshots/MyPlaceInstall3.png">
      </p>
 3. Check if <B>jq</B> and <B>curl</B> are installed (<B>curl</B> should already be):
 ```shell
@@ -78,7 +78,7 @@ apk add <jq or curl>
   
   *typical `<Plugin Path>` is `/var/lib/hoobs/<bridge>` 
 
-## How it Looks and Works:
+## How it Looks and Works
 ### (A) Aircon System (MyAir, E-zone, etc) has the following typical Homekit tiles:
 <p align="left">
 <img width="300px" src="Screenshots/Aircon_homekit_tiles.png">
@@ -146,7 +146,7 @@ Light with dimmer has a slider to control its brightness while a light without d
 
 Garage Door is either Opened or Closed, hence it appears as a simple switch while Blinds can be partially open, as such, it has a slider to set the %-open.
 
-## How You Can Help:
+## How You Can Help
 * Report Bugs/Errors by opening Issues/Tickets.
 * Suggest Improvements and Features you would like to see!
 
@@ -157,5 +157,5 @@ Garage Door is either Opened or Closed, hence it appears as a simple switch whil
 3. And never forget to thank my beautiful wife who has put up with my obsession on this.....
 
 
-## LICENSE:
+## LICENSE
 This plugin is distributed under the MIT license. See [LICENSE](https://github.com/uswong/homebridge-myplace/blob/main/LICENSE) for details.
