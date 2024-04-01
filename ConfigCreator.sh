@@ -1462,6 +1462,7 @@ function cleanUp()
    rm -f "${cmd5ConfigConstantsNonAA}"
    rm -f "${cmd5ConfigQueueTypesNonAA}"
    rm -f "${cmd5ConfigAccessoriesNonAA}"
+   rm -f "${cmd5ConfigDevicesKey}"   
    rm -f "${cmd5ConfigMiscKeys}"
    rm -f "${cmd5ConfigJsonAAwithNonAA}"
    rm -f "${configJsonNew}"
