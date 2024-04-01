@@ -10,6 +10,10 @@
       "type": "git",
       "url": "git://github.com/uswong/homebridge-myplace.git"
    },
+   "funding": {
+      "type" : "paypal",
+      "url" : "https://paypal.me/uswong"
+   },
    "homepage": "https://github.com/uswong/homebridge-myplace#readme",   
    "changelog": "https://github.com/uswong/homebridge-myplace/blob/master/CHANGELOG.md",
    "bugs": {
