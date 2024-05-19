@@ -577,6 +577,31 @@ function cmd5Fan()
    } >> "$1"
 }
 
+function cmd5FanNoRotationSpeed()
+{
+   local name="$2"
+   local id="$3"
+   id=${id//\"/}
+   { echo "        {"
+     echo "            \"type\": \"Fan\","
+     echo "            \"displayName\": \"${name}\","
+     echo "            \"on\": false,"
+     echo "            \"name\": \"${name}\","
+     echo "            \"manufacturer\": \"Advantage Air Australia\","
+     echo "            \"model\": \"${sysType}\","
+     echo "            \"serialNumber\": \"${tspModel}\","
+     echo "            \"queue\": \"$queue\","
+     echo "            \"polling\": ["
+     echo "                {"
+     echo "                    \"characteristic\": \"on\""
+     echo "                }"
+     echo "            ],"
+     echo "            \"state_cmd\": \"'${MYPLACE_SH_PATH}'\","
+     echo "            \"state_cmd_suffix\": \"ligID:$id ${ip}\""
+     echo "        },"
+   } >> "$1"
+} 
+
 function cmd5FanSwitch()
 {
    local fanName="$2"
@@ -1788,11 +1813,15 @@ for ((n=1; n<=noOfTablets; n++)); do
       do
          name=$(echo "$myAirData" | jq -e ".myLights.lights.${id}.name" | sed s/\"//g)
          value=$(echo "$myAirData" | jq -e ".myLights.lights.${id}.value ")
-         if [ "${value}" = "null" ]; then
-            cmd5LightbulbNoDimmer "${cmd5ConfigAccessoriesAA}" "${name}" "${id}"
+         if [ "${name:(-4)}" = " Fan" ]; then
+            cmd5FanNoRotationSpeed "${cmd5ConfigAccessoriesAA}" "${name}" "${id}"
          else
-            cmd5LightbulbWithDimmer "${cmd5ConfigAccessoriesAA}" "${name}" "${id}"
-         fi
+            if [ "${value}" = "null" ]; then
+               cmd5LightbulbNoDimmer "${cmd5ConfigAccessoriesAA}" "${name}" "${id}"
+            else
+               cmd5LightbulbWithDimmer "${cmd5ConfigAccessoriesAA}" "${name}" "${id}"
+            fi         
+         fi            
       done
    fi
 
