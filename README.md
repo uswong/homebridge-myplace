@@ -132,7 +132,19 @@ For zone current temperature info, click the setting button.
 
 Light with dimmer has a slider to control its brightness while a light without dimmer just has a simple ON/OFF light switch.
 
-### (C) Garage Door and Blinds
+### (C) Fans
+
+<p align="left">
+<img width="150px" src="Screenshots/Fan_homekit_tile.jpg">
+</p>
+
+<p align="left">
+<img width="240px" src="Screenshots/Fan_homekit_UI.jpg">
+</p>
+
+From version 1.1.6 onwards, if a light switch has a name ending with " Fan", it is regarded as a switch for turning ON or OFF a fan.  The icon on Homekit will then be a fan instead of a lightbulb. 
+
+### (D) Garage Door and Blinds
 <p align="left">
 <img width="300px" src="Screenshots/Garage&Blinds_homekit_tiles.png">
 </p>
