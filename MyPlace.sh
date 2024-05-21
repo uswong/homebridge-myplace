@@ -120,8 +120,13 @@ function logError()
    #
    # append a counter to the file so that the number of same error is logged
    if [ -f "${file}" ]; then
-      count=$(echo "${file}" | cut -d'#' -f2)
-      count=$((count + 1))
+      getFileStaeStatDt "${file}"
+      if [ "${dt}" -lt 600 ]; then
+         count=$(echo "${file}" | cut -d'#' -f2)
+         count=$((count + 1))
+      else
+         count=1
+      fi
    else
       count=1
    fi
