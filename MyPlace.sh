@@ -119,18 +119,15 @@ function logError()
    file=$(find "${fileName}"* 2>&1|grep -v find)
    #
    # append a counter to the file so that the number of same error is logged
+   count=1
    if [ -f "${file}" ]; then
       getFileStaeStatDt "${file}"
       if [ "${dt}" -lt 600 ]; then
          count=$(echo "${file}" | cut -d'#' -f2)
          count=$((count + 1))
-      else
-         count=1
       fi
-   else
-      count=1
+      rm -f "${file}"
    fi
-   rm -f "${file}"
    #
    fileName="${fileName}#${count}"
    { echo "$io $device $characteristic"
