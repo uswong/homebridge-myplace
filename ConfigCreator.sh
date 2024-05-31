@@ -1,29 +1,13 @@
 #!/bin/bash
 #
-# This script is to generate a complete Cmd5 configuration file needed for the myplace plugin
-# This script can handle up to 3 independent AdvantageAir (AA) systems
+# This script is to generate a complete configuration file needed for the myplace plugin
+# This script can handle up to 3 independent MyPlace systems
 #
 # This script can be invoked in two ways:
 # 1. from homebridge customUI
-#    a. click "SETTING" on myplace plugin and
-#    b. at the bottom of the SETTING page, define your AdvantageAir Device(s), then clikc SAVE
-#    c. click "SETTING" again and
-#    d. check the checkbox if you want the fan to be setup as fanSwitch
-#    e. click "CONFIG CREATOR" button
-#
 # 2. from a terminal
-#    a. find out where the bash script "ConfigCreator.sh" is installed (please see plugin wiki for details)
+#    a. find out where the bash script "ConfigCreator.sh" is installed
 #    b. run the bash script ConfigCreator.sh
-#    c. Enter the name and IP address of your AdvantageAir system(s) - up to 3 systems can be processed
-#    d. you can choose whether you want the fan to be setup as fanSwitch or not
-#    e. you might need to enter the path to MyPlace.sh if it is not found by the script.
-#    f. you might also need to enter the path to the Homebridge config.json file if it is not found by the script.
-#
-# Once the Cmd5 configuration file is generated and copied to Homebridge config.json and if you know
-# what you are doing you can do some edits on the Cmd5 configuration file in Cmd5 Config Editor
-# Click SAVE when you are done.
-#
-# NOTE:  If you need to 'flip' the GarageDoorOpener, you have to add that in yourself.
 #
 UIversion="customUI"
 
