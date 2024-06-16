@@ -106,20 +106,22 @@ function logError()
    if [ "$logErrors" != true ]; then
       return
    fi
+
    local comment="$1"
    local result="$2"
    local data1="$3"
    local data2="$4"
+   local count=1
    local sfx
    local file
-   local count
+   local fileName
+
    sfx="$rc-$io-$device-$characteristic"
    sfx=${sfx// /_}
-   local fileName="${tmpSubDir}/AAerror-${sfx}.txt"
+   fileName="${tmpSubDir}/AAerror-${sfx}.txt"
    file=$(find "${fileName}"* 2>&1|grep -v find)
    #
    # append a counter to the file so that the number of same error is logged
-   count=1
    if [ -f "${file}" ]; then
       getFileStaeStatDt "${file}"
       if [ "${dt}" -lt 600 ]; then
