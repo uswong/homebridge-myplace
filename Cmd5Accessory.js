@@ -394,7 +394,7 @@ class Cmd5Accessory
          let format = CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].props.format;
 
          // No matter what, remove it
-         if ( format == this.api.hap.Characteristic.Formats.TLV8 && this.hV.allowTLV8 == false )
+         if ( format == this.api.hap.Formats.TLV8 && this.hV.allowTLV8 == false )
          {
             if ( this.cmd5Storage.getStoredValueForIndex( accTypeEnumIndex ) != null )
             {
@@ -811,13 +811,13 @@ class Cmd5Accessory
              let props = accessory.configHasCharacteristicProps( accTypeEnumIndex );
              if ( props )
              {
-                if ( settings.cmd5Dbg ) accessory.log.debug( "Overriding characteristic %s props for: %s ", uCCharacteristicString, this.displayName );
+                if ( settings.cmd5Dbg ) accessory.log.debug( "Overriding characteristic %s props for: %s ", CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].type, this.displayName );
                   accessory.service.getCharacteristic( CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].
                          characteristic )
                   .setProps(
                      // props is an object of name value pairs (characteristics)
                      props
-                );
+                  );
              }
 
              // Get the permissions of characteristic ( Read/Write ... )
@@ -843,13 +843,14 @@ class Cmd5Accessory
              // - CurrentTemperature
              // - CurrentHeatingCoolingState
              // - StatusFault
-             if ( perms.indexOf( this.api.hap.Characteristic.Perms.READ ) >= 0 &&
-                  perms.indexOf( this.api.hap.Characteristic.Perms.WRITE ) == -1 ||
-                  perms.indexOf( this.api.hap.Characteristic.Perms.PAIRED_READ ) >= 0 &&
-                  perms.indexOf( this.api.hap.Characteristic.Perms.PAIRED_WRITE ) == -1 )
+             // Homebridge V2 removes Perms.READ && Perms.WRITE
+             if ( //perms.indexOf( this.api.hap.Perms.READ ) >= 0 &&
+                  //perms.indexOf( this.api.hap.Perms.WRITE ) == -1 ||
+                  perms.indexOf( this.api.hap.Perms.PAIRED_READ ) >= 0 &&
+                  perms.indexOf( this.api.hap.Perms.PAIRED_WRITE ) == -1 )
              {
-             accessory.service.setCharacteristic(
-                CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].characteristic,
+                accessory.service.setCharacteristic(
+                   CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].characteristic,
                       this.cmd5Storage.getStoredValueForIndex( accTypeEnumIndex ) );
              }
 
@@ -860,7 +861,9 @@ class Cmd5Accessory
                     .characteristic ).listeners( "get" ).length == 0 )
              {
                 // Add Read services for characterisitcs, if possible
-                if ( perms.indexOf( this.api.hap.Characteristic.Perms.READ ) != -1 )
+                // Homebridge v2 removed Perms.READ
+                if ( // perms.indexOf( this.api.hap.Perms.READ ) != -1 ||
+                     perms.indexOf( this.api.hap.Perms.PAIRED_READ ) != -1 )
                 {
 
                    // getCachedValue or getValue
@@ -896,7 +899,9 @@ class Cmd5Accessory
                   .characteristic ).listeners( "set" ).length == 0 )
              {
                 // Add Write services for characterisitcs, if possible
-                if ( perms.indexOf( this.api.hap.Characteristic.Perms.WRITE ) != -1 )
+                // Homebridge V2 removes Perms.WRITE
+                if ( // perms.indexOf( this.api.hap.Perms.WRITE ) != -1 ||
+                     perms.indexOf( this.api.hap.Perms.PAIRED_WRITE ) != -1 )
                 {
                    // setCachedValue or setValue
                    if ( ! accessory.polling ||
@@ -1267,6 +1272,12 @@ class Cmd5Accessory
       let characteristicString = rcDirective.type;
       let accTypeEnumIndex = rcDirective.accTypeEnumIndex;
 
+      if ( CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].deprecated == true )
+      {
+         this.log.warn( `The config.json characteristic: ${ characteristicString } is deprecated. It will be ignored.\nTo remove this Warning, Please fix your config.json.` );
+         return;
+      }
+
       // Do not update the stored values as it is being restored from cache
       if ( parseConfigShouldUseCharacteristicValues == false )
          return;
@@ -1478,6 +1489,9 @@ class Cmd5Accessory
                }
                this.typeIndex = rcValue.devEnumIndex;
 
+               if ( CMD5_DEVICE_TYPE_ENUM.properties[ this.typeIndex ].deprecated == true )
+                  throw new Error( `Error: device type: "${ this.type }" is now deprecated in Homebridge.` );
+
                break;
             }
             case constants.SUBTYPE:
@@ -1515,8 +1529,10 @@ class Cmd5Accessory
 
                break;
            case constants.ACCESSORY:
-               // Do nothing as this is a key for homebridge, not us
-               break;
+               // For 8.0 this is no longer supported.  Homebridge has deprecated
+               // the template and only wants Platform templates which makes
+               // it easier for Cmd5 to support homebridge-ui as well..
+               throw new Error( `Accessory: has been deprecated by homebridge. Only Platform confgurations are supported by Cmd5 >= 8.0 for: "${ this.displayName }".` );
            case constants.CATEGORY:
                // For those who define there own Category
                // Uppercase the category to be nice. Why do I know

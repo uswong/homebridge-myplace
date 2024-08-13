@@ -160,7 +160,7 @@ class Cmd5Platform
       if ( ! platformAccessory )
          return;
 
-      this.log.info( `Accessory ${ platformAccessory.displayName } will be removed.` );
+      this.log.info( `Removing existing accessory from cache: ${ platformAccessory.displayName }` );
 
       this.api.unregisterPlatformAccessories(  settings.PLUGIN_NAME, settings.PLATFORM_NAME, [ platformAccessory ] );
 
@@ -472,6 +472,9 @@ class Cmd5Platform
             // true = from existing.
             this.createServicesForAccessoriesChildren( accessory, true )
 
+            // Since updateReachability() function and the key 'reachable' are deprecated on Homebridge_v2
+            // we will define the key 'reachable' and set it to 'true' explicitly to flag that this accessory is restored from cache
+            existingAccessory.reachable = true;
 
          } else
          {
@@ -545,7 +548,8 @@ class Cmd5Platform
 
 
          // Just a flag to say we have processed this existing platform accessory.
-         platform.updateReachability( true );
+         // @deprecated homebridge v2
+         //platform.updateReachability( true );
 
 
          // For Unit testing only
