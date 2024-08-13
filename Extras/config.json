@@ -400,8 +400,8 @@
                "stateChangeResponseTime":   3
             },
             {
-               "type":                     "BatteryService",
-               "displayName":              "MyBatteryService",
+               "type":                     "Battery",
+               "displayName":              "MyBattery",
                "batteryLevel":              50,
                "chargingState":            "NOT_CHARGING",
                "statusLowBattery":         "BATTERY_LEVEL_NORMAL",
@@ -463,8 +463,8 @@
                "stateChangeResponseTime":   3
             },
             {
-               "type":                     "Slat",
-               "displayName":              "MySlat",
+               "type":                     "Slats",
+               "displayName":              "MySlats",
                "slatType":                 "HORIZONTAL",
                "currentSlatState":         "FIXED",
                "name":                     "MySlat",
@@ -670,23 +670,11 @@
                "stateChangeResponseTime":   3
             },
             {
-               "type":                     "Relay",
-               "displayName":              "MyRelay",
+               "type":                     "CloudRelay",
+               "displayName":              "MyCloudRelay",
                "relayEnabled":             "FALSE",
                "relayState":                0,
                "stateChangeResponseTime":   10
-            },
-            {
-               "type":                     "TimeInformation",
-               "displayName":              "MyTimeInformation",
-               "currentTime":              "11:15",
-               "dayoftheWeek":              1,
-               "timeUpdate":               "TRUE",
-               "name":                     "MyTimeInformation",
-               "manufacturer":             "Somebody",
-               "model":                    "Anything",
-               "serialNumber":             "12345",
-               "stateChangeResponseTime":   3
             },
             {
                "type":                     "Valve",
