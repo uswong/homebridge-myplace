@@ -10,7 +10,7 @@
 [![homebridge-myplace](https://badgen.net/npm/v/homebridge-myplace?icon=npm)](https://www.npmjs.com/package/homebridge-myplace)
 [![npm](https://badgen.net/npm/dt/homebridge-myplace?label=downloads)](https://www.npmjs.com/package/homebridge-myplace)
 [![mit-license](https://badgen.net/npm/license/lodash)](https://github.com/uswong/homebridge-myplace/blob/master/LICENSE)
-[![join-discord](https://badgen.net/badge/icon/discord?icon=discord&label=homebridge-myplace)](https://discord.gg/uaEXgtt72q)
+[![join-discord](https://badgen.net/badge/icon/discord?icon=discord&label=homebridge-myplace)](https://discord.gg/8JrsAwQ3)
 
 
 </span>
@@ -65,7 +65,7 @@ apk add <jq or curl>
 
    In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the checkboxes for `Include extra timers` and `Enable detailed debug log`, then click `SAVE`. This is to save your system parameters. Click `CLOSE` if a pop up urging you to `RESTART HOMEBRIDGE`.
    
-   Go back to `Plugin Config` again and press the `CREATE CONFIGURATION` button to create the required configuration file.  On a sucess, click `CHECK CONFIGURATION`to check the configuration file just created is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed. Click `CLOSE` then restart Homebridge.
+   Go back to `Plugin Config` again and press the `CREATE CONFIGURATION` button to create the required configuration file.  On a sucess, click `CHECK CONFIGURATION`to check the configuration file just created is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed. Click `CLOSE` (do not click `SAVE`) then restart Homebridge.
 
 * HOOBS users who do not have access to Homebridge UI (for now!) will have to run the Config Creator on a terminal:
 ```shell
