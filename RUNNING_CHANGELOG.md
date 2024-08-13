@@ -1,6 +1,10 @@
 ### Homebridge-myplace - An independent plugin for Homebridge bringing Advantage Air MyPlace system, its smaller siblings (E-zone, MyAir, MyAir4, etc) and its cousins (e.g. Fujitsu AnywAir) to Homekit
+##### v2.0.0 (2024-08-13)
 
-##### v1.1.6 (2024-05-21)
+###### (1) Fix for Homebridge v2
+###### (2) Use both accessory's type and displayName instead of using displayName only to generate UUID
+
+##### v1.1.6 (2024-05-20)
 
 ###### (1) If a light swtich has a name ending with " Fan", it will be regarded as a switch for turning ON or OFF a fan.  The homekit icon for this switch will then be a fan instead of a lightbulb.
 ###### (2) Update README to reflect the changes described in (1).
