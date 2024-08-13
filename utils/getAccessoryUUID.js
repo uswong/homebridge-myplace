@@ -6,7 +6,7 @@
 // @param config - The accessories config information.
 // @param UUIDGen - api.hap.uuid
 //
-// @returns - UUID or exits as all Accessories must have a name or displayName.
+// @returns - UUID or exits as all Accessories must have a type and name or displayName.
 //
 // Note: This follows the getAccessoryName logic of getting the Accessories name.
 
@@ -17,9 +17,14 @@ var getAccessoryUUID = function ( config, UUIDGen )
    if ( config.uuid )
       return config.uuid;
 
+   // UUID for homebridge-myplace
+   if ( config.type && config.displayName ) {
+      let typeDisplayName = config.type + " " + config.displayName;
+      return UUIDGen.generate( typeDisplayName );
+   }
+
    if ( config.name )
       return UUIDGen.generate( config.name );
-
    if ( config.Name )
       return UUIDGen.generate( config.Name );
 
