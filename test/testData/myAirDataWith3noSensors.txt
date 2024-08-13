@@ -223,7 +223,7 @@
       },
       "f70d005": {
         "id": "f70d005",
-        "name": "M.V. LED",
+        "name": "LED",
         "state": "off",
         "value": 100
       },
