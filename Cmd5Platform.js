@@ -118,26 +118,26 @@ class Cmd5Platform
       {
          this.log.info( chalk.blue( "Cmd5Platform didFinishLaunching" ) );
 
-         this.discoverDevices( this.log );
+         this.log.info( chalk.magenta( "Scanning config.json and the cache for devices to be removed/restored from cache" ) );
+         // scan the platform devices to identify which ones to be restored from cache
+         this.scanToBeRestoredDevices( this.log );
 
-         // Any accessory not reachable must have been removed, find them
+         // Any accessory NOT to be restored should be removed, find them
          this.toBeRestoredPlatforms.forEach( ( accessory ) =>
          {
-            if ( ! accessory.reachable )
+            if ( ! accessory.toBeRestored )
                this.removeAccessory( accessory );
          });
+
+         // Loop through config.json and restore existing accessory from cache or register new accessory
+         // if it is not already in cache
+         this.discoverDevices( this.log );
 
          // Let the Polling Begin
          this.startPolling();
 
       });
    }
-
-   // Platforms do not use getServices. Good to know.
-   //getServices( )
-   //{
-   //   return this.services;
-   //}
 
    // As Per HomeBridge:
    // This function is invoked when homebridge restores cached accessories
@@ -165,18 +165,6 @@ class Cmd5Platform
       this.api.unregisterPlatformAccessories(  settings.PLUGIN_NAME, settings.PLATFORM_NAME, [ platformAccessory ] );
 
    }
-
-   // Hmmmm does not happen
-   //configurationRequestHandler( context, request, callback )
-   //{
-   //   this.log( chalk.red( `In ConfigRequestHandler context: ${ context }` ) );
-   //   switch( context.step )
-   //   {
-   //      case 5:
-   //         this.log( chalk.red( `Asked to remove` ) );
-   //         break;
-   //   }
-   //}
 
    // Only parse those CMD5 directives we care about
    parseConfigForCmd5Directives( config )
@@ -359,6 +347,37 @@ class Cmd5Platform
       });
    }
 
+   // Scan the platform accessories and identify devices to be restored from cache
+   scanToBeRestoredDevices( )
+   {
+      // Homebridge can only handle a max of 150 accessories per bridge, as such, it is prudent to identify and remove those accessories 
+      // which are not to be restored before creating new ones
+      // Loop over the config.json devices and identify those need to be restored from cache
+      this.config.accessories && this.config.accessories.forEach( ( device ) =>
+      {
+         this.Service=this.api.hap.Service;
+
+         device.name = getAccessoryName( device );
+
+         if ( settings.cmd5Dbg ) this.log.debug( `Scanning config.json Platform accessories: ${ device.name }` );
+
+         // generate a unique id for the accessory
+         let uuid = getAccessoryUUID( device, this.api.hap.uuid );
+
+         // See if an accessory with the same UUID has already been registered
+         const existingAccessory = this.toBeRestoredPlatforms.find(accessory => accessory.UUID === uuid);
+
+         if (existingAccessory)
+         {
+            if ( settings.cmd5Dbg ) this.log.debug( chalk.magenta( `This existing accessory will be restored from cache: ` ), existingAccessory.displayName );
+
+            // Define the key 'toBeRestored' and set it to 'true' explicitly to flag that this accessory will be restored from cache
+            existingAccessory.toBeRestored = true;
+
+         } 
+      });
+   }
+
    // These would be platform accessories with/without linked accessories
    discoverDevices( )
    {
@@ -471,10 +490,6 @@ class Cmd5Platform
             // Create all the services for the accessory, including fakegato
             // true = from existing.
             this.createServicesForAccessoriesChildren( accessory, true )
-
-            // Since updateReachability() function and the key 'reachable' are deprecated on Homebridge_v2
-            // we will define the key 'reachable' and set it to 'true' explicitly to flag that this accessory is restored from cache
-            existingAccessory.reachable = true;
 
          } else
          {
