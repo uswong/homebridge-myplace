@@ -1,13 +1,11 @@
 #!/bin/bash
 #
 # This script is to generate a complete configuration file needed for the myplace plugin
-# This script can handle up to 3 independent MyPlace systems
+# This script can handle up to 3 independent AdvantageAir (AA) systems
 #
 # This script can be invoked in two ways:
 # 1. from homebridge customUI
 # 2. from a terminal
-#    a. find out where the bash script "ConfigCreator.sh" is installed
-#    b. run the bash script ConfigCreator.sh
 #
 UIversion="customUI"
 
@@ -1756,8 +1754,9 @@ for ((n=1; n<=noOfTablets; n++)); do
          ac=$( printf "ac%1d" "$a" )
          aircon=$(echo "$myAirData" | jq -e ".aircons.${ac}.info")
          if [ "${aircon}" != "null" ]; then
-            if [ "${a}" -ge "2" ]; then nameA="${nameA}_${ac}"; fi
-            #name=$(echo "$myAirData" | jq -e ".aircons.${ac}.info.name" | sed 's/ /_/g' | sed 's/\"//g')
+            if [ "${a}" -ge "2" ]; then nameA="${nameA} ${ac}"; fi
+            # use only alphanumeric, space, and apostrophe characters for name 
+            #name=$(echo "$myAirData" | jq -e ".aircons.${ac}.info.name" | sed 's/\"//g')
             cmd5Thermostat "${cmd5ConfigAccessoriesAA}" "${nameA}"
             cmd5FanLinkTypes "${cmd5ConfigAccessoriesAA}" "${nameA} FanSpeed"
             cmd5FanSwitch "${cmd5ConfigAccessoriesAA}" "${nameA} Fan"
@@ -1775,6 +1774,7 @@ for ((n=1; n<=noOfTablets; n++)); do
             for (( b=1;b<=nZones;b++ )); do
                zone="${b}"
                zoneStr=$( printf "z%02d" "${zone}" )
+               # use only alphanumeric, space, and apostrophe characters for name 
                name=$(echo "$myAirData" |jq -e ".aircons.${ac}.zones.${zoneStr}.name" | sed 's/\"//g')
                rssi=$(echo "$myAirData" | jq -e ".aircons.${ac}.zones.${zoneStr}.rssi")
                if [ "${rssi}" = "0" ]; then
@@ -1793,9 +1793,10 @@ for ((n=1; n<=noOfTablets; n++)); do
 
    # Lightings
    if [ "$hasLights" = true ]; then
-      echo "$myAirData" | jq -e ".myLights.lights" | grep \"id\" | cut -d":" -f2 | sed s/[,]//g | while read -r id;
+      echo "$myAirData" | jq -e ".myLights.lights" | grep \"id\" | cut -d":" -f2 | sed 's/[,]//g' | while read -r id;
       do
-         name=$(echo "$myAirData" | jq -e ".myLights.lights.${id}.name" | sed s/\"//g)
+         # use only alphanumeric, space, and apostrophe characters for name 
+         name=$(echo "$myAirData" | jq -e ".myLights.lights.${id}.name" | sed 's/\"//g')
          value=$(echo "$myAirData" | jq -e ".myLights.lights.${id}.value ")
          if [ "${name:(-4)}" = " Fan" ]; then
             cmd5FanNoRotationSpeed "${cmd5ConfigAccessoriesAA}" "${name}" "${id}"
@@ -1811,10 +1812,11 @@ for ((n=1; n<=noOfTablets; n++)); do
 
    # Things - Garage and blinds 
    if [ "$hasThings" = true ]; then
-      echo "$myAirData" | jq -e ".myThings.things" | grep \"id\" | cut -d":" -f2 | sed s/[,]//g | while read -r id;
+      echo "$myAirData" | jq -e ".myThings.things" | grep \"id\" | cut -d":" -f2 | sed 's/[,]//g' | while read -r id;
       do
-         channelDipState=$(echo "$myAirData" | jq -e ".myThings.things.${id}.channelDipState" | sed s/\"//g)
-         name=$(echo "$myAirData" | jq -e ".myThings.things.${id}.name" | sed s/\"//g)
+         channelDipState=$(echo "$myAirData" | jq -e ".myThings.things.${id}.channelDipState" | sed 's/\"//g')
+         # use only alphanumeric, space, and apostrophe characters for name 
+         name=$(echo "$myAirData" | jq -e ".myThings.things.${id}.name" | sed 's/\"//g')
          if [ "${channelDipState}" = "3" ]; then
             cmd5GarageDoorOpener "${cmd5ConfigAccessoriesAA}" "${name}" "${id}"
          elif [[ "${channelDipState}" = "1" || "${channelDipState}" = "2" ]]; then
