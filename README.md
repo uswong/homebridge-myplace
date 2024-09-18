@@ -34,49 +34,85 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
      <img width="400px" src="Screenshots/MyPlaceInstall3.png">
      </p>
 3. Check if <B>jq</B> and <B>curl</B> are installed (<B>curl</B> should already be):
-```shell
-jq -V
-curl -V
-```
-If they are installed, the above command should return a version number.
+   ```shell
+   jq --version
+   curl --version
+   ```
+   If they are installed, the above command should return a version number.
 
-4. If not already, install <B>jq</B> and <B>curl</B> via your Homebridge UI terminal or through ssh: 
-```shell
-# Raspbian/Hoobs:
-sudo apt-get install <jq or curl>
+4. If not already, install <B>jq</B> and <B>curl</B> via your Homebridge UI terminal or through ssh:
 
-# macOS:
-brew install <jq or curl>
+   ##### For Raspbian/Hoobs:
+   ```shell
+   sudo apt-get install <jq or curl>
+   ```
+   ##### For MacOS:
+   ```shell
+   brew install <jq or curl>
+   ```
+   ##### For Synology NAS:
+   ```shell
+   apt-get install <jq or curl>
+   ```
+   ##### For QNAP NAS:
+   ```shell
+   apk add <jq or curl>
+   ```
+   #### Important note:
+   At the time of updating this README, the `apt-get insatall` only allow jq-1.6 to be installed. To install the lastest and **MUCH faster** version of jq-1.7.1, please follow the step-by-step guide below:
+   1. Download the Source Code:
+   You can download the source code "jq-1.7.1.tar.gz" for jq 1.7.1 from the official GitHub releases page (https://github.com/jqlang/jq/releases) or use the link below:
+      ```shell
+      https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-1.7.1.tar.gz
+      ```
+   2. Install Dependencies:
+   Ensure you have the necessary build tools and dependencies installed. You can do this by running:
+      ```shell
+      sudo apt-get update
+      sudo apt-get install -y autoconf automake 
+      libtool make gcc
+      ```
+   3. Extract and Build:
+   Extract the downloaded tarball and navigate to the directory:
+      ```shell
+      tar -xvzf jq-1.7.1.tar.gz
+      cd jq-1.7.1
+      chmod +x configure
+      ```
+   4. Run the following commands to build and install jq:
+      ```shell
+      ./configure
+      make
+      sudo make install
+      ```
+   5. Verify Installation:
+      After installation, you can verify that jq is installed correctly by running:
+      ```shell
+      jq --version
+      ```
 
-# Synology NAS:
-apt-get install <jq or curl>
-
-# QNAP NAS:
-apk add <jq or curl>
-```
-
-
-5. Create your Homebridge `config.json`
+6. Create your Homebridge `config.json`
    
-  Go to the 'Plugins' tab in Homebridge UI, locate your newly installed `Homebridge Myplace` plugin and click the three dots on the bottom right, select `Plugin Config` and it should launch the <B>Configuration Creator and Checker</B> and <B>Device Settings</B> page.
-     <p align="left">
-     <img width="600px" src="Screenshots/MyPlaceConfigCreator.png">
-     </p>
+   Go to the 'Plugins' tab in Homebridge UI, locate your newly installed `Homebridge Myplace` plugin and click the three dots on the bottom right, select `Plugin Config` and it should launch the <B>Configuration Creator and Checker</B> and <B>Device 
+   Settings</B> page.
+        <p align="left">
+        <img width="600px" src="Screenshots/MyPlaceConfigCreator.png">
+        </p>
 
    In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the checkboxes for `Include extra timers` and `Enable detailed debug log`, then click `SAVE`. This is to save your system parameters. Click `CLOSE` if a pop up urging you to `RESTART HOMEBRIDGE`.
 
-*Please use only alphanumeric, space, and apostrophe characters for `Name`.*
+   *Please use only alphanumeric, space, and apostrophe characters for `Name`.*
      
-   Go back to `Plugin Config` again and press the `CREATE CONFIGURATION` button to create the required configuration file.  On a sucess, click `CHECK CONFIGURATION`to check the configuration file just created is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed. Click `CLOSE` (do not click `SAVE`) then restart Homebridge.
+    Go back to `Plugin Config` again and press the `CREATE CONFIGURATION` button to create the required configuration file.  On a sucess, click `CHECK CONFIGURATION`to check the configuration file just created is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed. Otherwise, click `SAVE` then restart Homebridge.
 
-* HOOBS users who do not have access to Homebridge UI (for now!) will have to run the Config Creator on a terminal:
-```shell
-   cd
-   <Plugin Path>/node_modules/homebridge-myplace/ConfigCreator.sh
-```
-  then follow the on-screen instructions.
+   **HOOBS** users who do not have access to Homebridge UI (for now!) will have to run the Config Creator on a terminal:
+   ```shell
+      cd
+      <Plugin Path>/node_modules/homebridge-myplace/ConfigCreator.sh
+   ```
+     then follow the on-screen instructions.
   
-  *typical `<Plugin Path>` is `/var/lib/hoobs/<bridge>` 
+     *typical `<Plugin Path>` is `/var/lib/hoobs/<bridge>` 
 
 ## How it Looks and Works
 ### (A) Aircon System (MyAir, E-zone, etc) has the following typical Homekit tiles:
