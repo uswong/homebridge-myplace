@@ -335,29 +335,6 @@ function myPlaceLightbulbWithDimmer()
    myPlaceAccessoriesAA=$( echo "${myPlaceAccessoriesAA}" | jq ".accessories += [${myPlaceLightbulbWithDimmer}]" )
 }
 
-function myPlaceFan()
-{
-   local name="$1"
-   local ac_l=" ${ac}"
-
-   if [ "${ac_l}" = " ac1" ]; then ac_l=""; fi
-
-   myPlaceFan="{}"
-   myPlaceFan=$( echo "${myPlaceFan}" | jq ".type |= \"Fan\"" \
-                                      | jq ".displayName |= \"${name}\"" \
-                                      | jq ".on |= false" \
-                                      | jq ".rotationSpeed |= 100" \
-                                      | jq ".name |= \"${name}\"" \
-                                      | jq ". += ${myPlaceModelQueue}" \
-                                      | jq ".polling[0].characteristic |= \"on\"" \
-                                      | jq ".polling[1].characteristic |= \"rotationSpeed\"" \
-                                      | jq ".props.rotationSpeed.minStep |= 1" \
-                                      | jq ".state_cmd |= \"'${MYPLACE_SH_PATH}'\"" \
-                                      | jq ".state_cmd_suffix |= \"${ip}${ac_l}\"" )
-
-   myPlaceAccessoriesAA=$( echo "${myPlaceAccessoriesAA}" | jq ".accessories += [${myPlaceFan}]" )
-}
-
 function myPlaceFanNoRotationSpeed()
 {
    local name="$1"
@@ -930,7 +907,7 @@ function writeToHomebridgeConfigJson()
    # Copy the "${configNew}" to Homebridge config.json
    fname=$( find "${homebridgeConfigJson}" -user "$USER" );
    if [ "${fname}" = "${homebridgeConfigJson}" ]; then
-      echo "${configNew}" > "${homebridgeConfigJson}"
+      echo "${configNew}" | tee "${homebridgeConfigJson}" > /dev/null
       rc=$?
    else
       echo "${configNew}" | sudo tee "${homebridgeConfigJson}" > /dev/null
