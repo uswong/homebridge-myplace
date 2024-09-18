@@ -36,7 +36,7 @@
 <script>
   (async () => {
     // get the initial config - this is an array potentially containing multiple config blocks
-    const pluginConfig = await homebridge.getPluginConfig();
+    var pluginConfig = await homebridge.getPluginConfig();
     const configSchema = await homebridge.getPluginConfigSchema();
 
     if (!pluginConfig.length) {
@@ -180,9 +180,17 @@
          return;
       } else if(response.feedback.includes("DONE" )) {
          // show a success toast notification
-         //homebridge.toast.success(`${response.feedback}`, 'Success');
          homebridge.toast.success(`ConfigCreator completed!`, 'Success');
-         homebridge.toast.success(`Restart Homebridge to apply the changes`, 'Config SAVED');
+         // extract the pluginConfigNew from response.feedback
+         const pluginConfigNew = response.feedback.split(";");
+         // empty the existing pluginConfig array and populate it with the newly created one
+         pluginConfig = [];
+         pluginConfig.push( JSON.parse(pluginConfigNew[1]) );
+         // now update the pluginConfig and Save it
+         await homebridge.updatePluginConfig(pluginConfig);
+         await homebridge.savePluginConfig();
+         // show a Config SAVED notification
+         homebridge.toast.success(`Click SAVE and RESTART HOMEBRIDGE to apply the changes`, 'Config SAVED');
          return;
       } else {
          homebridge.toast.error(`ConfigCreator did not run!`, 'Error');
