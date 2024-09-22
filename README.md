@@ -63,14 +63,13 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
    1. Download the Source Code:
    You can download the source code "jq-1.7.1.tar.gz" for jq 1.7.1 from the official GitHub releases page (https://github.com/jqlang/jq/releases) or use the link below:
       ```shell
-      https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-1.7.1.tar.gz
+      wget https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-1.7.1.tar.gz
       ```
    2. Install Dependencies:
    Ensure you have the necessary build tools and dependencies installed. You can do this by running:
       ```shell
       sudo apt-get update
-      sudo apt-get install -y autoconf automake 
-      libtool make gcc
+      sudo apt-get install -y autoconf automake libtool make gcc
       ```
    3. Extract and Build:
    Extract the downloaded tarball and navigate to the directory:
