@@ -1,22 +1,13 @@
 #!/bin/bash
 #
-# This script is to check the Cmd5 configuration file for myplace plugin
+# This script is to check the MyPlace configuration file for myplace plugin
 #
 # Usage ./CheckConfig.sh                                                                   
 # 
 
-# define the possible names for MyPlace platform
-cmd5Platform1="\"platform\": \"MyPlace\""
-cmd5Platform2="\"platform\": \"homebridge-myplace\""
-
-# define some file variables
-homebridgeConfigJson=""           # homebridge config.json
-configJson="config.json.copy"     # a working copy of homebridge config.json
-
 # fun color stuff
 BOLD=$(tput bold)
 TRED=$(tput setaf 1)
-#TGRN=$(tput setaf 2)
 TYEL=$(tput setaf 3)
 TPUR=$(tput setaf 5)
 TLBL=$(tput setaf 6)
@@ -27,13 +18,14 @@ function readHomebridgeConfigJson()
    INPUT=""
    homebridgeConfigJson=""
    getHomebridgeConfigJsonPath
-   if [ "${fullPath}" != "" ]; then homebridgeConfigJson="${fullPath}"; fi 
- 
-   # if no config.json file found, ask user to input the full path
-   if [ -z "${homebridgeConfigJson}" ]; then
-      homebridgeConfigJson=""
+   if [ "${fullPath}" != "" ]; then
+      homebridgeConfigJson="${fullPath}"
+      echo "${TLBL}INFO: Valid Homebridge config.json found: ${homebridgeConfigJson}${TNRM}"
       echo ""
-      echo "${TPUR}WARNING: No valid Homebridge config.json file located by the script!${TNRM}"
+   else
+      # if no valid config.json file found, ask user to manually specify the full path
+      echo ""
+      echo "${TPUR}WARNING: No valid Homebridge config.json located by the script!${TNRM}"
       echo ""
       until [ -n "${INPUT}" ]; do
          echo "${TYEL}Please enter the full path of your Homebridge config.json file,"
@@ -41,7 +33,6 @@ function readHomebridgeConfigJson()
          read -r -p "${BOLD}> ${TNRM}" INPUT
          if [ -z "${INPUT}" ]; then
             echo "${TPUR}WARNING: No Homebridge config.json file specified"
-            cleanUp
             exit 1
          elif expr "${INPUT}" : '[./a-zA-Z0-9]*/config.json$' >/dev/null; then
             if [ -f "${INPUT}" ]; then
@@ -60,28 +51,20 @@ function readHomebridgeConfigJson()
             INPUT=""
          fi
       done
-   fi
-   if [ -f "${homebridgeConfigJson}" ]; then
-      if [ -z "${INPUT}" ]; then
-         echo "${TLBL}INFO: The Homebridge config.json found: ${homebridgeConfigJson}${TNRM}"
+      # check that this specified config.json is valid - has "MyPlace" platform in it.
+      fullPath="${homebridgeConfigJson}"
+      checkForMyPlacePlatformInFile
+      if [ -z "${myPlacePlatformFound}" ]; then
          echo ""
+         echo "${TRED}ERROR: MyPlace Config specified in \"${homebridgeConfigJson}\" is invalid. Please ensure that homebridge-myplace plugin is installed and configured${TNRM}"
+         exit 1
       else
          echo ""
-         echo "${TLBL}INFO: The Homebridge config.json specified: ${homebridgeConfigJson}${TNRM}"
+         echo "${TLBL}INFO: Valid Homebridge config.json specified: ${homebridgeConfigJson}${TNRM}"
          echo ""
-      fi
-      # expand the json just in case it is in compact form
-      jq --indent 4 '.' "${homebridgeConfigJson}" > "${configJson}"
-      checkForPlatformCmd5InHomebridgeConfigJson
-      if [ -z "${validFile}" ]; then
-         echo ""
-         echo "${TRED}ERROR: no Cmd5 Config found in \"${homebridgeConfigJson}\"! Please ensure that Homebridge-MyPlace plugin is installed${TNRM}"
-         cleanUp
-         exit 1
       fi
    fi
 }
-
 
 function getGlobalNodeModulesPathForFile()
 {
@@ -170,8 +153,8 @@ function getHomebridgeConfigJsonPath()
    if [ -n "${Hoobs}" ]; then
       fullPath="${MYPLACE_SH_PATH%/*/*/*}/config.json"
       if [ -f "${fullPath}" ]; then
-         checkForCmd5PlatformNameInFile
-         if [ -z "${cmd5PlatformNameFound}" ]; then
+         checkForMyPlacePlatformInFile
+         if [ -z "${myPlacePlatformFound}" ]; then
             fullPath=""
          fi 
          return
@@ -183,8 +166,8 @@ function getHomebridgeConfigJsonPath()
          1)
             fullPath="/var/lib/homebridge/config.json"
             if [ -f "${fullPath}" ]; then
-               checkForCmd5PlatformNameInFile
-               if [ -n "${cmd5PlatformNameFound}" ]; then 
+               checkForMyPlacePlatformInFile
+               if [ -n "${myPlacePlatformFound}" ]; then 
                   return
                else
                   fullPath=""
@@ -194,8 +177,8 @@ function getHomebridgeConfigJsonPath()
          2)
             fullPath="$HOME/.homebridge/config.json"
             if [ -f "${fullPath}" ]; then
-               checkForCmd5PlatformNameInFile
-               if [ -n "${cmd5PlatformNameFound}" ]; then 
+               checkForMyPlacePlatformInFile
+               if [ -n "${myPlacePlatformFound}" ]; then 
                   return
                else
                   fullPath=""
@@ -208,8 +191,8 @@ function getHomebridgeConfigJsonPath()
             for ((i = 1; i <= noOfInstances; i ++)); do
                fullPath=$(echo "${foundPath}"|sed -n "${i}"p)
                if [ -f "${fullPath}" ]; then
-                  checkForCmd5PlatformNameInFile   
-                  if [ -n "${cmd5PlatformNameFound}" ]; then 
+                  checkForMyPlacePlatformInFile   
+                  if [ -n "${myPlacePlatformFound}" ]; then 
                      return
                   else
                      fullPath=""
@@ -223,8 +206,8 @@ function getHomebridgeConfigJsonPath()
             for ((i = 1; i <= noOfInstances; i ++)); do
                fullPath=$(echo "${foundPath}"|sed -n "${i}"p)
                if [ -f "${fullPath}" ]; then
-                  checkForCmd5PlatformNameInFile   
-                  if [ -n "${cmd5PlatformNameFound}" ]; then 
+                  checkForMyPlacePlatformInFile   
+                  if [ -n "${myPlacePlatformFound}" ]; then 
                      return
                   else
                      fullPath=""
@@ -238,8 +221,8 @@ function getHomebridgeConfigJsonPath()
             for ((i = 1; i <= noOfInstances; i ++)); do
                fullPath=$(echo "${foundPath}"|sed -n "${i}"p)
                if [ -f "${fullPath}" ]; then
-                  checkForCmd5PlatformNameInFile   
-                  if [ -n "${cmd5PlatformNameFound}" ]; then 
+                  checkForMyPlacePlatformInFile   
+                  if [ -n "${myPlacePlatformFound}" ]; then 
                      return
                   else
                      fullPath=""
@@ -253,8 +236,8 @@ function getHomebridgeConfigJsonPath()
             for ((i = 1; i <= noOfInstances; i ++)); do
                fullPath=$(echo "${foundPath}"|sed -n "${i}"p)
                if [ -f "${fullPath}" ]; then
-                  checkForCmd5PlatformNameInFile   
-                  if [ -n "${cmd5PlatformNameFound}" ]; then 
+                  checkForMyPlacePlatformInFile   
+                  if [ -n "${myPlacePlatformFound}" ]; then 
                      return
                   else
                      fullPath=""
@@ -266,60 +249,15 @@ function getHomebridgeConfigJsonPath()
    done
 }
 
-function checkForPlatformCmd5InHomebridgeConfigJson()
+function checkForMyPlacePlatformInFile()
 {
-   validFile=""
-   for ((tryIndex = 1; tryIndex <= 2; tryIndex ++)); do
-      case $tryIndex in
-         1)
-            validFile=$(grep -n "${cmd5Platform1}" "${configJson}"|cut -d":" -f1)
-            if [ -n "${validFile}" ]; then
-               return
-            fi
-         ;;
-         2)
-            validFile=$(grep -n "${cmd5Platform2}" "${configJson}"|cut -d":" -f1)
-            if [ -n "${validFile}" ]; then
-               return
-            fi
-         ;;
-      esac
-   done
-}
-
-function checkForCmd5PlatformNameInFile()
-{
-   cmd5PlatformNameFound=""
-
-   for ((Index = 1; Index <= 2; Index ++)); do
-      case $Index in
-         1)
-            cmd5PlatformName=$(echo "${cmd5Platform1}"|cut -d'"' -f4)
-            cmd5PlatformNameFound=$(grep -n "\"${cmd5PlatformName}\"" "${fullPath}"|cut -d":" -f1)
-            if [ -n "${cmd5PlatformNameFound}" ]; then
-               return
-            fi
-         ;;
-         2)
-            cmd5PlatformName=$(echo "${cmd5Platform2}"|cut -d'"' -f4)
-            cmd5PlatformNameFound=$(grep -n "\"${cmd5PlatformName}\"" "${fullPath}"|cut -d":" -f1)
-            if [ -n "${cmd5PlatformNameFound}" ]; then
-               return
-            fi
-         ;;
-      esac
-   done
-}
-
- 
-function cleanUp()
-{
-   rm -f "${configJson}"
+   myPlacePlatformFound=""
+   myPlacePlatformFound=$(grep -n "\"MyPlace\"" "${fullPath}" )
 }
 
 # main starts here
 
-echo "${TYEL}This script is to check that the Cmd5 configuration file meets all requirements${TNRM}"
+echo "${TYEL}This script is to check that the MyPlace configuration file meets all requirements${TNRM}"
 echo ""
 
 echo "${TYEL}CheckConfig engine:${TNRM}"
@@ -369,5 +307,4 @@ readHomebridgeConfigJson
 if [[ -f "${homebridgeConfigJson}" && -f "${MYPLACE_SH_PATH}" ]]; then
    echo "${TYEL}CheckConfig in progress.......${TNRM}"
    node "${CHECKCONFIG_PATH}" "$MYPLACE_SH_PATH" "${homebridgeConfigJson}"
-   cleanUp
 fi
