@@ -28,7 +28,7 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
 ### Raspbian/HOOBS/macOS/NAS
 1. Install Homebridge via these instructions for [Raspbian](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian), [HOOBS](https://support.hoobs.org/docs) or [macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS), if you have not already.
 
-2. Find the `homebridge-myplace` plugin via the Homebridge UI 'Plugins' tab search function, once found, click the blue down arrow at the bottom right to install.
+2. Find the `homebridge-myplace` plugin via the Homebridge UI 'Plugins' tab search function, once found, click the blue *down-arrow* at the bottom right to install.  Once install, click on the three dots at the bottom right and select `JSON Config`, a pop-up box showing a small config in it. Do not edit anything but click `SAVE`.  More pop-up boxes may appear, click `SAVE` to all until you are prompted to `RESTART HOMEBRIDGE`.  You do not need to restart homebridge but can click `CLOSE` now to move on to the next step.
   
      <p align="left">
      <img width="400px" src="Screenshots/MyPlaceInstall3.png">
@@ -38,10 +38,7 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
    jq --version
    curl --version
    ```
-   If they are installed, the above command should return a version number.
-
-4. If not already, install <B>jq</B> and <B>curl</B> via your Homebridge UI terminal or through ssh:
-
+   If they are installed, the above command should return a version number. If not, install them:
    ##### For Raspbian/Hoobs:
    ```shell
    sudo apt-get install <jq or curl>
@@ -59,20 +56,23 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
    apk add <jq or curl>
    ```
    #### Important note:
-   At the time of updating this README, the `apt-get insatall` only allow jq-1.6 to be installed. To install the lastest and **MUCH faster** version of jq-1.7.1, please follow the step-by-step guide below:
+   At the time of updating this README, the `apt-get insatall` only allow jq-1.6 to be installed, which is notorously slow! To install the lastest and **MUCH faster** version of jq-1.7.1, please follow the step-by-step guide below:
    1. Download the Source Code:
-   You can download the source code "jq-1.7.1.tar.gz" for jq 1.7.1 from the official GitHub releases page (https://github.com/jqlang/jq/releases) or use the link below:
+   
+      You can download the source code "jq-1.7.1.tar.gz" for jq 1.7.1 from the official GitHub releases page (https://github.com/jqlang/jq/releases) or use the link below:
       ```shell
       wget https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-1.7.1.tar.gz
       ```
    2. Install Dependencies:
-   Ensure you have the necessary build tools and dependencies installed. You can do this by running:
+   
+      Ensure you have the necessary build tools and dependencies installed. You can do this by running:
       ```shell
       sudo apt-get update
       sudo apt-get install -y autoconf automake libtool make gcc
       ```
    3. Extract and Build:
-   Extract the downloaded tarball and navigate to the directory:
+   
+      Extract the downloaded tarball and navigate to the directory:
       ```shell
       tar -xvzf jq-1.7.1.tar.gz
       cd jq-1.7.1
@@ -85,12 +85,13 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
       sudo make install
       ```
    5. Verify Installation:
+
       After installation, you can verify that jq is installed correctly by running:
       ```shell
       jq --version
       ```
 
-6. Create your Homebridge `config.json`
+4. Create MyPlace configuration file:
    
    Go to the 'Plugins' tab in Homebridge UI, locate your newly installed `Homebridge Myplace` plugin and click the three dots on the bottom right, select `Plugin Config` and it should launch the <B>Configuration Creator and Checker</B> and <B>Device 
    Settings</B> page.
@@ -99,10 +100,12 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
         </p>
 
    In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the checkboxes for `Include extra timers` and `Enable detailed debug log`, then click `SAVE`. This is to save your system parameters. Click `CLOSE` if a pop up urging you to `RESTART HOMEBRIDGE`.
-
-   *Please use only alphanumeric, space, and apostrophe characters for `Name`.*
      
-    Go back to `Plugin Config` again and press the `CREATE CONFIGURATION` button to create the required configuration file.  On a sucess, click `CHECK CONFIGURATION`to check the configuration file just created is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed. Otherwise, click `SAVE` then restart Homebridge.
+   Go back to `Plugin Config` again and press the `CREATE CONFIGURATION` button to create the required configuration file.
+
+   On a sucess, you may click `CHECK CONFIGURATION`to check the configuration file just created is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed.
+
+   Otherwise, click `SAVE` then `RESTART HOMEBRIDGE`.
 
    **HOOBS** users who do not have access to Homebridge UI (for now!) will have to run the Config Creator on a terminal:
    ```shell
@@ -136,14 +139,16 @@ Both the <B>Thermostat</B> and <B>Fan</B> switch has associated fan speed contro
 <img width="240px" src="Screenshots/Timer_homekit_UI.png">
 </p>
 
-A timer is repurposed from <B>Lightbulb</B> accessory and its <B>%-brightness</B> as proxy for duration configured to represent 6 minutes per 1%. 10%-timer is then a 60-minutes or 1-hour timer and 25%-timer is a 2.5-hours timer. A maximum of 10-hour timer (100%-timer) can be set. This timer will turn ON or OFF the Aircon system.
+A timer is repurposed from <B>Lightbulb</B> accessory and its <B>%-brightness</B> as proxy for timer duration, configured to represent 6 minutes per 1%. So a 10%-timer is a 60-minutes or 1-hour timer and 25%-timer is a 2.5-hours timer. A maximum of 10-hour timer (100%-timer) can be set. This timer will turn ON or OFF the Aircon system.
 
-If <B>Include extra timers</B> is checked during the setup process, 3 more timers would have been created- a <B>Fan Timer</B>, a <B>Cool Timer</B> and a <B>Heat Timer</B>:
+If <B>Include extra timers</B> was selected during the setup process, 3 more timers would have been created- a <B>Fan Timer</B>, a <B>Cool Timer</B> and a <B>Heat Timer</B>:
 <p align="left">
 <img width="300px" src="Screenshots/FancyTimers_homekit_tiles.png">
 </p>
 
-These timers will turn ON the Aircon system in specific mode as their names suggest. *Please note that the icons on the Timer tiles in the example above have been deliberately changed to distinguish them from lights. All timers are repurposed from <B>Lightbulb</B> accessory.*
+These timers will turn ON the Aircon system in specific mode as their names suggest. 
+
+*Please note that the icons on the Timer tiles in the example above have been deliberately changed to distinguish them from lights.*
 
 #### (iii) Zone Control
 <p align="left">
@@ -153,7 +158,9 @@ These timers will turn ON the Aircon system in specific mode as their names sugg
 
 Zone control is repurposed from <B>Fan</B> accessory with its <B>%-rotationSpeed</B> as proxy for zone %-open.  
 
-For zones with temperature sensors and with myZone defined, a <B>myZone</B> switch, repurposed from <B>rotationDirection</B> will appear as a round button. Turn this button <B>ON</B> to set this zone as myZone.  *Please note that as per Advantage Air system design, myZone cannot be turned <B>OFF</B>. It can only be turned <B>OFF</B> by setting another zone as myZone.  Moreover, %-open for these zones cannot be set.  It is set automatically by the system.*
+For zones with temperature sensors and with myZone defined, a <B>myZone</B> switch, repurposed from <B>rotationDirection</B> will appear as a round button. Turn this button <B>ON</B> to set this zone as myZone.  
+
+*Please note that as per Advantage Air system design, myZone cannot be turned <B>OFF</B>. It can only be turned <B>OFF</B> by setting another zone as myZone.  Moreover, %-open for zones with temperature sensors cannot be set manually.  It is set automatically by the system.*
 
 For zone current temperature info, click the setting button.
 
