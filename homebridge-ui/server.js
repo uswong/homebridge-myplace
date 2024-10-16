@@ -46,23 +46,23 @@ class UiServer extends HomebridgePluginUiServer
    }
 
    async ConfigCreator(payload) {
-      if (payload.ip !== "") {
-         payload.ip += ':';
-         payload.ip += payload.port;
-         console.log('Processing AA system:', payload.name,payload.ip,payload.debug);
-         console.log('Timer setup instruction:', payload.timerSetup1);
+      if (payload.ip1 !== "") {
+         payload.ip1 += ':';
+         payload.ip1 += payload.port1;
+         console.log('Processing AA system:', payload.name1,payload.ip1,payload.debug1);
+         console.log('extra Timers:', payload.extraTimers1);
       }
       if (payload.ip2 !== "") {
          payload.ip2 += ':';
          payload.ip2 += payload.port2;
          console.log('Processing AA system:', payload.name2,payload.ip2,payload.debug2);
-         console.log('Timer setup instruction:', payload.timerSetup2);
+         console.log('extra Timers:', payload.extraTimers2);
       }
       if (payload.ip3 !== "") {
          payload.ip3 += ':';
          payload.ip3 += payload.port3;
          console.log('Processing AA system:', payload.name3,payload.ip3,payload.debug3);
-         console.log('Timer setup instruction:', payload.timerSetup3);
+         console.log('Extra Timers:', payload.extraTimers3);
       }
 
       try {
@@ -71,7 +71,7 @@ class UiServer extends HomebridgePluginUiServer
 
          //This spawns a child process which runs a bash script
          const spawnSync = require('child_process').spawnSync;
-         let FeedBack = spawnSync(ConfigCreator_shPath, [payload.ip,payload.name,payload.timerSetup1,payload.debug,payload.ip2,payload.name2,payload.timerSetup2,payload.debug2,payload.ip3,payload.name3,payload.timerSetup3,payload.debug3,MyPlace_shPath], {encoding: 'utf8'});
+         let FeedBack = spawnSync(ConfigCreator_shPath, [payload.ip1,payload.name1,payload.extraTimers1,payload.debug1,payload.ip2,payload.name2,payload.extraTimers2,payload.debug2,payload.ip3,payload.name3,payload.extraTimers3,payload.debug3,MyPlace_shPath], {encoding: 'utf8'});
          let feedback = `${ FeedBack.stdout.replace(/\n*$/, "")}`
 
          // return data to the ui
