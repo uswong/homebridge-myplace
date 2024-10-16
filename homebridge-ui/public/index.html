@@ -52,50 +52,48 @@
       })
     }
 
-    AAIP = "";
-    AAname = "";
-    AAport = "2025"
-    AAtimerSetup = "false";
-    AAdebug = "false";
+    AAIP1 = "";
+    AAname1 = "";
+    AAport1 = "2025";
+    AAextraTimers1 = "false";
+    AAdebug1 = "false";
     AAIP2 = "";
     AAname2 = "";
     AAport2 = "2025";
-    AAtimerSetup2 = "false";
+    AAextraTimers2 = "false";
     AAdebug2 = "false";
     AAIP3 = "";
     AAname3 = "";
     AAport3 = "2025";
-    AAtimerSetup3 = "false";
+    AAextraTimers3 = "false";
     AAdebug3 = "false";
     feedback = "";
-    var timerSetup1;
-    var timerSetup2;
-    var timerSetup3;
 
     // get the intial from the config and add it to the form
     if (pluginConfig.length) {
       if (pluginConfig[0].devices.length >= 1) {
-        AAIP = pluginConfig[0].devices[0].ipAddress;
-        AAname = pluginConfig[0].devices[0].name;
-        AAport = pluginConfig[0].devices[0].port;
-        AAtimerSetup = pluginConfig[0].devices[0].extraTimers;
-        AAdebug = pluginConfig[0].devices[0].debug;
+        AAIP1 = pluginConfig[0].devices[0].ipAddress;
+        AAname1 = pluginConfig[0].devices[0].name;
+        AAport1 = pluginConfig[0].devices[0].port;
+        AAextraTimers1 = pluginConfig[0].devices[0].extraTimers;
+        AAdebug1 = pluginConfig[0].devices[0].debug;
       }
       if (pluginConfig[0].devices.length >= 2) {
         AAIP2 = pluginConfig[0].devices[1].ipAddress;
         AAname2 = pluginConfig[0].devices[1].name;
         AAport2 = pluginConfig[0].devices[1].port;
-        AAtimerSetup2 = pluginConfig[0].devices[1].extraTimers;
+        AAextraTimers2 = pluginConfig[0].devices[1].extraTimers;
         AAdebug2 = pluginConfig[0].devices[1].debug;
       }
       if (pluginConfig[0].devices.length >= 3) {
         AAIP3 = pluginConfig[0].devices[2].ipAddress;
         AAname3 = pluginConfig[0].devices[2].name;
         AAport3 = pluginConfig[0].devices[2].port;
-        AAtimerSetup3 = pluginConfig[0].devices[2].extraTimers;
+        AAextraTimers3 = pluginConfig[0].devices[2].extraTimers;
         AAdebug3 = pluginConfig[0].devices[2].debug;
       }
     }
+
 
     // watch for click events on the ConfigCreatorButton
     document.querySelector('#ConfigCreatorButton').addEventListener('click', async () => {
@@ -106,48 +104,32 @@
     }
 
     // validate an ip was provided
-    if ( AAIP === "undefined" || !AAIP) {
+    if ( AAIP1 === undefined || !AAIP1) {
       // create a error / red toast notification if the required input is not provided.
       homebridge.toast.error('An ip address of your AdvantageAir system must be provided.', 'Error');
       return;
     }
 
     // Assign default values if undefined
-    if ( AAport == undefined ) { AAport = "2025" }
+    if ( AAport1 == undefined ) { AAport1 = "2025" }
     if ( AAport2 == undefined ) { AAport2 = "2025" }
     if ( AAport3 == undefined ) { AAport3 = "2025" }
 
-    if ( AAtimerSetup == undefined ) { AAtimerSetup = "false" }
-    if ( AAtimerSetup2 == undefined ) { AAtimerSetup2 = "false" }
-    if ( AAtimerSetup3 == undefined ) { AAtimerSetup3 = "false" }
-
-    if ( AAtimerSetup ) {
-       timerSetup1 = "includeFancyTimers";
-    } else {
-       timerSetup1 = "noFancyTimers";
-    }
-    if ( AAtimerSetup2 ) {
-       timerSetup2 = "includeFancyTimers";
-    } else {
-       timerSetup2 = "noFancyTimers";
-    }
-    if ( AAtimerSetup3) {
-       timerSetup3 = "includeFancyTimers";
-    } else {
-       timerSetup3 = "noFancyTimers";
-    }
+    if ( AAextraTimers1 == undefined ) { AAextraTimers1 = "false" }
+    if ( AAextraTimers2 == undefined ) { AAextraTimers2 = "false" }
+    if ( AAextraTimers3 == undefined ) { AAextraTimers3 = "false" }
 
     if ( pluginConfig[0].devices.length == 3 ) {
-       homebridge.toast.info(`This process may take up to 3 minutes`, 'Info');
-       homebridge.toast.info(`(1) ${timerSetup1}. (2) ${timerSetup2}. (3) ${timerSetup3}.`, 'Setup Info');
+       homebridge.toast.info(`Processing 3 Aircon systems - may take up to 3 minutes`, 'Info');
+       homebridge.toast.info(`(1) ${AAextraTimers1}. (2) ${AAextraTimers2}. (3) ${AAextraTimers3}.`, 'Include extraTimers?');
     } 
     else if ( pluginConfig[0].devices.length == 2 ) {
-       homebridge.toast.info(`This process may take up to 2 minutes`, 'Info');
-       homebridge.toast.info(`(1) ${timerSetup1}. (2) ${timerSetup2}`, 'Setup Info');
+       homebridge.toast.info(`Processing 2 Aircon systems - may take up to 2 minutes`, 'Info');
+       homebridge.toast.info(`(1) ${AAextraTimers1}. (2) ${AAextraTimers2}.`, 'Include extraTimers?');
     } 
     else if ( pluginConfig[0].devices.length == 1 ) {
-       homebridge.toast.info(`This process may take up to 1 minute`, 'Info');
-       homebridge.toast.info(`(1) ${timerSetup1}.`, 'Setup Info');
+       homebridge.toast.info(`Processing 1 Aircon system -  may take up to 1 minute`, 'Info');
+       homebridge.toast.info(`(1) ${AAextraTimers1}.`, 'Include extraTimers?');
     } 
 
     // starting the request, show the loading spinner
@@ -156,20 +138,20 @@
     // request key paths from the server
     try {
       const response = await homebridge.request('/configcreator', {
-        ip: AAIP,
-        name: AAname,
-        port: AAport,
-        timerSetup1: timerSetup1,
-        debug: AAdebug,
+        ip1: AAIP1,
+        name1: AAname1,
+        port1: AAport1,
+        extraTimers1: AAextraTimers1,
+        debug1: AAdebug1,
         ip2: AAIP2,
         name2: AAname2,
         port2: AAport2,
-        timerSetup2: timerSetup2,
+        extraTimers2: AAextraTimers2,
         debug2: AAdebug2,
         ip3: AAIP3,
         name3: AAname3,
         port3: AAport3,
-        timerSetup3: timerSetup3,
+        extraTimers3: AAextraTimers3,
         debug3: AAdebug3,
         feedback: feedback 
       });
