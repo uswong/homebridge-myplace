@@ -12,27 +12,26 @@
 
 var getAccessoryUUID = function ( config, UUIDGen )
 {
-   if ( config.UUID )
-      return config.UUID;
-   if ( config.uuid )
-      return config.uuid;
-
    // UUID for homebridge-myplace
-   if ( config.type && config.displayName ) {
-      let typeDisplayName = config.type + " " + config.displayName;
-      return UUIDGen.generate( typeDisplayName );
+   let noOfChar = config.polling.length
+   let typeName = config.type + config.name + noOfChar;
+   if ( config.linkedTypes === undefined ) {
+      return UUIDGen.generate( typeName );
+   } else { 
+      if ( config.linkedTypes.length === 1 ) {
+         let lt0Type = config.linkedTypes[0].type;
+         let lt0Name = config.linkedTypes[0].name;
+         let typeName1 = typeName + lt0Type + lt0Name;
+         return UUIDGen.generate( typeName1 );
+      } else if ( config.linkedTypes.length === 2 ) {
+         let lt0Type = config.linkedTypes[0].type;
+         let lt0Name = config.linkedTypes[0].name;
+         let lt1Type = config.linkedTypes[1].type;
+         let lt1Name = config.linkedTypes[1].name;
+         let typeName2 = typeName + lt0Type + lt0Name + lt1Type + lt1Name;
+         return UUIDGen.generate( typeName2 );
+      }
    }
-
-   if ( config.name )
-      return UUIDGen.generate( config.name );
-   if ( config.Name )
-      return UUIDGen.generate( config.Name );
-
-   if ( config.displayName )
-      return UUIDGen.generate( config.displayName );
-
-   if ( config.DisplayName )
-      return UUIDGen.generate( config.DisplayName );
 
    throw new Error( "You must either, 'displayName' and or 'name' per accessory." );
 }
