@@ -99,13 +99,13 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
         <img width="600px" src="Screenshots/MyPlaceConfigCreator.png">
         </p>
 
-   In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the checkboxes for `Include extra timers` and `Enable detailed debug log`, then click `SAVE`. This is to save your system parameters. Click `CLOSE` if a pop up urging you to `RESTART HOMEBRIDGE`.
+   In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the self-explanatory checkboxes for `Include extra timers` and `Enable detailed debug log`, then click `SAVE`. This is to save your system parameters. Click `CLOSE` if a pop up urging you to `RESTART`.
      
    Go back to `Plugin Config` again and press the `CREATE CONFIGURATION` button to create the required configuration file.
 
    On a sucess, you may click `CHECK CONFIGURATION`to check the configuration file just created is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed.
 
-   Otherwise, click `SAVE` then `RESTART HOMEBRIDGE`.
+   Otherwise, click `SAVE` then `RESTART`.
 
    **HOOBS** users who do not have access to Homebridge UI (for now!) will have to run the Config Creator on a terminal:
    ```shell
@@ -152,17 +152,16 @@ These timers will turn ON the Aircon system in specific mode as their names sugg
 
 #### (iii) Zone Control
 <p align="left">
-<img width="240px" src="Screenshots/ZoneNoMyZone_homekit_UI.png">
- <img width="530px" src="Screenshots/ZoneWithMyZone2_homekit_UI.png">
+<img width="760px" src="Screenshots/variousZoneControls_homekit_UI.png">
 </p>
 
-Zone control is repurposed from <B>Fan</B> accessory with its <B>%-rotationSpeed</B> as proxy for zone %-open.  
+Zone control is repurposed from <B>Fan</B> accessory with its <B>%-rotationSpeed</B> as proxy for Zone damper %-open and <B>rotationDirection</B> as <B>myZone</B> button.  <B>Thermostat</B> accessory is used for setting the Zone target temperature.
 
-For zones with temperature sensors and with myZone defined, a <B>myZone</B> switch, repurposed from <B>rotationDirection</B> will appear as a round button. Turn this button <B>ON</B> to set this zone as myZone.  
+(a) A non temperature controlled Zone: the damper %-open is to be adjusted manually.
 
-*Please note that as per Advantage Air system design, myZone cannot be turned <B>OFF</B>. It can only be turned <B>OFF</B> by setting another zone as myZone.  Moreover, %-open for zones with temperature sensors cannot be set manually.  It is set automatically by the system.*
+(b) A temperature controlled Zone but without <B>myZone</B> defined: the damper %-open is adjusted automatically by the system, it cannot be adjusted manually. To turn off the Zone, slide the slider to zero. To turn it on, tap anywhere within the slider. Use the Thermostat to set the target temperature by moving the big white dot. The small white dot on the Thermostat is the measured temperature of the Zone. The mode of the Thermostat here (`Cool`, `Heat` or `Auto`) reflects the current mode of the Aircon.  It is purely for INFO only, you cannot use it to change the mode of the Aircon. When the Aircon mode is on `dry` and `fan`, it will be shown as `Auto` here.
 
-For zone current temperature info, click the setting button.
+(c) A temperature controlled Zone with <B>myZone</B> defined: same as (b) but with an additional round button to set this zone as <B>myZone</B>. Please note that <B>myZone</B> cannot be turned <B>OFF</B> as per AdvantageAir system design. It can only be turned <B>OFF</B> by setting another zone as <B>myZone</B>.
 
 ### (B) Lights
 <p align="left">
