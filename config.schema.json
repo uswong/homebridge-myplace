@@ -275,6 +275,18 @@
                   "currentTemperature": {
                     "type": "number"
                   },
+                  "targetTemperature": {
+                    "type": "number"
+                  },
+                  "currentHeatingCoolingState": {
+                    "type": "string"
+                  },
+                  "targetHeatingCoolingState": {
+                    "type": "string"
+                  },
+                  "temperatureDisplayUnits": {
+                    "type": "string"
+                  },
                   "rotationSpeed": {
                     "type": "number"
                   },

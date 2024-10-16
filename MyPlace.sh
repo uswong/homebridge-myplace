@@ -37,6 +37,7 @@ rc=1
 
 # Default values
 zone=""
+noOtherThermostat=false
 zoneSpecified=false
 fanSpecified=false
 fanTimerSpecified=false
@@ -106,30 +107,26 @@ function logError()
    if [ "$logErrors" != true ]; then
       return
    fi
-
    local comment="$1"
    local result="$2"
    local data1="$3"
    local data2="$4"
-   local count=1
    local sfx
    local file
-   local fileName
-
+   local count
    sfx="$rc-$io-$device-$characteristic"
    sfx=${sfx// /_}
-   fileName="${tmpSubDir}/AAerror-${sfx}.txt"
+   local fileName="${tmpSubDir}/AAerror-${sfx}.txt"
    file=$(find "${fileName}"* 2>&1|grep -v find)
    #
    # append a counter to the file so that the number of same error is logged
    if [ -f "${file}" ]; then
-      getFileStaeStatDt "${file}"
-      if [ "${dt}" -lt 600 ]; then
-         count=$(echo "${file}" | cut -d'#' -f2)
-         count=$((count + 1))
-      fi
-      rm -f "${file}"
+      count=$(echo "${file}" | cut -d'#' -f2)
+      count=$((count + 1))
+   else
+      count=1
    fi
+   rm -f "${file}"
    #
    fileName="${fileName}#${count}"
    { echo "$io $device $characteristic"
@@ -188,8 +185,7 @@ function queryCachedAirCon()
 {
    local url="$1"
    local exitOnFail="$2"
-   local forceFetch="$3"
-   local iteration="$4"
+   local iteration="$3"
    local queryType
    local myAirData_cached="{}"
 
@@ -200,7 +196,6 @@ function queryCachedAirCon()
 
    # The dateFile is only valid if there is an MY_AIRDATA_FILE
    local useFileCache=false
-   local doFetch=false
    local dt=-1
 
    # The dateFile and MY_AIRDATA_FILE must exist together to check
@@ -213,23 +208,20 @@ function queryCachedAirCon()
       elif [[ "$dt" -gt 180  &&  -f "$lockFile" ]]; then # an earlier curl may have timed out
          tlf=$(cat "$lockFile")
          dtlf=$(( t0 - tlf ))
-         if [ "$dtlf" -ge 60 ]; then # earlier curl has timed out, recover and try again
+
+         # If earlier curl timed out, recover by removing the lockFile and try again in 1.2s (max 5 tries)
+         if [ "$dtlf" -ge 60 ]; then 
             rm "$lockFile"
             rc=99
-            logQueryAirConDiagnostic "queryCachedAirCon_calls_earlier_CMD5_timed_out $tf $t0 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
+            logQueryAirConDiagnostic "queryCachedAirCon_calls_earlier_curl_timed_out $tf $t0 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
             return
          fi
       fi
    fi
    logQueryAirConDiagnostic "queryCachedAirCon_calls $tf $t0 $dt $useFileCache itr=$iteration $io $device $characteristic $url" 
 
-   if [ "$forceFetch" = true ] || [ "$useFileCache" = false ]; then
-      doFetch=true
-   fi
-
    # If $lockFile is detected, iterate until it is deleted or 60s whichever is earlier
    # The $lockfile can be there for 1s to 60s (even beyond occasionally) for a big system, with an average of ~6s
-   #
    if [ -f "$lockFile" ]; then
       queryType="copy"
       tlf=$(cat "$lockFile")
@@ -238,11 +230,15 @@ function queryCachedAirCon()
          t2=$(date '+%s')
          dt=$(( t2 - t0 ))
          dtlf=$(( t2 - tlf ))
+
+         # earlier curl has timed out (timeout:60000) - this rarely happen (<0.1% of the time)
+         # flag it, remove the $lockFile and copy the existing cached file, try again next cycle.
          if [ "$dtlf" -ge 60 ]; then  
-            # earlier CMD5 has timed out (CMD5 timeout:60000) - this rarely happen (<0.1% of the time)
-            # flag it and copy the existing cached file and move on. May not have enough time to retry
             rc=98
-            logQueryAirConDiagnostic "queryCachedAirCon_copy_earlier_CMD5_timed_out $t0 $t2 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
+            logQueryAirConDiagnostic "queryCachedAirCon_timed_out_so_copy_earlier_cache $t0 $t2 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
+
+            # Remove the lockFile
+            rm "$lockFile"
 
             # To test the logic, issue this comment
             if [ "$selfTest" = "TEST_ON" ]; then
@@ -260,9 +256,16 @@ function queryCachedAirCon()
          echo "Fetching myAirData from cached file"
       fi
 
-   elif [ "$doFetch" = true ]; then
-      echo "$t0" > "$lockFile"
+   # Fetch the data from the Cache
+   elif [ "$useFileCache" = true ]; then
+      queryType="cache"
+      myAirData=$( cat "$MY_AIRDATA_FILE" )
+      rc=$?
+
+   # Fetch the data from the System
+   elif [ "$useFileCache" = false ]; then
       queryType="curl"
+      echo "$t0" > "$lockFile"
       myAirData=$( curl --fail -s -g "$url")
       rc=$?
       if [ "$rc" = "0" ]; then
@@ -290,11 +293,6 @@ function queryCachedAirCon()
          unset myAirData
       fi
       rm "$lockFile"
-
-   elif [ "$doFetch" = false ]; then
-      queryType="cache"
-      myAirData=$( cat "$MY_AIRDATA_FILE" )
-      rc=$?
    fi
 
    if [ "$rc" != "0" ]; then
@@ -503,7 +501,6 @@ function parseMyAirDataWithJq()
 function  queryAirConWithIterations()
 {
    local url="$1"
-   local forceFetch="$2"
 
    # Try 5 times, the last returning the error found.
    for i in 0 1 2 3 4
@@ -516,7 +513,7 @@ function  queryAirConWithIterations()
          exitOnFail="1"
       fi
       # Updates global variable myAirData
-      queryCachedAirCon "$url" "$exitOnFail" "$forceFetch" "$i"
+      queryCachedAirCon "$url" "$exitOnFail" "$i"
       if [ "$rc" = "0" ]; then
          break
       else
@@ -535,7 +532,7 @@ function getMyAirDataFromCachedFile()
          echo "Getting myAirData.txt from cached file"
       fi
    else
-      queryAirConWithIterations "http://$IP:$PORT/getSystemData" false
+      queryAirConWithIterations "http://$IP:$PORT/getSystemData"
    fi
 }
 
@@ -576,6 +573,9 @@ function setMyZoneToAnOpenedZoneWithTempSensorWithPriorityToCzones()
                myZoneValue=$((10#$( echo "${myZone}" | cut -d"z" -f2 ))) 
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{myZone:$myZoneValue}}}"
                myZoneAssigned=true
+               # the target temperature of myZone needs to be copied to the system target temperature
+               parseMyAirDataWithJq ".aircons.$ac.zones.${myZone}.setTemp" "1"
+               setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{setTemp:$jqResult}}}"
                return
             fi
          fi
@@ -593,6 +593,9 @@ function setMyZoneToAnOpenedZoneWithTempSensorWithPriorityToCzones()
                myZone="${ZoneStr}"
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{myZone:$Zone}}}"
                myZoneAssigned=true
+               # the target temperature of myZone needs to be copied to the system target temperature
+               parseMyAirDataWithJq ".aircons.$ac.zones.${myZone}.setTemp" "1"
+               setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{setTemp:$jqResult}}}"
                return
             fi
          fi
@@ -832,6 +835,10 @@ if [ $argEND -ge $argSTART ]; then
             selfTest="${v}"
             PORT="2025"
             ;;
+         noOtherThermostat)
+            # If only the control unit Thermostat is specified, ie no zone Thermostat is defined 
+            noOtherThermostat=true
+            ;;
          fanSpeed)
             # If the accessory is used to control the fan speed
             fanSpeed=true
@@ -934,7 +941,7 @@ t0=$(date '+%s')
 if [ "$io" = "Get" ]; then
 
    # Get the systemData, but not forcefully
-   queryAirConWithIterations "http://$IP:$PORT/getSystemData" false
+   queryAirConWithIterations "http://$IP:$PORT/getSystemData"
 
    case "$characteristic" in
       # Gets the current temperature.
@@ -971,60 +978,70 @@ if [ "$io" = "Get" ]; then
       ;;
       # Gets the target temperature.
       TargetTemperature )
-         # Updates global variable jqResult
-         parseMyAirDataWithJq ".aircons.$ac.info.myZone" "1"
-         myZone=$( printf "z%02d" "$jqResult" )
-         if [ "${myZone}" != "z00" ]; then 
-            parseMyAirDataWithJq ".aircons.$ac.zones.$myZone.setTemp" "1"
+         if [ $zoneSpecified = true ]; then
+            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.setTemp" "1"
             echo "$jqResult"
             exit 0
          else
-            parseMyAirDataWithJq ".aircons.$ac.info.setTemp" "1"
-            echo "$jqResult"
-            exit 0
+            # check whether myZone is defined
+            parseMyAirDataWithJq ".aircons.$ac.info.myZone" "1"
+            myZone=$( printf "z%02d" "$jqResult" )
+            if [ "${myZone}" != "z00" ]; then 
+               parseMyAirDataWithJq ".aircons.$ac.zones.$myZone.setTemp" "1"
+               echo "$jqResult"
+               exit 0
+            else
+               parseMyAirDataWithJq ".aircons.$ac.info.setTemp" "1"
+               echo "$jqResult"
+               exit 0
+            fi
          fi
       ;;
       # Makes the target Control Unit state the current Control Unit state.
       TargetHeatingCoolingState | CurrentHeatingCoolingState )
-         # Set to Off if the zone is closed or the Control Unit is Off.
-         # Updates global variable jqResult
-         parseMyAirDataWithJq ".aircons.$ac.info.state" "1"
-         if [  "$jqResult" = '"off"' ]; then
-            echo 0
-            exit 0
-         else
-            # Get the current mode of the Control Unit. Off=0, Heat=1, Cool=2.
-            # Updates global variable jqResult
-            parseMyAirDataWithJq ".aircons.$ac.info.mode" "1"
-            mode="$jqResult"
-            case "$mode" in
-               '"heat"' )
-                  # Thermostat in Heat Mode.
-                  echo 1
-                  exit 0
-               ;;
-               '"cool"' )
-                  # Thermostat in Cool Mode.
-                 echo 2
-                 exit 0
-               ;;
-               '"vent"' )
-                  # Fan mode, set Thermostat to Off and Fan to On.
-                  echo 0
-                  exit 0
-               ;;
-               '"dry"' )
-                  # Dry mode, set Thermostat to Auto Mode as a proxy.
-                  echo 3
-                  exit 0
-               ;;
-               * )
-                  # If anything unexpected is retruned than the above, return value Off.
-                  echo 0
-                  exit 0
-               ;;
-            esac
+         if [ $zoneSpecified = false ]; then 
+            # Set to Off if the Control Unit is Off.
+            parseMyAirDataWithJq ".aircons.$ac.info.state" "1"
+            if [  "$jqResult" = '"off"' ]; then
+               echo 0
+               exit 0
+            fi
          fi
+         # Get the current mode of the Thermostat; Heat=1, Cool=2, dry(auto)=3
+         # Updates global variable jqResult
+         parseMyAirDataWithJq ".aircons.$ac.info.mode" "1"
+         mode="$jqResult"
+         case "$mode" in
+            '"heat"' )
+               # Thermostat in Heat Mode.
+               echo 1
+               exit 0
+            ;;
+            '"cool"' )
+               # Thermostat in Cool Mode.
+              echo 2
+              exit 0
+            ;;
+            '"vent"' )
+               # Fan mode, set Thermostat to Off if $zoneSpecified is false otherwise set Thermostat to Auto
+               if [ $zoneSpecified = false ]; then
+                  echo 0
+               else
+                  echo 3
+               fi
+               exit 0
+            ;;
+            '"dry"' )
+               # Dry mode, set Thermostat to Auto Mode as a proxy.
+               echo 3
+               exit 0
+            ;;
+            * )
+               # If anything unexpected is retruned than the above, return value Off.
+               echo 0
+               exit 0
+            ;;
+         esac
       ;;
       # for garage door opener: get the value from MyPlace
       # (100=open, 0=close) (in Homekit 0=open, 1=close)
@@ -1314,48 +1331,58 @@ if [ "$io" = "Set" ]; then
 
    case "$characteristic" in
       TargetHeatingCoolingState )
-         case "$value" in
-            0 )
-               # Shut Off Control Unit.
-               setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:off}}}"
-               exit 0
-            ;;
-            1 )
-               # Turn On Control Unit, Set Mode to Heat, Open Current Zone.
-               setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:on,mode:heat}}}"
-               exit 0
-            ;;
-            2 )
-               # Turn On Control Unit, Set Mode to Cool, Open Current Zone.
-               setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:on,mode:cool}}}"
-               exit 0
-            ;;
-            3 )
-               # Turn On Control Unit, Set Mode to Dry.  Auto mode in Homekit as a proxy to Dry mode
-               setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:on,mode:dry}}}"
-               exit 0
-            ;;
-         esac
+         if [ $zoneSpecified = false ]; then
+            case "$value" in
+               0 )
+                  # Shut Off Control Unit.
+                  setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:off}}}"
+                  exit 0
+               ;;
+               1 )
+                  # Turn On Control Unit, Set Mode to Heat, Open Current Zone.
+                  setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:on,mode:heat}}}"
+                  exit 0
+               ;;
+               2 )
+                  # Turn On Control Unit, Set Mode to Cool, Open Current Zone.
+                  setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:on,mode:cool}}}"
+                  exit 0
+               ;;
+               3 )
+                  # Turn On Control Unit, Set Mode to Dry.  Auto mode in Homekit as a proxy to Dry mode
+                  setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:on,mode:dry}}}"
+                  exit 0
+               ;;
+            esac
+         fi
       ;;
       TargetTemperature )
-         setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{setTemp:$value}}}"
-         # if myZone is defined, set the target temperature to the defined myZone
          parseMyAirDataWithJq ".aircons.$ac.info.myZone" "1"
          myZone=$( printf "z%02d" "$jqResult" )
-         if [ "${myZone}" != "z00" ]; then 
-            setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$myZone:{setTemp:$value}}}}"
+         if [ $zoneSpecified = true ]; then
+            setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$zone:{setTemp:$value}}}}"
+            # if this zone is myZone, then set the target temperature of the system too
+            if [ "${zone}" = "${myZone}" ]; then
+               setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{setTemp:$value}}}"
+            fi
          else
-            # if myZone is not defined, set the target temperature to all zones with temperature sensors
-            parseMyAirDataWithJq ".aircons.$ac.info.noOfZones" "1"
-            nZones="${jqResult}"
-            for (( a=1;a<=nZones;a++ )); do
-               zoneStr=$( printf "z%02d" "$a" )
-               parseMyAirDataWithJq ".aircons.$ac.zones.$zoneStr.rssi" "1"
-               rssi="${jqResult}"
-               if [ "${rssi}" != "0" ]; then
-                  setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$zoneStr:{setTemp:$value}}}}"
-               fi
-            done
+            setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{setTemp:$value}}}"
+            # if myZone is defined, set the target temperature to the defined myZone too
+            if [ "${myZone}" != "z00" ]; then 
+               setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$myZone:{setTemp:$value}}}}"
+            elif [ $noOtherThermostat = true ]; then
+               # if myZone is not defined and noOtherThermostat=true, set the target temperature to all zones with temperature sensors
+               parseMyAirDataWithJq ".aircons.$ac.info.noOfZones" "1"
+               nZones="${jqResult}"
+               for (( a=1;a<=nZones;a++ )); do
+                  zoneStr=$( printf "z%02d" "$a" )
+                  parseMyAirDataWithJq ".aircons.$ac.zones.$zoneStr.rssi" "1"
+                  rssi="${jqResult}"
+                  if [ "${rssi}" != "0" ]; then
+                     setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$zoneStr:{setTemp:$value}}}}"
+                  fi
+               done
+            fi
          fi
          exit 0
       ;;

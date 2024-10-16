@@ -15,15 +15,15 @@ UIversion="customUI"
 
 AAIP="${1}"
 AAname="${2}"
-timerSetup1="${3}"
+extraTimers1="${3}"
 AAdebug="${4}"
 AAIP2="${5}"
 AAname2="${6}"
-timerSetup2="${7}"
+extraTimers2="${7}"
 AAdebug2="${8}"
 AAIP3="${9}"
 AAname3="${10}"
-timerSetup3="${11}"
+extraTimers3="${11}"
 AAdebug3="${12}"
 MYPLACE_SH_PATH="${13}"
 
@@ -101,8 +101,10 @@ function myPlaceModelQueue()
 function myPlaceThermostat()
 {
    local name="$1"
+   local zone="$2"
    local ac_l=" ${ac}"
 
+   if [ "${zone}" != "" ]; then zone="${zone} "; fi
    if [ "${ac_l}" = " ac1" ]; then ac_l=""; fi
 
    myPlaceThermostat="{}"
@@ -121,14 +123,16 @@ function myPlaceThermostat()
                                                     | jq ".polling[3].characteristic |= \"targetTemperature\"" \
                                                     | jq ".props.currentTemperature.maxValue |= 32" \
                                                     | jq ".props.currentTemperature.minValue |= 16" \
-                                                    | jq ".props.currentTemperature.minStep |= 1" \
+                                                    | jq ".props.currentTemperature.minStep |= 0.1" \
                                                     | jq ".props.targetTemperature.maxValue |= 32" \
                                                     | jq ".props.targetTemperature.minValue |= 16" \
                                                     | jq ".props.targetTemperature.minStep |= 1" \
                                                     | jq ".state_cmd |= \"'${MYPLACE_SH_PATH}'\"" \
-                                                    | jq ".state_cmd_suffix |= \"${ip}${ac_l}\"" )
+                                                    | jq ".state_cmd_suffix |= \"${zone}${ip}${ac_l}\"" )
 
-   myPlaceLinkedTypesFanSpeed "${name} FanSpeed" "${myPlaceThermostat}"
+   if [[ "${zone}" = "" || "${zone}" = "noOtherThermostat " ]]; then
+      myPlaceLinkedTypesFanSpeed "${name} FanSpeed" "${myPlaceThermostat}"
+   fi
 }
 
 function myPlaceLinkedTypesFanSpeed()
@@ -244,28 +248,11 @@ function myPlaceZoneFanv2()
                                                   | jq ".state_cmd |= \"'${MYPLACE_SH_PATH}'\"" \
                                                   | jq ".state_cmd_suffix |= \"${zoneStr} ${ip}${ac_l}\"" ) 
 
-   myPlaceZoneLinkedTypesTempSensor "${nameZ} Temperature" "${myPlaceZoneFanv2}"
-}
+   # Append the Zone Thermostat as linkedTypes
+   myPlaceThermostat "${nameZ} Thermostat" "${zoneStr}"
+   myPlaceZoneFanv2=$( echo "${myPlaceZoneFanv2}" | jq ".linkedTypes += [${myPlaceThermostat}]" )
 
-function myPlaceZoneLinkedTypesTempSensor()
-{
-   local name="$1"
-   local motherAcc="$2"
-   local ac_l=" ${ac}"
-
-   if [ "${ac_l}" = " ac1" ]; then ac_l=""; fi
-   myPlaceZoneLinkedTypesTempSensor="{}"
-   myPlaceZoneLinkedTypesTempSensor=$( echo "${myPlaceZoneLinkedTypesTempSensor}" | jq ".type |= \"TemperatureSensor\"" \
-                                                                                  | jq ".displayName |= \"${name}\"" \
-                                                                                  | jq ".currentTemperature |= 25" \
-                                                                                  | jq ".name |= \"${name}\"" \
-                                                                                  | jq ". += ${myPlaceModelQueue}" \
-                                                                                  | jq ".polling[0].characteristic |= \"currentTemperature\"" \
-                                                                                  | jq ".state_cmd |= \"'${MYPLACE_SH_PATH}'\"" \
-                                                                                  | jq ".state_cmd_suffix |= \"${zoneStr} ${ip}${ac_l}\"" )
-
-   motherAcc=$( echo "${motherAcc}" | jq ".linkedTypes |= [${myPlaceZoneLinkedTypesTempSensor}]" )
-   myPlaceAccessoriesAA=$( echo "${myPlaceAccessoriesAA}" | jq ".accessories += [${motherAcc}]" )
+   myPlaceAccessoriesAA=$( echo "${myPlaceAccessoriesAA}" | jq ".accessories += [${myPlaceZoneFanv2}]" )
 }
 
 function myPlaceZoneFanv2noRotationDirection()
@@ -288,7 +275,11 @@ function myPlaceZoneFanv2noRotationDirection()
                                                                                         | jq ".state_cmd |= \"'${MYPLACE_SH_PATH}'\"" \
                                                                                         | jq ".state_cmd_suffix |= \"${zoneStr} ${ip}${ac_l}\"" )
 
-   myPlaceZoneLinkedTypesTempSensor "${name} FanSpeed" "${myPlaceZoneFanv2noRotationDirection}"
+   # Append the Zone Thermostat as linkedTypes
+   myPlaceThermostat "${nameZ} Thermostat" "${zoneStr}"
+   myPlaceZoneFanv2noRotationDirection=$( echo "${myPlaceZoneFanv2noRotationDirection}" | jq ".linkedTypes += [${myPlaceThermostat}]" )
+
+   myPlaceAccessoriesAA=$( echo "${myPlaceAccessoriesAA}" | jq ".accessories += [${myPlaceZoneFanv2noRotationDirection}]" )
 }
 
 function myPlaceLightbulbNoDimmer()
@@ -496,7 +487,6 @@ function updateMyPlaceDevices()
    # update device1
    ipAddress1="$(echo "${AAIP}" | cut -d":" -f1)"
    port1="$(echo "${AAIP}" | cut -d":" -f2)"
-   if [ "${timerSetup1}" = "includeFancyTimers" ]; then extraTimers1=true; else extraTimers1=false; fi
    myPlaceDevices=$( echo "${myPlaceDevices}" | jq ".devices[0].name |= \"${AAname}\"" \
                                               | jq ".devices[0].ipAddress |= \"${ipAddress1}\"" \
                                               | jq ".devices[0].port |= ${port1}" \
@@ -506,7 +496,6 @@ function updateMyPlaceDevices()
    # update/insert/remove device2  
    ipAddress2="$(echo "${AAIP2}" | cut -d":" -f1)"
    port2="$(echo "${AAIP2}" | cut -d":" -f2)"
-   if [ "${timerSetup2}" = "includeFancyTimers" ]; then extraTimers2=true; else extraTimers2=false; fi
    # update/insert device2  
    if [ -n "${AAname2}" ]; then
       myPlaceDevices=$( echo "${myPlaceDevices}" | jq ".devices[1].name |= \"${AAname2}\"" \
@@ -521,7 +510,6 @@ function updateMyPlaceDevices()
    # update/insert device3  
    ipAddress3="$(echo "${AAIP3}" | cut -d":" -f1)"
    port3="$(echo "${AAIP3}" | cut -d":" -f2)"
-   if [ "${timerSetup3}" = "includeFancyTimers" ]; then extraTimers3=true; else extraTimers3=false; fi
    # update/insert device2  
    if [ -n "${AAname3}" ]; then
       myPlaceDevices=$( echo "${myPlaceDevices}" | jq ".devices[2].name |= \"${AAname3}\"" \
@@ -984,9 +972,9 @@ case $UIversion in
 
       read -r -p "${TYEL}Include extra fancy timers to turn-on the Aircon in specific mode: Cool, Heat or Vent? (y/n, default=n):${TNRM} " INPUT
       if [[ "${INPUT}" = "y" || "${INPUT}" = "Y" ]]; then
-         timerSetup1="includeFancyTimers"
+         extraTimers1="true"
       else
-         timerSetup1="noFancyTimers"
+         extraTimers1="false"
       fi
 
       AAdebug="false"
@@ -1017,9 +1005,9 @@ case $UIversion in
       if [ -n "${AAIP2}" ]; then
          read -r -p "${TYEL}Include extra fancy timers to turn-on the Aircon in specific mode: Cool, Heat or Vent? (y/n, default=n):${TNRM} " INPUT
          if [[ "${INPUT}" = "y" || "${INPUT}" = "Y" ]]; then
-            timerSetup2="includeFancyTimers"
+            extraTimers2="true"
          else
-            timerSetup2="noFancyTimers"
+            extraTimers2="false"
          fi
 
          AAdebug2="false"
@@ -1052,9 +1040,9 @@ case $UIversion in
          if [ -n "${AAIP3}" ]; then
             read -r -p "${TYEL}Include extra fancy timers to turn-on the Aircon in specific mode: Cool, Heat or Vent? (y/n, default=n):${TNRM} " INPUT
             if [[ "${INPUT}" = "y" || "${INPUT}" = "Y" ]]; then
-               timerSetup3="includeFancyTimers"
+               extraTimers3="true"
             else
-               timerSetup3="noFancyTimers"
+               extraTimers3="false"
             fi
 
             AAdebug3="false"
@@ -1108,7 +1096,7 @@ for ((n=1; n<=noOfTablets; n++)); do
       ip="\${AAIP}"
       IPA="${AAIP}"
       nameA="${AAname}"
-      timerSetup="${timerSetup1}"
+      extraTimers="${extraTimers1}"
       debug="${AAdebug}"
       queue="AAA"
    fi
@@ -1116,7 +1104,7 @@ for ((n=1; n<=noOfTablets; n++)); do
       ip="\${AAIP2}"
       IPA="${AAIP2}"
       nameA="${AAname2}"
-      timerSetup="${timerSetup2}"
+      extraTimers="${extraTimers2}"
       debug="${AAdebug2}"
       queue="AAB"
    fi
@@ -1124,7 +1112,7 @@ for ((n=1; n<=noOfTablets; n++)); do
       ip="\${AAIP3}"
       IPA="${AAIP3}"
       nameA="${AAname3}"
-      timerSetup="${timerSetup3}"
+      extraTimers="${extraTimers3}"
       debug="${AAdebug3}"
       queue="AAC"
    fi
@@ -1139,9 +1127,7 @@ for ((n=1; n<=noOfTablets; n++)); do
    if [ "${UIversion}" = "nonUI" ]; then
       echo "${TLBL}INFO: Fetching and processing data from your AdvantageAir system (${nameA} ${IPA}).... ${TNRM}"
       echo ""
-      echo "${TLBL}INFO: timerSetup=${timerSetup}${TNRM}"
-      echo ""
-
+      echo "${TLBL}INFO: extraTimers=${extraTimers}${TNRM}"
    fi
 
    myAirData=$(curl -s -g --max-time 45 --fail --connect-timeout 45 "http://${IPA}/getSystemData")
@@ -1198,13 +1184,30 @@ for ((n=1; n<=noOfTablets; n++)); do
          ac=$( printf "ac%1d" "$a" )
          aircon=$(echo "$myAirData" | jq -e ".aircons.${ac}.info")
          if [ "${aircon}" != "null" ]; then
+
+            # check that the system has tempSensors, if so, set zoneSetTemp="true" 
+            zoneSetTemp="false"
+            nZones=$(echo "$myAirData" | jq -e ".aircons.${ac}.info.noOfZones")
+            for (( b=1;b<=nZones;b++ )); do
+               zone="${b}"
+               zoneStr=$( printf "z%02d" "${zone}" )
+               rssi=$(echo "$myAirData" | jq -e ".aircons.${ac}.zones.${zoneStr}.rssi")
+               if [ "${rssi}" != "0" ]; then
+                  zoneSetTemp="true"
+                  break
+               fi
+            done
+
             if [ "${a}" -ge "2" ]; then nameA="${nameA} ${ac}"; fi
+            if [ "${zoneSetTemp}" = "true" ]; then zoneA=""; else zoneA="noOtherThermostat"; fi
             # use only alphanumeric, space, and apostrophe characters for name 
             #name=$(echo "$myAirData" | jq -e ".aircons.${ac}.info.name" | sed 's/\"//g')
-            myPlaceThermostat "${nameA}"
+
+            # Creating Aircon config
+            myPlaceThermostat "${nameA}" "${zoneA}"
             myPlaceFanSwitch "${nameA} Fan"
             myPlaceTimerLightbulb "${nameA} Timer" "timer"
-            if [ "${timerSetup}" = "includeFancyTimers" ]; then
+            if [ "${extraTimers}" = "true" ]; then
                myPlaceTimerLightbulb "${nameA} Fan Timer" "fanTimer"
                myPlaceTimerLightbulb "${nameA} Cool Timer" "coolTimer"
                myPlaceTimerLightbulb "${nameA} Heat Timer" "heatTimer"

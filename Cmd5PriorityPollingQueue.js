@@ -131,6 +131,16 @@ class Cmd5PriorityPollingQueue
                // Abort this Set request
                return;
             }
+            // Reject Set requests to change Thermostat targetHeatingCoolingState for Zone Thermostat
+            if ( this.typeIndex == 57 && this.displayName.match ( / Thermostat$/ ) && 
+                  characteristicString == 'TargetHeatingCoolingState' 
+               )
+            {
+               let storedValue = this.cmd5Storage.getStoredValueForIndex( accTypeEnumIndex );
+               this.service.getCharacteristic( CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].characteristic ).updateValue( storedValue );
+               // Abort this Set request
+               return;
+            }
             // Turn on the Zone when this Zone is set as myZone
             else if ( this.typeIndex == 20 && this.displayName.match ( / Zone$/ ) &&
                       characteristicString == 'RotationDirection' && value == 0 
