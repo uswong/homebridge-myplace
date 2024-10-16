@@ -157,11 +157,13 @@ These timers will turn ON the Aircon system in specific mode as their names sugg
 
 Zone control is repurposed from <B>Fan</B> accessory with its <B>%-rotationSpeed</B> as proxy for Zone damper %-open and <B>rotationDirection</B> as <B>myZone</B> button.  <B>Thermostat</B> accessory is used for setting the Zone target temperature.
 
-(a) A non temperature controlled Zone: the damper %-open is to be adjusted manually.
+<B>(a) A non temperature controlled Zone:</B> the damper %-open is to be adjusted manually.
 
-(b) A temperature controlled Zone but without <B>myZone</B> defined: the damper %-open is adjusted automatically by the system, it cannot be adjusted manually. To turn off the Zone, slide the slider to zero. To turn it on, tap anywhere within the slider. Use the Thermostat to set the target temperature by moving the big white dot. The small white dot on the Thermostat is the measured temperature of the Zone. The mode of the Thermostat here (`Cool`, `Heat` or `Auto`) reflects the current mode of the Aircon.  It is purely for INFO only, you cannot use it to change the mode of the Aircon. When the Aircon mode is on `dry` and `fan`, it will be shown as `Auto` here.
+<B>(b) A temperature controlled Zone but without myZone defined:</B> the damper %-open is adjusted automatically by the system, it cannot be adjusted manually. To turn off the Zone, slide the slider to zero. To turn it on, tap anywhere within the slider. 
 
-(c) A temperature controlled Zone with <B>myZone</B> defined: same as (b) but with an additional round button to set this zone as <B>myZone</B>. Please note that <B>myZone</B> cannot be turned <B>OFF</B> as per AdvantageAir system design. It can only be turned <B>OFF</B> by setting another zone as <B>myZone</B>.
+Use the Thermostat to set the target temperature by moving the big white dot. The small white dot on the Thermostat is the measured temperature of the Zone. The mode of the Thermostat (`Cool`, `Heat` or `Auto`) reflects the current mode of the Aircon.  It is purely for INFO only, you cannot use it to change the mode of the Aircon here. When the Aircon mode is on `dry` or `fan`, it will be shown as `Auto` here.
+
+<B>(c) A temperature controlled Zone with myZone defined:</B> same as <B>(b)</B> but with an additional round button to set this zone as <B>myZone</B>. Please note that <B>myZone</B> cannot be turned <B>OFF</B> as per AdvantageAir system design. It can only be turned <B>OFF</B> by setting another zone as <B>myZone</B>.
 
 ### (B) Lights
 <p align="left">
