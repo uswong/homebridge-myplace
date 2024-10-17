@@ -249,10 +249,43 @@ function myPlaceZoneFanv2()
                                                   | jq ".state_cmd_suffix |= \"${zoneStr} ${ip}${ac_l}\"" ) 
 
    # Append the Zone Thermostat as linkedTypes
-   myPlaceThermostat "${nameZ} Thermostat" "${zoneStr}"
-   myPlaceZoneFanv2=$( echo "${myPlaceZoneFanv2}" | jq ".linkedTypes += [${myPlaceThermostat}]" )
+   myPlaceZoneThermostat "${nameZ} Thermostat" "${zoneStr}"
+   myPlaceZoneFanv2=$( echo "${myPlaceZoneFanv2}" | jq ".linkedTypes += [${myPlaceZoneThermostat}]" )
 
    myPlaceAccessoriesAA=$( echo "${myPlaceAccessoriesAA}" | jq ".accessories += [${myPlaceZoneFanv2}]" )
+}
+
+function myPlaceZoneThermostat()
+{
+   local name="$1"
+   local zone="$2"
+   local ac_l=" ${ac}"
+
+   if [ "${zone}" != "" ]; then zone="${zone} "; fi
+   if [ "${ac_l}" = " ac1" ]; then ac_l=""; fi
+
+   myPlaceZoneThermostat="{}"
+   myPlaceZoneThermostat=$( echo "${myPlaceZoneThermostat}" | jq ".type |= \"Thermostat\"" \
+                                                            | jq ".displayName |= \"${name}\"" \
+                                                            | jq ".currentHeatingCoolingState |= \"OFF\"" \
+                                                            | jq ".targetHeatingCoolingState |= \"OFF\"" \
+                                                            | jq ".currentTemperature |= 24" \
+                                                            | jq ".targetTemperature |= 24" \
+                                                            | jq ".temperatureDisplayUnits |= \"CELSIUS\"" \
+                                                            | jq ".name |= \"${name}\"" \
+                                                            | jq ". += ${myPlaceModelQueue}" \
+                                                            | jq ".polling[0].characteristic |= \"targetHeatingCoolingState\"" \
+                                                            | jq ".polling[1].characteristic |= \"currentTemperature\"" \
+                                                            | jq ".polling[2].characteristic |= \"targetTemperature\"" \
+                                                            | jq ".props.currentTemperature.maxValue |= 32" \
+                                                            | jq ".props.currentTemperature.minValue |= 16" \
+                                                            | jq ".props.currentTemperature.minStep |= 0.1" \
+                                                            | jq ".props.targetTemperature.maxValue |= 32" \
+                                                            | jq ".props.targetTemperature.minValue |= 16" \
+                                                            | jq ".props.targetTemperature.minStep |= 1" \
+                                                            | jq ".state_cmd |= \"'${MYPLACE_SH_PATH}'\"" \
+                                                            | jq ".state_cmd_suffix |= \"${zone}${ip}${ac_l}\"" )
+
 }
 
 function myPlaceZoneFanv2noRotationDirection()
