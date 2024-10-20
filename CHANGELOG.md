@@ -1,7 +1,6 @@
 ### Homebridge-myplace - An independent plugin for Homebridge bringing Advantage Air MyPlace system, its smaller siblings (E-zone, MyAir, MyAir4, etc) and its cousins (e.g. Fujitsu AnywAir) to Homekit
-##### v2.1.0 (2024-10-18)
+##### v2.1.1 (2024-10-21)
 
-###### (1) Added a Thermostat on each temperature controlled Zone
-###### (2) Enhanced UUID generation
-###### (3) Bug fixes
-###### (4) Update to README.md
+###### (1) Set Zone Thermostat to Auto when the state of the Aircon is Off
+###### (2) Remove plugin temporary working files and directories on every Homebridge RESTART
+###### (3) Minor update to README.md
