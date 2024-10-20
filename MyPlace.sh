@@ -1,9 +1,8 @@
 #!/bin/bash
 
 ################################################################################
-#
 # A massive thank to John Talbot of homebridge-cmd4 and Mitch Williams of 
-# homebridge-cmd4-advantageair for all their works from which this work is
+# homebridge-cmd4-advantageair for all their works from which this work was
 # derived.
 ###############################################################################
 
@@ -999,15 +998,22 @@ if [ "$io" = "Get" ]; then
       ;;
       # Makes the target Control Unit state the current Control Unit state.
       TargetHeatingCoolingState | CurrentHeatingCoolingState )
-         if [ $zoneSpecified = false ]; then 
-            # Set to Off if the Control Unit is Off.
-            parseMyAirDataWithJq ".aircons.$ac.info.state" "1"
-            if [  "$jqResult" = '"off"' ]; then
+         # Updates global variable jqResult
+         parseMyAirDataWithJq ".aircons.$ac.info.state" "1"
+         state="$jqResult"
+         # If the state of the Aircon is Off, set Main Thermostat to Off (0) and Zone Thermostat to Auto (3)
+         if [  "$state" = '"off"' ]; then
+            if [ $zoneSpecified = true ]; then 
+               # set to "AUTO" for zoneThermostat
+               echo 3
+               exit 0
+            else
+               # set to "OFF" for main Thermostat
                echo 0
                exit 0
             fi
          fi
-         # Get the current mode of the Thermostat; Heat=1, Cool=2, dry(auto)=3
+         # Get the current mode of the Thermostat; Heat=1, Cool=2, Dry(Auto)=3
          # Updates global variable jqResult
          parseMyAirDataWithJq ".aircons.$ac.info.mode" "1"
          mode="$jqResult"
@@ -1019,17 +1025,18 @@ if [ "$io" = "Get" ]; then
             ;;
             '"cool"' )
                # Thermostat in Cool Mode.
-              echo 2
-              exit 0
+               echo 2
+               exit 0
             ;;
             '"vent"' )
-               # Fan mode, set Thermostat to Off if $zoneSpecified is false otherwise set Thermostat to Auto
-               if [ $zoneSpecified = false ]; then
-                  echo 0
-               else
+               # for Fan mode, set main Thermostat to Off (0) or zone Thermostat to Auto (3)
+               if [ $zoneSpecified = true ]; then
                   echo 3
+                  exit 0
+               else
+                  echo 0
+                  exit 0
                fi
-               exit 0
             ;;
             '"dry"' )
                # Dry mode, set Thermostat to Auto Mode as a proxy.
