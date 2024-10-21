@@ -3,4 +3,4 @@
 
 ###### (1) Set Zone Thermostat to Auto when the state of the Aircon is Off
 ###### (2) Remove plugin temporary working files and directories on every Homebridge RESTART
-###### (3) Minor update to README.md
+###### (3) Updated the Zone Control section of the README.md
