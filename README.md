@@ -157,15 +157,19 @@ These timers will turn ON the Aircon system in specific mode as their names sugg
 
 Zone control is repurposed from <B>Fan</B> accessory with its <B>%-rotationSpeed</B> as proxy for Zone damper %-open and <B>rotationDirection</B> as <B>myZone</B> button.  <B>Thermostat</B> accessory is used for setting the Zone target temperature.
 
-<B>(a) A non temperature controlled Zone:</B> There is only a Fan accessory slider for a zone with no temperature sensor.  The slider is for adjusting the desired damper %-open manually.
+There are three possible Zone Control configurations depending on the setup of your Aircon system:
 
-<B>(b) A temperature controlled Zone but without myZone defined:</B> There is a Fan accessory slider and a Thermostat accessory.           
+<B>(a) A non temperature controlled Zone:</B> If your system has no temperature sensors, then there will only be a simple <B>Fan</B> accessory for your Zone Control.  The Fan slider is for adjusting the desired damper %-open manually.
 
-The slider is to show the damper %-open for this zone for your INFO only. It is adjusted automatically by the system, it cannot be adjusted manually. To turn off the Zone, slide the slider to zero. To turn it on, tap anywhere within the slider.
+<B>(b) A temperature controlled Zone but without myZone defined:</B> If your system has temperature sensors but <B>myZone</B> is not defined, then there will be a simple <B>Fan</B> accessory and a <B>Thermostat</B> accessory.           
 
-The <B>Thermostat</B> is for setting the target temperature for this zone by moving the big white dot. The small white dot is an indication of the measured temperature of the Zone. The mode on this <B>Thermostat</B> is for your INFO only. It will show `Cool` or `Heat` when the Aircon mode is `Cool` or `Heat` respectively. It will show `Auto` when the state of the Aircon is `Off` or the mode is on `vent` or `dry`. You cannot change the state and the mode of the Aircon here.
+The Fan slider here is to show the damper %-open for this zone for your INFO only. It is set automatically by the system, it cannot be adjusted manually. To turn off the Zone, slide the slider to zero. To turn it on, tap anywhere within the slider.
 
-<B>(c) A temperature controlled Zone with myZone defined:</B> Same as <B>(b)</B> but with an additional round button for setting this zone as <B>myZone</B>. Please note that <B>myZone</B> cannot be turned `Off` as per AdvantageAir system design. It can only be turned `Off` by setting another zone as <B>myZone</B>.
+The <B>Thermostat</B> is for setting the target temperature for this zone by moving the big white dot. The small white dot is an indicating of the measured temperature of the Zone for your INFO. The mode on this <B>Thermostat</B> is also just for your INFO only. It will show `Cool` or `Heat` when the Aircon mode is `Cool` or `Heat` respectively. It will show `Auto` when the state of the Aircon is `Off` or the mode is `vent` or `dry`. You cannot change the state or the mode of the Aircon here.
+
+<B>(c) A temperature controlled Zone with myZone defined:</B> If your system has temperature sensors and <B>myZone</B> is defined, then there will be a round button for setting this zone as <B>myZone</B> in addition to a simple <B>Fan</B> accessory and a <B>Thermostat</B> accessory as detailed in <B>(b)</B> above.
+
+Please note that <B>myZone</B> cannot be turned `Off` as per AdvantageAir system design. It can only be turned `Off` by setting another zone as <B>myZone</B>.  However, if a Zone, which is set as <B>myZone</B>, is turned off by sliding the Fan slider to zero, this plugin will automatically set another open Zone to be <B>myZone</B> with preference to an open Constant Zone. If there is no other open Zone, then this plugin will open a Zone with preference to a Constant Zone and set it as <B>myZone</B>.
 
 ### (B) Lights
 <p align="left">
