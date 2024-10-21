@@ -33,6 +33,34 @@ var CHAR_DATA = require( "./lib/CMD5_CHAR_TYPE_ENUMS" );
 var ACC_DATA = require( "./lib/CMD5_ACC_TYPE_ENUM" );
 var DEVICE_DATA = require( "./lib/CMD5_DEVICE_TYPE_ENUM" );
 
+// Remove MyPlace shell script temporary working directories on Hombridge RESTART
+const fs = require('fs');
+const path = require('path');
+
+var directoryPath = process.env.TMPDIR || "/tmp"
+
+fs.readdir(directoryPath, (err, files) => {
+  if (err) {
+    return console.error('Unable to scan directory:', err);
+  }
+
+  // Filter files that matches with "AA-xxx" or "BB-xxx" where xxx is a 3 digit integer
+  const filteredFiles = files.filter(file => file.match(/^[A-B][A-B]-[0-9][0-9][0-9]$/));
+
+  // Log the filtered files
+  filteredFiles.forEach(file => {
+    // Sub directory path
+    var sdir = `${directoryPath}/${file}`
+    // Delete sub-directory recursively
+    fs.rm(sdir, { recursive: true, force: true }, (err) => {
+      if (err) {
+        throw err;
+      }
+      console.log(`>>> [MyPlace] Temporary working directory ${sdir} removed`);
+    });
+  });
+});
+
 module.exports =
 {
    default: function ( api )
