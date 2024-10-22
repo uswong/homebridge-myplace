@@ -121,9 +121,6 @@ function myPlaceThermostat()
                                                     | jq ".polling[1].characteristic |= \"targetHeatingCoolingState\"" \
                                                     | jq ".polling[2].characteristic |= \"currentTemperature\"" \
                                                     | jq ".polling[3].characteristic |= \"targetTemperature\"" \
-                                                    | jq ".props.currentTemperature.maxValue |= 32" \
-                                                    | jq ".props.currentTemperature.minValue |= 16" \
-                                                    | jq ".props.currentTemperature.minStep |= 0.1" \
                                                     | jq ".props.targetTemperature.maxValue |= 32" \
                                                     | jq ".props.targetTemperature.minValue |= 16" \
                                                     | jq ".props.targetTemperature.minStep |= 1" \
@@ -277,15 +274,11 @@ function myPlaceZoneThermostat()
                                                             | jq ".polling[0].characteristic |= \"targetHeatingCoolingState\"" \
                                                             | jq ".polling[1].characteristic |= \"currentTemperature\"" \
                                                             | jq ".polling[2].characteristic |= \"targetTemperature\"" \
-                                                            | jq ".props.currentTemperature.maxValue |= 32" \
-                                                            | jq ".props.currentTemperature.minValue |= 16" \
-                                                            | jq ".props.currentTemperature.minStep |= 0.1" \
                                                             | jq ".props.targetTemperature.maxValue |= 32" \
                                                             | jq ".props.targetTemperature.minValue |= 16" \
                                                             | jq ".props.targetTemperature.minStep |= 1" \
                                                             | jq ".state_cmd |= \"'${MYPLACE_SH_PATH}'\"" \
                                                             | jq ".state_cmd_suffix |= \"${zone}${ip}${ac_l}\"" )
-
 }
 
 function myPlaceZoneFanv2noRotationDirection()
