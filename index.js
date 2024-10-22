@@ -45,7 +45,7 @@ fs.readdir(directoryPath, (err, files) => {
   }
 
   // Filter files that matches with "AA-xxx" or "BB-xxx" where xxx is a 3 digit integer
-  const filteredFiles = files.filter(file => file.match(/^[A-B][A-B]-[0-9][0-9][0-9]$/));
+  const filteredFiles = files.filter(file => file.match(/^(AA|BB)-\d{3}$/));
 
   // Log the filtered files
   filteredFiles.forEach(file => {
