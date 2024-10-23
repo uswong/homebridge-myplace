@@ -32,7 +32,7 @@ beforeEach()
    assert_equal "${lines[1]}" "Parsing for jqPath: .aircons.ac1.info"
    assert_equal "${lines[2]}" "Parsing for jqPath: .aircons.ac1.info.myZone"
    assert_equal "${lines[3]}" "Parsing for jqPath: .aircons.ac1.info.setTemp"
-   assert_equal "${lines[4]}" "23"
+   assert_equal "${lines[4]}" "23.0"
    # No more lines than expected
    assert_equal "${#lines[@]}" 5
 }

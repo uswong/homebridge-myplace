@@ -56,7 +56,7 @@ beforeEach()
    assert_equal "${lines[5]}" "Parsing for jqPath: .aircons.ac2.zones.z01.rssi"
    assert_equal "${lines[6]}" "Parsing for jqPath: .aircons.ac2.info.setTemp"
    # The noSensors fixes this
-   assert_equal "${lines[7]}" "21"
+   assert_equal "${lines[7]}" "21.0"
    # No more lines than expected
    assert_equal "${#lines[@]}" 8
 }

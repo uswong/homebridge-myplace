@@ -239,7 +239,6 @@ beforeEach()
    assert_equal "${lines[15]}" "Parsing for jqPath: .aircons.ac1.zones.z08.state"
    assert_equal "${lines[16]}" "Parsing for jqPath: .aircons.ac1.zones.z09.state"
    assert_equal "${lines[17]}" "Parsing for jqPath: .aircons.ac1.zones.z10.state"
-   # Check which zone is closed and with temperature sensors
    assert_equal "${lines[18]}" "Parsing for jqPath: .aircons.ac1.zones.z01.state"
    assert_equal "${lines[19]}" "Parsing for jqPath: .aircons.ac1.zones.z08.state"
    assert_equal "${lines[20]}" "Parsing for jqPath: .aircons.ac1.zones.z08.rssi"
@@ -252,11 +251,15 @@ beforeEach()
    assert_equal "${lines[27]}" "Setting url: http://127.0.0.1:2025/setAircon?json={ac1:{info:{myZone:1}}}"
    assert_equal "${lines[28]}" "Try 0"
    assert_equal "${lines[29]}" "Setting json: .aircons.ac1.info.myZone=1"
-   assert_equal "${lines[30]}" "Setting url: http://127.0.0.1:2025/setAircon?json={ac1:{zones:{z07:{state:close}}}}"
-   assert_equal "${lines[31]}" "Try 0"
-   assert_equal "${lines[32]}" "Setting json: .aircons.ac1.zones.z07.state=\"close\""
+   assert_equal "${lines[30]}" "Parsing for jqPath: .aircons.ac1.zones.z01.setTemp"
+   assert_equal "${lines[31]}" "Setting url: http://127.0.0.1:2025/setAircon?json={ac1:{info:{setTemp:24}}}"
+   assert_equal "${lines[32]}" "Try 0"
+   assert_equal "${lines[33]}" "Setting json: .aircons.ac1.info.setTemp=24"
+   assert_equal "${lines[34]}" "Setting url: http://127.0.0.1:2025/setAircon?json={ac1:{zones:{z07:{state:close}}}}"
+   assert_equal "${lines[35]}" "Try 0"
+   assert_equal "${lines[36]}" "Setting json: .aircons.ac1.zones.z07.state=\"close\""
    # No more lines than ex8ected
-   assert_equal "${#lines[@]}" 33
+   assert_equal "${#lines[@]}" 37
 }
  
 @test "MyPlace Test Set On 1 z05      -open  z05 (noSensor)      step 1 of 4" {
@@ -338,8 +341,6 @@ beforeEach()
    assert_equal "${lines[4]}" "Parsing for jqPath: .aircons.ac1.info.constant1"
    assert_equal "${lines[5]}" "Parsing for jqPath: .aircons.ac1.info.constant2"
    assert_equal "${lines[6]}" "Parsing for jqPath: .aircons.ac1.info.constant3"
-   # No need to create zoneOpen.txt
-   # because it is within the 10s validity of the zoneOpen.txt
    #
    # Check which zone is opened and with temperature sensors, then assign myZone to it
    assert_equal "${lines[7]}" "Parsing for jqPath: .aircons.ac1.zones.z01.state"
@@ -355,10 +356,14 @@ beforeEach()
    assert_equal "${lines[17]}" "Setting url: http://127.0.0.1:2025/setAircon?json={ac1:{info:{myZone:9}}}"
    assert_equal "${lines[18]}" "Try 0"
    assert_equal "${lines[19]}" "Setting json: .aircons.ac1.info.myZone=9"
+   assert_equal "${lines[20]}" "Parsing for jqPath: .aircons.ac1.zones.z09.setTemp"
+   assert_equal "${lines[21]}" "Setting url: http://127.0.0.1:2025/setAircon?json={ac1:{info:{setTemp:24}}}"
+   assert_equal "${lines[22]}" "Try 0"
+   assert_equal "${lines[23]}" "Setting json: .aircons.ac1.info.setTemp=24"
    # Finally z07 can now be closed
-   assert_equal "${lines[20]}" "Setting url: http://127.0.0.1:2025/setAircon?json={ac1:{zones:{z07:{state:close}}}}"
-   assert_equal "${lines[21]}" "Try 0"
-   assert_equal "${lines[22]}" "Setting json: .aircons.ac1.zones.z07.state=\"close\""
+   assert_equal "${lines[24]}" "Setting url: http://127.0.0.1:2025/setAircon?json={ac1:{zones:{z07:{state:close}}}}"
+   assert_equal "${lines[25]}" "Try 0"
+   assert_equal "${lines[26]}" "Setting json: .aircons.ac1.zones.z07.state=\"close\""
    # No more lines than expected
-   assert_equal "${#lines[@]}" 23
+   assert_equal "${#lines[@]}" 27
 }
