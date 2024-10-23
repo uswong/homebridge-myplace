@@ -1,5 +1,8 @@
-# Ignore any swap files
+# Ignore any swap files, cmd5*.js and Cmd5*.js
 *.swp
+cmd5*.js
+Cmd5*.js
+index.js
 
 # Ignore node_modules as it gets installed via npm
 node_modules
