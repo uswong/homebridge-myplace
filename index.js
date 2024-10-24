@@ -41,7 +41,7 @@ var directoryPath = process.env.TMPDIR || "/tmp"
 
 fs.readdir(directoryPath, (err, files) => {
   if (err) {
-    return console.error('Unable to scan directory:', err);
+    return console.error(`Unable to scan directory: [${err}]`);
   }
 
   // Filter files that matches with "AA-xxx" or "BB-xxx" where xxx is a 3 digit integer
@@ -54,7 +54,7 @@ fs.readdir(directoryPath, (err, files) => {
     // Delete sub-directory recursively
     fs.rm(sdir, { recursive: true, force: true }, (err) => {
       if (err) {
-        throw err;
+        return console.error(`>>> [MyPlace] Unable to remove temporary working directory ${sdir}: [${err}]`);
       }
       console.log(`>>> [MyPlace] Temporary working directory ${sdir} removed`);
     });
