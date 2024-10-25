@@ -31,7 +31,7 @@ bigSystem1()
   # and the earlier "curl" completed within 6 seconds
 
   t0=$(date '+%s')
-  t1=$((t0 - curlRunTime + 6))
+  t1=$((t0 - curlRunTime ))
   t2=$((t0 - 122)) # $MY_AIRDTA_FILE = 122 seconds old
 
   echo "$t1" > "${TMPDIR}/AA-001/myAirData.txt.lock"
@@ -94,7 +94,7 @@ bigSystem3()
    assert_equal "$status" 0
    assert_equal "${lines[0]}" "Using IP: 127.0.0.1"
    assert_equal "${lines[1]}" "Try 0"
-   assert_equal "${lines[2]}" "Fetching myAirData from cached file" 
+   assert_equal "${lines[2]}" "myAirData fetched from the Cache" 
    assert_equal "${lines[3]}" "Parsing for jqPath: .aircons.ac1.info.state"
    assert_equal "${lines[4]}" "Parsing for jqPath: .aircons.ac1.info.mode"
    assert_equal "${lines[5]}" "0"
@@ -103,7 +103,7 @@ bigSystem3()
 }
 
 # test for the situation where the $lockFile is detected and earlier curl timed out
-@test "MyPlace Test Big AirCon System 2 - \$MY_AIRDATA_FILE =122s old and \$lockFile detected and earlier getSystemData timed out" {
+@test "MyPlace Test Big AirCon System 2 - \$MY_AIRDATA_FILE =122s old and \$lockFile detected and earlier getSystemData timed out, recover and copy the earlier cache" {
    beforeEach
    # Issue the reInit
    curl -s -g "http://localhost:$PORT/reInit"
@@ -115,9 +115,9 @@ bigSystem3()
    assert_equal "${lines[0]}" "Using IP: 127.0.0.1"
    assert_equal "${lines[1]}" "Try 0"
    # earlier curl to getSystemData has timed out
-   assert_equal "${lines[2]}" "Earlier \"curl\" to getSystemData has timed out" 
-   # no more time to retry, copy whatever in the cached file
-   assert_equal "${lines[3]}" "Fetching myAirData from cached file" 
+   assert_equal "${lines[2]}" "Earlier \"curl\" to getSystemData has timed out, recover and just copy the earlier cache" 
+   # no more time to retry, copy whatever in the Cache
+   assert_equal "${lines[3]}" "myAirData fetched from the Cache" 
    assert_equal "${lines[4]}" "Parsing for jqPath: .aircons.ac1.info.state"
    assert_equal "${lines[5]}" "Parsing for jqPath: .aircons.ac1.info.mode"
    assert_equal "${lines[6]}" "0"
@@ -126,7 +126,7 @@ bigSystem3()
 }
 
 # test for the situation where myAirData.txt is >180s old and $lockfile is detected and earlier curl timed out, revover and retry)
-@test "MyPlace Test Big AirCon System 3 - \$MY_AIRDATA_FILE >180s old and \$lockFile detected and earlier getSystemData timed out, recover and retry" {
+@test "MyPlace Test Big AirCon System 3 - \$MY_AIRDATA_FILE >180s old and \$lockFile detected and earlier getSystemData timed out, recover and retry in 1.2s to fetch the data from the System" {
    beforeEach
    # Issue the reInit
    curl -s -g "http://localhost:$PORT/reInit"
@@ -137,12 +137,14 @@ bigSystem3()
    assert_equal "$status" 0
    assert_equal "${lines[0]}" "Using IP: 127.0.0.1"
    assert_equal "${lines[1]}" "Try 0"
+   # earlier curl to getSystemData has timed out
+   assert_equal "${lines[2]}" "Earlier \"curl\" to getSystemData has timed out, recover and try again in 1.2s" 
    # revover and retry
-   assert_equal "${lines[2]}" "Try 1"
-   assert_equal "${lines[3]}" "Parsing for jqPath: .aircons.ac1.info"
-   assert_equal "${lines[4]}" "Parsing for jqPath: .aircons.ac1.info.state"
-   assert_equal "${lines[5]}" "Parsing for jqPath: .aircons.ac1.info.mode"
-   assert_equal "${lines[6]}" "0"
+   assert_equal "${lines[3]}" "Try 1"
+   assert_equal "${lines[4]}" "Parsing for jqPath: .aircons.ac1.info"
+   assert_equal "${lines[5]}" "Parsing for jqPath: .aircons.ac1.info.state"
+   assert_equal "${lines[6]}" "Parsing for jqPath: .aircons.ac1.info.mode"
+   assert_equal "${lines[7]}" "0"
    # No more lines than expected
-   assert_equal "${#lines[@]}" 7
+   assert_equal "${#lines[@]}" 8
 }
