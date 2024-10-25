@@ -213,6 +213,12 @@ function queryCachedAirCon()
             rm "$lockFile"
             rc=99
             logQueryAirConDiagnostic "queryCachedAirCon_calls_earlier_curl_timed_out $tf $t0 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
+
+            # To test the logic, issue this comment
+            if [ "$selfTest" = "TEST_ON" ]; then
+               echo "Earlier \"curl\" to getSystemData has timed out, recover and try again in 1.2s"
+            fi
+
             return
          fi
       fi
@@ -241,7 +247,7 @@ function queryCachedAirCon()
 
             # To test the logic, issue this comment
             if [ "$selfTest" = "TEST_ON" ]; then
-               echo "Earlier \"curl\" to getSystemData has timed out"
+               echo "Earlier \"curl\" to getSystemData has timed out, recover and just copy the earlier cache"
             fi
             break 
          fi
@@ -252,7 +258,7 @@ function queryCachedAirCon()
 
       # To test the logic, issue this comment
       if [ "$selfTest" = "TEST_ON" ]; then
-         echo "Fetching myAirData from cached file"
+         echo "myAirData fetched from the Cache"
       fi
 
    # Fetch the data from the Cache
