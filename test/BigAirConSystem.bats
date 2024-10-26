@@ -51,7 +51,7 @@ bigSystem2()
 
   # bigSystem2 simulates a situation where $lockFile is detected,
   # with the $MY_AIRDATA_FILE > 120 seconds old but < 180 seconds old
-  # and the earlier "curl" has taken more than 60 seconds and CMD4 timed out
+  # and the earlier "curl" has taken more than 60 seconds and timed out
 
   t0=$(date '+%s')
   t1=$((t0 - curlRunTime ))
@@ -94,6 +94,7 @@ bigSystem3()
    assert_equal "$status" 0
    assert_equal "${lines[0]}" "Using IP: 127.0.0.1"
    assert_equal "${lines[1]}" "Try 0"
+   # earlier curl completed successfully before it timed out
    assert_equal "${lines[2]}" "myAirData fetched from the Cache" 
    assert_equal "${lines[3]}" "Parsing for jqPath: .aircons.ac1.info.state"
    assert_equal "${lines[4]}" "Parsing for jqPath: .aircons.ac1.info.mode"
@@ -141,6 +142,7 @@ bigSystem3()
    assert_equal "${lines[2]}" "Earlier \"curl\" to getSystemData has timed out, recover and try again in 1.2s" 
    # revover and retry
    assert_equal "${lines[3]}" "Try 1"
+   # myAirData fetched from the System
    assert_equal "${lines[4]}" "Parsing for jqPath: .aircons.ac1.info"
    assert_equal "${lines[5]}" "Parsing for jqPath: .aircons.ac1.info.state"
    assert_equal "${lines[6]}" "Parsing for jqPath: .aircons.ac1.info.mode"
