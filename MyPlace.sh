@@ -1,10 +1,10 @@
 #!/bin/bash
 
-################################################################################
-# A massive thank to John Talbot of homebridge-cmd4 and Mitch Williams of 
-# homebridge-cmd4-advantageair for all their works from which this work was
-# derived.
-###############################################################################
+#########################################################################
+# Many thanks to John Talbot of homebridge-cmd4 and Mitch Williams of 
+# homebridge-cmd4-advantageair for all their inital works from which this
+# work was evolved from...
+#########################################################################
 
 # Lets be explicit
 typeset -i a argSTART argEND
@@ -179,7 +179,6 @@ function getFileStatDt()
    dt=$((t0 - tf))
 }
 
-# NOTE: ONLY queryAirConWithIterations CALLS THIS !!!
 function queryCachedAirCon()
 {
    local url="$1"
