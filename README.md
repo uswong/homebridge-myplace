@@ -210,6 +210,7 @@ Garage Door is either Opened or Closed, hence it appears as a simple switch whil
 ## How You Can Help
 * Report Bugs/Errors by opening Issues/Tickets.
 * Suggest Improvements and Features you would like to see!
+* If you are loving this plugin or using this plugin, please feel free to give me a `Star`!
 
 
 ## Special Thanks
