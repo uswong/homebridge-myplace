@@ -626,17 +626,17 @@ function extractNonAAaccessoriesrConstantsQueueTypesMisc()
 {
    # this function should only be called after the AA constants, queueTypes and accessories are created
    # extract non-AA config from ${myPlaceConfig} and concatenate non-AA accessories to AA accessories
+   # then extract misc. keys from non-AA config
    myPlaceAccessoriesAAwithNonAA="${myPlaceAccessoriesAA}"
    extractMyPlaceConfigNonAAandAccessoriesNonAA
+   extractMyPlaceMiscKeys
 
-   # extract and concatenate the non-AA constants, non-AA queueTypes and non-AA related misc. keys if there are non-AA accessories
+   # extract and concatenate the non-AA constants and non-AA queueTypes to AA's if there are non-AA accessories
    myPlaceConstantsAAwithNonAA="${myPlaceConstantsAA}"
    myPlaceQueueTypesAAwithNonAA="${myPlaceQueueTypesAA}"
-   myPlaceMiscKeys="{}"
    if [ -n "${accessoriesNonAA}" ]; then
       extractNonAAconstants
       extractNonAAqueueTypes
-      extractMyPlaceMiscKeys
    fi
 
 }
@@ -662,8 +662,8 @@ function assembleMyPlaceConfigAAwithNonAA()
                                                                   | jq ". += ${myPlaceConstantsAAwithNonAA}" \
                                                                   | jq ". += ${myPlaceQueueTypesAAwithNonAA}" \
                                                                   | jq ". += ${myPlaceAccessoriesAAwithNonAA}" \
-                                                                  | jq ". += ${myPlaceMiscKeys}" \
-                                                                  | jq ".platform += \"MyPlace\"" )
+                                                                  | jq ".platform += \"MyPlace\"" \
+                                                                  | jq ". += ${myPlaceMiscKeys}" )
 }
 
 function getGlobalNodeModulesPathForFile()
