@@ -29,9 +29,7 @@ beforeEach()
 {
    _common_beforeEach
    rm -f "${TMPDIR}/AA-001/myAirData.txt"*
-   rm -f "${TMPDIR}/AA-001/fanTimer.txt"*
-   rm -f "${TMPDIR}/AA-001/coolTimer.txt"*
-   rm -f "${TMPDIR}/AA-001/heatTimer.txt"*
+   rm -f "${TMPDIR}/AA-001/extraTimers.txt"
 }
 
 
@@ -94,7 +92,7 @@ beforeEach()
    assert_equal "$status" 0
    assert_equal "${lines[0]}" "Try 0"
    assert_equal "${lines[1]}" "Parsing for jqPath: .aircons.ac1.info"
-   assert_equal "${lines[2]}" "Query the state file: ${TMPDIR}/AA-001/fanTimer.txt.ac1"
+   assert_equal "${lines[2]}" "Query the state file: ${TMPDIR}/AA-001/extraTimers.txt"
    assert_equal "${lines[3]}" "Parsing for jqPath: .aircons.ac1.info.state"          
    assert_equal "${lines[4]}" "Parsing for jqPath: .aircons.ac1.info.mode"          
    assert_equal "${lines[5]}" "1"
@@ -113,11 +111,11 @@ beforeEach()
    run ../MyPlace.sh Get Blah Brightness fanTimer 127.0.0.1 TEST_ON
    assert_equal "$status" 0
    assert_equal "${lines[0]}" "Try 0"
-   assert_equal "${lines[1]}" "Query the state file: ${TMPDIR}/AA-001/fanTimer.txt.ac1"
+   assert_equal "${lines[1]}" "Query the state file: ${TMPDIR}/AA-001/extraTimers.txt"
    assert_equal "${lines[2]}" "Parsing for jqPath: .aircons.ac1.info.state"          
    assert_equal "${lines[3]}" "Parsing for jqPath: .aircons.ac1.info.mode"          
    assert_equal "${lines[4]}" "Update the timer for vent with timeToOn: 5398 and timeToOff: 0"          
-   assert_equal "${lines[5]}" "Update the timer state file: ${TMPDIR}/AA-001/fanTimer.txt.ac1 with timeToOn: 5398 and timeToOff: 0"          
+   assert_equal "${lines[5]}" "Update the timer state file: ${TMPDIR}/AA-001/extraTimers.txt with timeToOn: 5398 and timeToOff: 0"          
    assert_equal "${lines[6]}" "15"
    # No more lines than expected
    assert_equal "${#lines[@]}" 7
@@ -133,7 +131,7 @@ beforeEach()
    assert_equal "$status" 0
    assert_equal "${lines[0]}" "Try 0"
    assert_equal "${lines[1]}" "Parsing for jqPath: .aircons.ac1.info"
-   assert_equal "${lines[2]}" "Query the state file: ${TMPDIR}/AA-001/coolTimer.txt.ac1"
+   assert_equal "${lines[2]}" "Query the state file: ${TMPDIR}/AA-001/extraTimers.txt"
    assert_equal "${lines[3]}" "Parsing for jqPath: .aircons.ac1.info.state"          
    assert_equal "${lines[4]}" "Parsing for jqPath: .aircons.ac1.info.mode"          
    assert_equal "${lines[5]}" "1"
@@ -151,7 +149,7 @@ beforeEach()
    assert_equal "$status" 0
    assert_equal "${lines[0]}" "Try 0"
    assert_equal "${lines[1]}" "Parsing for jqPath: .aircons.ac1.info"
-   assert_equal "${lines[2]}" "Query the state file: ${TMPDIR}/AA-001/heatTimer.txt.ac1"
+   assert_equal "${lines[2]}" "Query the state file: ${TMPDIR}/AA-001/extraTimers.txt"
    assert_equal "${lines[3]}" "Parsing for jqPath: .aircons.ac1.info.state"          
    assert_equal "${lines[4]}" "Parsing for jqPath: .aircons.ac1.info.mode"          
    assert_equal "${lines[5]}" "1"

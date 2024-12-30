@@ -17,6 +17,7 @@ beforeEach()
 {
    _common_beforeEach
    rm -f "${TMPDIR}/AA-001/myAirData.txt"*
+   rm -f "${TMPDIR}/AA-001/extraTimers.txt"
    rm -f "${TMPDIR}/AA-001/zoneOpen.txt"*
 }
 
@@ -69,12 +70,12 @@ beforeEach()
    curl -s -g "http://localhost:$PORT/reInit"
    # Do the load
    curl -s -g "http://localhost:$PORT?load=testData/basicPassingSystemData.txt"
-   # Needs to create the fanTimer.txt       
+   # Needs to create the extraTimers.txt       
    run ../MyPlace.sh Get Blab On fanTimer 127.0.0.1 TEST_ON
    run ../MyPlace.sh Set Blab On 0 fanTimer 127.0.0.1 TEST_ON
    assert_equal "$status" "0"
    assert_equal "${lines[0]}" "Getting myAirData.txt from cached file" 
-   assert_equal "${lines[1]}" "Update the timer state file: ${TMPDIR}/AA-001/fanTimer.txt.ac1 with timeToOn: 0 and timeToOff: 0" 
+   assert_equal "${lines[1]}" "Update the timer state file: ${TMPDIR}/AA-001/extraTimers.txt with timeToOn: 0 and timeToOff: 0" 
    # No more lines than expected
    assert_equal "${#lines[@]}" 2
 }
@@ -85,12 +86,12 @@ beforeEach()
    curl -s -g "http://localhost:$PORT/reInit"
    # Do the load
    curl -s -g "http://localhost:$PORT?load=testData/basicPassingSystemData.txt"
-   # Needs to create the coolTimer.txt       
+   # Needs to create the extraTimers.txt       
    run ../MyPlace.sh Get Blab On coolTimer 127.0.0.1 TEST_ON
    run ../MyPlace.sh Set Blab On 0 coolTimer 127.0.0.1 TEST_ON
    assert_equal "$status" "0"
    assert_equal "${lines[0]}" "Getting myAirData.txt from cached file" 
-   assert_equal "${lines[1]}" "Update the timer state file: ${TMPDIR}/AA-001/coolTimer.txt.ac1 with timeToOn: 0 and timeToOff: 0" 
+   assert_equal "${lines[1]}" "Update the timer state file: ${TMPDIR}/AA-001/extraTimers.txt with timeToOn: 0 and timeToOff: 0" 
    # No more lines than expected
    assert_equal "${#lines[@]}" 2
 }
@@ -101,12 +102,12 @@ beforeEach()
    curl -s -g "http://localhost:$PORT/reInit"
    # Do the load
    curl -s -g "http://localhost:$PORT?load=testData/basicPassingSystemData.txt"
-   # Needs to create the heatTimer.txt       
+   # Needs to create the extraTimers.txt       
    run ../MyPlace.sh Get Blab On  heatTimer 127.0.0.1 TEST_ON
    run ../MyPlace.sh Set Blab On 0 heatTimer 127.0.0.1 TEST_ON
    assert_equal "$status" "0"
    assert_equal "${lines[0]}" "Getting myAirData.txt from cached file" 
-   assert_equal "${lines[1]}" "Update the timer state file: ${TMPDIR}/AA-001/heatTimer.txt.ac1 with timeToOn: 0 and timeToOff: 0" 
+   assert_equal "${lines[1]}" "Update the timer state file: ${TMPDIR}/AA-001/extraTimers.txt with timeToOn: 0 and timeToOff: 0" 
    # No more lines than expected
    assert_equal "${#lines[@]}" 2
 }

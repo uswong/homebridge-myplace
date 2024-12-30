@@ -17,6 +17,7 @@ beforeEach()
 {
    _common_beforeEach
    rm -f "${TMPDIR}/AA-001/myAirData.txt"*
+   rm -f "${TMPDIR}/AA-001/extraTimers.txt"
 }
 
 # ezone
@@ -68,7 +69,7 @@ beforeEach()
    assert_equal "${lines[0]}" "Using IP: 127.0.0.1"
    assert_equal "${lines[1]}" "Try 0"
    assert_equal "${lines[2]}" "Parsing for jqPath: .aircons.ac1.info"
-   assert_equal "${lines[3]}" "Query the state file: ${TMPDIR}/AA-001/fanTimer.txt.ac1"
+   assert_equal "${lines[3]}" "Query the state file: ${TMPDIR}/AA-001/extraTimers.txt"
    assert_equal "${lines[4]}" "Parsing for jqPath: .aircons.ac1.info.state"
    assert_equal "${lines[5]}" "Parsing for jqPath: .aircons.ac1.info.mode"
    assert_equal "${lines[6]}" "0"
@@ -87,7 +88,7 @@ beforeEach()
    assert_equal "${lines[0]}" "Using IP: 127.0.0.1"
    assert_equal "${lines[1]}" "Try 0"
    assert_equal "${lines[2]}" "Parsing for jqPath: .aircons.ac1.info"
-   assert_equal "${lines[3]}" "Query the state file: ${TMPDIR}/AA-001/coolTimer.txt.ac1"
+   assert_equal "${lines[3]}" "Query the state file: ${TMPDIR}/AA-001/extraTimers.txt"
    assert_equal "${lines[4]}" "Parsing for jqPath: .aircons.ac1.info.state"
    assert_equal "${lines[5]}" "Parsing for jqPath: .aircons.ac1.info.mode"
    assert_equal "${lines[6]}" "0"
@@ -106,7 +107,7 @@ beforeEach()
    assert_equal "${lines[0]}" "Using IP: 127.0.0.1"
    assert_equal "${lines[1]}" "Try 0"
    assert_equal "${lines[2]}" "Parsing for jqPath: .aircons.ac1.info"
-   assert_equal "${lines[3]}" "Query the state file: ${TMPDIR}/AA-001/heatTimer.txt.ac1"
+   assert_equal "${lines[3]}" "Query the state file: ${TMPDIR}/AA-001/extraTimers.txt"
    assert_equal "${lines[4]}" "Parsing for jqPath: .aircons.ac1.info.state"
    assert_equal "${lines[5]}" "Parsing for jqPath: .aircons.ac1.info.mode"
    assert_equal "${lines[6]}" "0"

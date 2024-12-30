@@ -17,6 +17,7 @@ beforeEach()
 {
    _common_beforeEach
    rm -f "${TMPDIR}/AA-001/myAirData.txt"*
+   rm -f "${TMPDIR}/AA-001/extraTimers.txt"
 }
 
 @test "MyPlace Test SetBrightness for Zone with no Temperature Sensor, specified damper 85" {
@@ -82,16 +83,16 @@ beforeEach()
    curl -s -g "http://localhost:$PORT/reInit"
    # Do the load
    curl -s -g "http://localhost:$PORT?load=testData/basicPassingSystemData.txt"
-   # need to create the fanTimer.txt file first
+   # need to create the extraTimers.txt file first
    run ../MyPlace.sh Get Blah Brightness fanTimer 127.0.0.1 TEST_ON
    run ../MyPlace.sh Set Blah Brightness 15 fanTimer 127.0.0.1 TEST_ON
    assert_equal "$status" 0
    # MyPlace.sh does a get first
    assert_equal "${lines[0]}" "Getting myAirData.txt from cached file"
-   assert_equal "${lines[1]}" "Query the state file: ${TMPDIR}/AA-001/fanTimer.txt.ac1"
+   assert_equal "${lines[1]}" "Query the state file: ${TMPDIR}/AA-001/extraTimers.txt"
    assert_equal "${lines[2]}" "Parsing for jqPath: .aircons.ac1.info.state"
    assert_equal "${lines[3]}" "Parsing for jqPath: .aircons.ac1.info.mode"
-   assert_equal "${lines[4]}" "Update the timer state file: ${TMPDIR}/AA-001/fanTimer.txt.ac1 with timeToOn: 5400 and timeToOff: 0"
+   assert_equal "${lines[4]}" "Update the timer state file: ${TMPDIR}/AA-001/extraTimers.txt with timeToOn: 5400 and timeToOff: 0"
    # No more lines than expected
    assert_equal "${#lines[@]}" 5
 }
@@ -102,16 +103,16 @@ beforeEach()
    curl -s -g "http://localhost:$PORT/reInit"
    # Do the load
    curl -s -g "http://localhost:$PORT?load=testData/basicPassingSystemData.txt"
-   # need to create the fanTimer.txt file first
+   # need to create the extraTimers.txt file first
    run ../MyPlace.sh Get Blah Brightness coolTimer 127.0.0.1 TEST_ON
    run ../MyPlace.sh Set Blah Brightness 20 coolTimer 127.0.0.1 TEST_ON
    assert_equal "$status" 0
    # MyPlace.sh does a get first
    assert_equal "${lines[0]}" "Getting myAirData.txt from cached file"
-   assert_equal "${lines[1]}" "Query the state file: ${TMPDIR}/AA-001/coolTimer.txt.ac1"
+   assert_equal "${lines[1]}" "Query the state file: ${TMPDIR}/AA-001/extraTimers.txt"
    assert_equal "${lines[2]}" "Parsing for jqPath: .aircons.ac1.info.state"
    assert_equal "${lines[3]}" "Parsing for jqPath: .aircons.ac1.info.mode"
-   assert_equal "${lines[4]}" "Update the timer state file: ${TMPDIR}/AA-001/coolTimer.txt.ac1 with timeToOn: 0 and timeToOff: 7200"
+   assert_equal "${lines[4]}" "Update the timer state file: ${TMPDIR}/AA-001/extraTimers.txt with timeToOn: 0 and timeToOff: 7200"
    # No more lines than expected
    assert_equal "${#lines[@]}" 5
 }
@@ -122,16 +123,16 @@ beforeEach()
    curl -s -g "http://localhost:$PORT/reInit"
    # Do the load
    curl -s -g "http://localhost:$PORT?load=testData/basicPassingSystemData.txt"
-   # need to create the fanTimer.txt file first
+   # need to create the extraTimers.txt file first
    run ../MyPlace.sh Get Blah Brightness heatTimer 127.0.0.1 TEST_ON
    run ../MyPlace.sh Set Blah Brightness 25 heatTimer 127.0.0.1 TEST_ON
    assert_equal "$status" 0
    # MyPlace.sh does a get first
    assert_equal "${lines[0]}" "Getting myAirData.txt from cached file"
-   assert_equal "${lines[1]}" "Query the state file: ${TMPDIR}/AA-001/heatTimer.txt.ac1"
+   assert_equal "${lines[1]}" "Query the state file: ${TMPDIR}/AA-001/extraTimers.txt"
    assert_equal "${lines[2]}" "Parsing for jqPath: .aircons.ac1.info.state"
    assert_equal "${lines[3]}" "Parsing for jqPath: .aircons.ac1.info.mode"
-   assert_equal "${lines[4]}" "Update the timer state file: ${TMPDIR}/AA-001/heatTimer.txt.ac1 with timeToOn: 9000 and timeToOff: 0"
+   assert_equal "${lines[4]}" "Update the timer state file: ${TMPDIR}/AA-001/extraTimers.txt with timeToOn: 9000 and timeToOff: 0"
    # No more lines than expected
    assert_equal "${#lines[@]}" 5
 }
