@@ -28,12 +28,7 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
 ### Raspbian/HOOBS/macOS/NAS
 1. Install Homebridge via these instructions for [Raspbian](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian), [HOOBS](https://support.hoobs.org/docs) or [macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS), if you have not already.
 
-2. Find the `homebridge-myplace` plugin via the Homebridge UI 'Plugins' tab search function, once found, click the blue *down-arrow* at the bottom right to install.  Once install, click on the three dots at the bottom right and select `JSON Config`, a pop-up box showing a small config in it. Do not edit anything but click `SAVE`.  More pop-up boxes may appear, click `SAVE` to all until you are prompted to `RESTART HOMEBRIDGE`.  You do not need to restart homebridge but can click `CLOSE` now to move on to the next step.
-  
-     <p align="left">
-     <img width="400px" src="Screenshots/MyPlaceInstall3.png">
-     </p>
-3. Check if <B>jq</B> and <B>curl</B> are installed (<B>curl</B> should already be):
+2. Check if <B>jq</B> and <B>curl</B> are installed (<B>curl</B> should already be):
    ```shell
    jq --version
    curl --version
@@ -90,18 +85,26 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
       ```shell
       jq --version
       ```
+3. Find the `homebridge-myplace` plugin via the Homebridge UI 'Plugins' tab search function, once found, click the blue *down-arrow* at the bottom right to install.  
+  
+     <p align="left">
+     <img width="400px" src="Screenshots/MyPlaceInstall3.png">
+     </p>
 
+     Once install, `Config: homebridge-myplace` UI will pop up, then follow the steps shown in Step 4 below.
+
+     If for some reasons, the `Config: homebridge-myplace` UI did not pop up, locate your newly installed `Homebridge Myplace` plugin and click on the three dots at the bottom right and select `Plugin Config` to get the `Config: homebridge-myplace` UI.
+   
 4. Create MyPlace configuration file:
    
-   Go to the 'Plugins' tab in Homebridge UI, locate your newly installed `Homebridge Myplace` plugin and click the three dots on the bottom right, select `Plugin Config` and it should launch the <B>Configuration Creator and Checker</B> and <B>Device 
-   Settings</B> page.
+   This is the `Config: homebridge-myplace` UI where you register your system parameters and create/check the required configuration file to run this plugin. 
         <p align="left">
         <img width="600px" src="Screenshots/MyPlaceConfigCreator.png">
         </p>
 
    In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the self-explanatory checkboxes for `Include extra timers` and `Enable detailed debug log`, then click `SAVE`. This is to save your system parameters. Click `CLOSE` if a pop up urging you to `RESTART`.
      
-   Go back to `Plugin Config` again and press the `CREATE CONFIGURATION` button to create the required configuration file.
+   Go back to `Config: homebridge-myplace` UI agina (by clicking the the 3 dots at the bottom right and click `Plugin Config`) and press the `CREATE CONFIGURATION` button to create the required configuration file.
 
    On a sucess, you may click `CHECK CONFIGURATION`to check the configuration file just created is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed.
 
