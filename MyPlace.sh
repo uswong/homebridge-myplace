@@ -4,6 +4,29 @@
 # Many thanks to John Talbot of homebridge-cmd4 and Mitch Williams of 
 # homebridge-cmd4-advantageair for all their inital works from which this
 # work was evolved from...
+#
+# Evolution credited to @uswong:
+# 1. Fan speed control (2022)
+# 2. Store myAirData in cache up to 2 minutes (2022)
+# 3. Extend the control to lights and things (2022)
+# 4. Update cache on Set request (2022)
+# 5. Zone closing control (2022)
+# 6. ConfigCreator - Created homebridge UI and developed scriptes to automate 
+#    the generation of configuration file required (2023)
+# 7. Optional extra timers to turn on aircon in specific mode (2023)
+# 8. Added myZone capability (2023)
+# 9. Added temperature control for zones with temperature sensor (2024)
+#
+# Game changer 1: storing myAirData in cache up to 2 minutes was a real game
+# changer. This allows a big system with hundreds of devices to run properly,
+# otherwise the AdvantageAir tablet will get overwhelmed with Get requests and
+# will stop working.
+#
+# Game changer 2: ConfigCreator was another game changer.  It was a dreadful
+# task to create a configureation file especially for a big system with
+# hundred of devices, many users shy away from it.  To be able to automate
+# the generation of the configureation file make this plugin so easy and
+# simple to set up. 
 #########################################################################
 
 # Lets be explicit
@@ -74,11 +97,9 @@ thingSpecified=false
 #Temporary files - the subdirectory full path will be defined later
 if [ -z "${TMPDIR}" ]; then TMPDIR="/tmp"; fi
 tmpSubDir="${TMPDIR}"
-QUERY_AIRCON_LOG_FILE="queryCachedAirCon_calls.log"
+QUERY_AIRCON_LOG_FILE="queryAirCon.log"
 MY_AIRDATA_FILE="myAirData.txt"
-FANTIMER_STATE_FILE="fanTimer.txt"
-COOLTIMER_STATE_FILE="coolTimer.txt"
-HEATTIMER_STATE_FILE="heatTimer.txt"
+TIMER_STATE_FILE="extraTimers.txt"
 ZONEOPEN_FILE="zoneOpen.txt"
 
 function showHelp()
@@ -179,7 +200,7 @@ function getFileStatDt()
    dt=$((t0 - tf))
 }
 
-function queryCachedAirCon()
+function queryAirCon()
 {
    local url="$1"
    local exitOnFail="$2"
@@ -211,7 +232,7 @@ function queryCachedAirCon()
          if [ "$dtlf" -ge 60 ]; then 
             rm "$lockFile"
             rc=99
-            logQueryAirConDiagnostic "queryCachedAirCon_calls_earlier_curl_timed_out $tf $t0 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
+            logQueryAirConDiagnostic "queryAirCon_calls_earlier_curl_timed_out $tf $t0 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
 
             # To test the logic, issue this comment
             if [ "$selfTest" = "TEST_ON" ]; then
@@ -222,7 +243,7 @@ function queryCachedAirCon()
          fi
       fi
    fi
-   logQueryAirConDiagnostic "queryCachedAirCon_calls $tf $t0 $dt $useFileCache itr=$iteration $io $device $characteristic $url" 
+   logQueryAirConDiagnostic "queryAirCon_calls $tf $t0 $dt $useFileCache itr=$iteration $io $device $characteristic $url" 
 
    # If $lockFile is detected, iterate until it is deleted or 60s whichever is earlier
    # The $lockfile can be there for 1s to 60s (even beyond occasionally) for a big system, with an average of ~6s
@@ -239,7 +260,7 @@ function queryCachedAirCon()
          # flag it, remove the $lockFile and copy the existing cached file, try again next cycle.
          if [ "$dtlf" -ge 60 ]; then  
             rc=98
-            logQueryAirConDiagnostic "queryCachedAirCon_timed_out_so_copy_earlier_cache $t0 $t2 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
+            logQueryAirConDiagnostic "queryAirCon_timed_out_so_copy_earlier_cache $t0 $t2 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
 
             # Remove the lockFile
             rm "$lockFile"
@@ -253,7 +274,7 @@ function queryCachedAirCon()
       done
       myAirData=$( cat "$MY_AIRDATA_FILE" )
       rc=$?
-      logQueryAirConDiagnostic "queryCachedAirCon_copy  $t0 $t2 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
+      logQueryAirConDiagnostic "queryAirCon_copy  $t0 $t2 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
 
       # To test the logic, issue this comment
       if [ "$selfTest" = "TEST_ON" ]; then
@@ -282,18 +303,18 @@ function queryCachedAirCon()
             if [ -f "$MY_AIRDATA_FILE" ]; then isMyAirDataSameAsCached; fi
             if [ $sameAsCached = false ]; then echo "$myAirData" > "$MY_AIRDATA_FILE"; fi
             dt=$((t2 - t0))  # time-taken for curl command to complete
-            logQueryAirConDiagnostic "queryCachedAirCon_curl  $t0 $t2 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
+            logQueryAirConDiagnostic "queryAirCon_curl  $t0 $t2 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
          else
             echo "{}" > "$MY_AIRDATA_FILE"
             echo "$t2" > "$dateFile" 
-            logQueryAirConDiagnostic "queryCachedAirCon_curl_invalid $t0 $t2 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
+            logQueryAirConDiagnostic "queryAirCon_curl_invalid $t0 $t2 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
             # just in case
             unset myAirData
          fi
       else
          echo "{}" > "$MY_AIRDATA_FILE"
          echo "$t2" > "$dateFile" 
-         logQueryAirConDiagnostic "queryCachedAirCon_curl_failed $t0 $t2 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
+         logQueryAirConDiagnostic "queryAirCon_curl_failed $t0 $t2 $dt $useFileCache rc=$rc itr=$iteration $io $device $characteristic $url"
          unset myAirData
       fi
       rm "$lockFile"
@@ -476,6 +497,9 @@ function parseMyAirDataWithJq()
 {
    local jqPath="$1"
    local exitOnFail="$2"
+
+   if [ -z "${exitOnFail}" ]; then exitOnFail=1; fi
+
    # Understanding jq options
    # -e                  (Upon bad data, exit with return code )
    # Updates global variable jqResult
@@ -517,7 +541,7 @@ function  queryAirConWithIterations()
          exitOnFail="1"
       fi
       # Updates global variable myAirData
-      queryCachedAirCon "$url" "$exitOnFail" "$i"
+      queryAirCon "$url" "$exitOnFail" "$i"
       if [ "$rc" = "0" ]; then
          break
       else
@@ -546,8 +570,9 @@ function openZoneInFullWithZoneOpenCounter()
    setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$Zone:{state:open}}}}"
    # update the number of zoneOpen in a temporary file to be used up to 10 seconds
    zoneOpen=$((zoneOpen + 1))
-   echo "$zoneOpen" > "$ZONEOPEN_FILE"
-   parseMyAirDataWithJq ".aircons.$ac.zones.${Zone}.rssi" "1"
+   ZONEOPEN_JSON=$( jq ".$ac |= $zoneOpen" "$ZONEOPEN_FILE" )
+   echo "$ZONEOPEN_JSON" > "$ZONEOPEN_FILE"
+   parseMyAirDataWithJq ".aircons.$ac.zones.${Zone}.rssi"
    if [ "${jqResult}"  = "0" ]; then
       setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$Zone:{value:100}}}}"
    fi
@@ -559,7 +584,8 @@ function closeZoneWithZoneOpenCounter()
    setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$Zone:{state:close}}}}"
    # update the number of zoneOpen in a temporary file to be used up to 10 seconds
    zoneOpen=$((zoneOpen - 1))
-   echo "$zoneOpen" > "$ZONEOPEN_FILE"
+   ZONEOPEN_JSON=$( jq ".$ac |= $zoneOpen" "$ZONEOPEN_FILE" )
+   echo "$ZONEOPEN_JSON" > "$ZONEOPEN_FILE"
 }
 
 function setMyZoneToAnOpenedZoneWithTempSensorWithPriorityToCzones()
@@ -569,16 +595,16 @@ function setMyZoneToAnOpenedZoneWithTempSensorWithPriorityToCzones()
 
    for cZone in $cZone1 $cZone2 $cZone3; do
       if [[ "${cZone}" != "z00" && "${cZone}" != "${zone}" ]]; then
-         parseMyAirDataWithJq ".aircons.$ac.zones.${cZone}.state" "1"
+         parseMyAirDataWithJq ".aircons.$ac.zones.${cZone}.state"
          if [ "${jqResult}" = '"open"' ]; then
-            parseMyAirDataWithJq ".aircons.$ac.zones.${cZone}.rssi" "1"
+            parseMyAirDataWithJq ".aircons.$ac.zones.${cZone}.rssi"
             if [ "${jqResult}" != "0" ]; then
                myZone="${cZone}"
                myZoneValue=$((10#$( echo "${myZone}" | cut -d"z" -f2 ))) 
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{myZone:$myZoneValue}}}"
                myZoneAssigned=true
                # the target temperature of myZone needs to be copied to the system target temperature
-               parseMyAirDataWithJq ".aircons.$ac.zones.${myZone}.setTemp" "1"
+               parseMyAirDataWithJq ".aircons.$ac.zones.${myZone}.setTemp"
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{setTemp:$jqResult}}}"
                return
             fi
@@ -590,15 +616,15 @@ function setMyZoneToAnOpenedZoneWithTempSensorWithPriorityToCzones()
    for ((Zone=1; Zone<=nZones; Zone++)); do
       ZoneStr=$( printf "z%02d" "${Zone}" )
       if [[ "${ZoneStr}" != "${zone}" && "${ZoneStr}" != "${cZone1}" && "${ZoneStr}" != "${cZone2}" && "${ZoneStr}" != "${cZone3}" ]]; then
-         parseMyAirDataWithJq ".aircons.$ac.zones.${ZoneStr}.state" "1"
+         parseMyAirDataWithJq ".aircons.$ac.zones.${ZoneStr}.state"
          if [ "${jqResult}" = '"open"' ]; then
-            parseMyAirDataWithJq ".aircons.$ac.zones.${ZoneStr}.rssi" "1"
+            parseMyAirDataWithJq ".aircons.$ac.zones.${ZoneStr}.rssi"
             if [ "${jqResult}" != "0" ]; then
                myZone="${ZoneStr}"
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{myZone:$Zone}}}"
                myZoneAssigned=true
                # the target temperature of myZone needs to be copied to the system target temperature
-               parseMyAirDataWithJq ".aircons.$ac.zones.${myZone}.setTemp" "1"
+               parseMyAirDataWithJq ".aircons.$ac.zones.${myZone}.setTemp"
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{setTemp:$jqResult}}}"
                return
             fi
@@ -614,7 +640,7 @@ function openAclosedCzone()
 
    for cZone in $cZone1 $cZone2 $cZone3; do
       if [ "${cZone}" != "z00" ]; then
-         parseMyAirDataWithJq ".aircons.$ac.zones.${cZone}.state" "1"
+         parseMyAirDataWithJq ".aircons.$ac.zones.${cZone}.state"
          if [ "${jqResult}" = '"close"' ]; then
             openZoneInFullWithZoneOpenCounter "${cZone}"
             return
@@ -629,9 +655,9 @@ function openAclosedZoneWithTempSensorWithPriorityToCzones()
 
    for cZone in $cZone1 $cZone2 $cZone3; do
       if [[ "${cZone}" != "z00" && "${cZone}" != "${zone}" ]]; then
-         parseMyAirDataWithJq ".aircons.$ac.zones.${cZone}.state" "1"
+         parseMyAirDataWithJq ".aircons.$ac.zones.${cZone}.state"
          if [ "${jqResult}" = '"close"' ]; then
-            parseMyAirDataWithJq ".aircons.$ac.zones.${cZone}.rssi" "1"
+            parseMyAirDataWithJq ".aircons.$ac.zones.${cZone}.rssi"
             if [ "${jqResult}" != "0" ]; then
                openZoneInFullWithZoneOpenCounter "${cZone}"
                return
@@ -643,9 +669,9 @@ function openAclosedZoneWithTempSensorWithPriorityToCzones()
    for ((Zone=1; Zone<=nZones; Zone++)); do
       ZoneStr=$( printf "z%02d" "${Zone}" )
       if [[ "${ZoneStr}" != "${zone}" && "${ZoneStr}" != "${cZone1}" && "${ZoneStr}" != "${cZone2}" && "${ZoneStr}" != "${cZone3}" ]]; then
-         parseMyAirDataWithJq ".aircons.$ac.zones.${ZoneStr}.state" "1"
+         parseMyAirDataWithJq ".aircons.$ac.zones.${ZoneStr}.state"
          if [ "${jqResult}" = '"close"' ]; then
-            parseMyAirDataWithJq ".aircons.$ac.zones.${ZoneStr}.rssi" "1"
+            parseMyAirDataWithJq ".aircons.$ac.zones.${ZoneStr}.rssi"
             if [ "${jqResult}" != "0" ]; then
                openZoneInFullWithZoneOpenCounter "${ZoneStr}"
                return
@@ -657,30 +683,51 @@ function openAclosedZoneWithTempSensorWithPriorityToCzones()
 
 function queryTimerStateFile()
 {
-   TIMER_STATE_FILE="$1"
+   local mode="$1"
+   local acStates
+   addToStateFile=false
 
    if [ -f "${TIMER_STATE_FILE}" ]; then
-      state=$(cat "${TIMER_STATE_FILE}")
-      rc=$?
+      # fetch the timer states from the existing timer state file
+      states=$( jq "." "${TIMER_STATE_FILE}" )
+      # need to check if the ${states} include this $ac, if not add it
+      acStates=$( echo "${states}" | jq -c ".$ac" )
+      if [ "${acStates}" = "null" ]; then addToStateFile=true; fi
    else
-      state="{\"timeToOn\":0,\"timeToOff\":0,\"setTime\":0}"
-      rc=$?
-      echo "$state" > "$TIMER_STATE_FILE"
+      # create new timer state file
+      states="{}"
+      addToStateFile=true
+   fi
+
+   if [ "${addToStateFile}" = true ]; then
+      states=$( echo "${states}" | jq ".$ac.fan.timeToOn |= 0" \
+                                 | jq ".$ac.fan.timeToOff |= 0" \
+                                 | jq ".$ac.fan.setTime |= 0" \
+                                 | jq ".$ac.cool.timeToOn |= 0" \
+                                 | jq ".$ac.cool.timeToOff |= 0" \
+                                 | jq ".$ac.cool.setTime |= 0" \
+                                 | jq ".$ac.heat.timeToOn |= 0" \
+                                 | jq ".$ac.heat.timeToOff |= 0" \
+                                 | jq ".$ac.heat.setTime |= 0" )
+
+      echo "${states}" > "$TIMER_STATE_FILE"
    fi
 
    if [ "$selfTest" = "TEST_ON" ]; then
       echo "Query the state file: ${TIMER_STATE_FILE}"
    fi
 
-   timeToOn=$(echo "$state" | jq -e ".timeToOn")
-   timeToOff=$(echo "$state" | jq -e ".timeToOff")
-   setTime=$(echo "$state" | jq -e ".setTime")
+   timeToOn=$(echo "${states}"  | jq -e ".$ac.$mode.timeToOn"  )
+   timeToOff=$(echo "${states}" | jq -e ".$ac.$mode.timeToOff" )
+   setTime=$(echo "${states}"   | jq -e ".$ac.$mode.setTime"   )
 
-   # Get the current state of the fan
-   parseMyAirDataWithJq ".aircons.$ac.info.state" "1"
+   # Retrieve the current state and mode of the aircon
+   parseMyAirDataWithJq ".aircons.$ac.info.state"
    acState="${jqResult}"
-   parseMyAirDataWithJq ".aircons.$ac.info.mode" "1"
+   parseMyAirDataWithJq ".aircons.$ac.info.mode"
    acMode="${jqResult}"
+
+   # Get the state of the fan mode
    if [ $fanTimerSpecified = true ]; then
       if [[ "${acState}" = '"on"' && "${acMode}" = '"vent"' ]]; then
          fanState=1
@@ -688,6 +735,8 @@ function queryTimerStateFile()
          fanState=0
       fi
       logQueryAirConDiagnostic "queryFanTimer           ${t0} ${t0} fanState=${fanState} ${timeToOn} ${timeToOff} ${setTime} $io $device $characteristic"
+
+   # Get the state of the cool mode
    elif [ $coolTimerSpecified = true ]; then
       if [[ "${acState}" = '"on"' && "${acMode}" = '"cool"' ]]; then
          coolState=1
@@ -695,6 +744,8 @@ function queryTimerStateFile()
          coolState=0
       fi
       logQueryAirConDiagnostic "queryCoolTimer          ${t0} ${t0} coolState=${coolState} ${timeToOn} ${timeToOff} ${setTime} $io $device $characteristic"
+
+   # Get the state of the heat mode
    elif [ $heatTimerSpecified = true ]; then
       if [[ "${acState}" = '"on"' && "${acMode}" = '"heat"' ]]; then
          heatState=1
@@ -707,42 +758,41 @@ function queryTimerStateFile()
 
 function updateTimer()
 {
-   State="$1"
-   Mode="$2"
-   TIMER_STATE_FILE="$3"
+   local state="$1"
+   local mode="$2"
 
    if [ "$selfTest" = "TEST_ON" ]; then
       t0=$((setTime + 2)) 
    fi
 
    # Update fan timer
-   if [[ "$timeToOn" = "0" && "$timeToOff" = "0" ]]; then # no update required
+   if [[ "${timeToOn}" = "0" && "${timeToOff}" = "0" ]]; then # no update required
       echo ""
       return
-   elif [[ "${State}" = "1" && "${timeToOn}" != "0" ]]; then # reset timer
+   elif [[ "${state}" = "1" && "${timeToOn}" != "0" ]]; then # reset timer
       timeToOn=0
       setTime=${t0}
-   elif [[ "${State}" = "1" && "$timeToOff" != "0" ]]; then # update timer
+   elif [[ "${state}" = "1" && "${timeToOff}" != "0" ]]; then # update timer
       timeToOff=$((timeToOff - t0 + setTime))
       timeToOff=$((timeToOff > 30? timeToOff : 0))
       setTime=${t0}
-      if [ "$timeToOff" = "0" ]; then # turn off the fan
+      if [ "${timeToOff}" = "0" ]; then # turn off the fan
          setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:off}}}"
       fi
-   elif [[ "${State}" = "0" && "$timeToOff" != "0" ]]; then # reset timer
+   elif [[ "${state}" = "0" && "${timeToOff}" != "0" ]]; then # reset timer
       timeToOff=0
       setTime=${t0}
-   elif [[ "${State}" = "0" && "$timeToOn" != "0" ]]; then # update timer
+   elif [[ "${state}" = "0" && "${timeToOn}" != "0" ]]; then # update timer
       timeToOn=$((timeToOn - t0 + setTime))
       timeToOn=$((timeToOn > 30? timeToOn : 0))
       setTime=${t0}
-      if [ "$timeToOn" = "0" ]; then # turn on the fan, cool or heat
-         setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:on,mode:$Mode}}}"
+      if [ "${timeToOn}" = "0" ]; then # turn on the fan, cool or heat
+         setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:on,mode:$mode}}}"
       fi
    fi
 
    if [ "$selfTest" = "TEST_ON" ]; then
-      echo "Update the timer for ${Mode} with timeToOn: ${timeToOn} and timeToOff: ${timeToOff}" 
+      echo "Update the timer for ${mode} with timeToOn: ${timeToOn} and timeToOff: ${timeToOff}" 
    fi
 
    # Diagnostic logging
@@ -754,16 +804,19 @@ function updateTimer()
       logQueryAirConDiagnostic "updateHeatTimer         ${t0} ${t0} heatState=${heatState} ${timeToOn} ${timeToOff} ${setTime} $io $device $characteristic"
    fi
 
-   updateTimerStateFile "${TIMER_STATE_FILE}"
+   if [ "${mode}" = "vent" ]; then mode="fan"; fi
+   updateTimerStateFile "${mode}"
 }
 
 function updateTimerStateFile()
 {
-   TIMER_STATE_FILE="$1"
+   local mode="$1"
 
-   updatedState=$(jq -ec ".timeToOn=$timeToOn" "$TIMER_STATE_FILE" | jq -ec ".timeToOff=$timeToOff" | jq -ec ".setTime=$setTime")
-   rc=$?
-   echo "$updatedState" > "$TIMER_STATE_FILE"
+   updatedStates=$( jq ".$ac.$mode.timeToOn  |= $timeToOn" "$TIMER_STATE_FILE" \
+                  | jq ".$ac.$mode.timeToOff |= $timeToOff" \
+                  | jq ".$ac.$mode.setTime   |= $setTime" )
+
+   echo "$updatedStates" > "$TIMER_STATE_FILE"
 
    # Diagnostic logging
    if [ "${io}" = "Get" ]; then
@@ -927,10 +980,8 @@ if [ ! -d "${tmpSubDir}/" ]; then mkdir "${tmpSubDir}/"; fi
 QUERY_AIRCON_LOG_FILE="${tmpSubDir}/${QUERY_AIRCON_LOG_FILE}"
 QUERY_IDBYNAME_LOG_FILE="${tmpSubDir}/${QUERY_IDBYNAME_LOG_FILE}"
 MY_AIRDATA_FILE="${tmpSubDir}/${MY_AIRDATA_FILE}"
-FANTIMER_STATE_FILE="${tmpSubDir}/${FANTIMER_STATE_FILE}.${ac}"
-COOLTIMER_STATE_FILE="${tmpSubDir}/${COOLTIMER_STATE_FILE}.${ac}"
-HEATTIMER_STATE_FILE="${tmpSubDir}/${HEATTIMER_STATE_FILE}.${ac}"
-ZONEOPEN_FILE="${tmpSubDir}/${ZONEOPEN_FILE}.${ac}"
+TIMER_STATE_FILE="${tmpSubDir}/${TIMER_STATE_FILE}"
+ZONEOPEN_FILE="${tmpSubDir}/${ZONEOPEN_FILE}"
 
 # Fan accessory is the only accessory without identification constant, hence
 # give it an identification "fanSpecified"
@@ -956,26 +1007,26 @@ if [ "$io" = "Get" ]; then
          # if not again, use setTemp   
 
          if [ $zoneSpecified = true ]; then
-            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.measuredTemp" "1"
+            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.measuredTemp"
             echo "$jqResult"
             exit 0
          fi
-         parseMyAirDataWithJq ".aircons.$ac.info.myZone" "1"
+         parseMyAirDataWithJq ".aircons.$ac.info.myZone"
          myZone=$( printf "z%02d" "$jqResult" )
          if [ "${myZone}" != "z00" ]; then 
-            parseMyAirDataWithJq ".aircons.$ac.zones.$myZone.measuredTemp" "1"
+            parseMyAirDataWithJq ".aircons.$ac.zones.$myZone.measuredTemp"
             echo "$jqResult"
             exit 0
          fi
-         parseMyAirDataWithJq ".aircons.$ac.info.constant1" "1"
+         parseMyAirDataWithJq ".aircons.$ac.info.constant1"
          cZone1=$( printf "z%02d" "$jqResult" )
-         parseMyAirDataWithJq ".aircons.$ac.zones.$cZone1.rssi" "1"
+         parseMyAirDataWithJq ".aircons.$ac.zones.$cZone1.rssi"
          if [ "${jqResult}" != "0" ]; then
-            parseMyAirDataWithJq ".aircons.$ac.zones.$cZone1.measuredTemp" "1"
+            parseMyAirDataWithJq ".aircons.$ac.zones.$cZone1.measuredTemp"
             echo "$jqResult"
             exit 0
          else 
-            parseMyAirDataWithJq ".aircons.$ac.info.setTemp" "1"
+            parseMyAirDataWithJq ".aircons.$ac.info.setTemp"
             echo "$jqResult"
             exit 0
          fi
@@ -983,19 +1034,19 @@ if [ "$io" = "Get" ]; then
       # Gets the target temperature.
       TargetTemperature )
          if [ $zoneSpecified = true ]; then
-            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.setTemp" "1"
+            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.setTemp"
             echo "$jqResult"
             exit 0
          else
             # check whether myZone is defined
-            parseMyAirDataWithJq ".aircons.$ac.info.myZone" "1"
+            parseMyAirDataWithJq ".aircons.$ac.info.myZone"
             myZone=$( printf "z%02d" "$jqResult" )
             if [ "${myZone}" != "z00" ]; then 
-               parseMyAirDataWithJq ".aircons.$ac.zones.$myZone.setTemp" "1"
+               parseMyAirDataWithJq ".aircons.$ac.zones.$myZone.setTemp"
                echo "$jqResult"
                exit 0
             else
-               parseMyAirDataWithJq ".aircons.$ac.info.setTemp" "1"
+               parseMyAirDataWithJq ".aircons.$ac.info.setTemp"
                echo "$jqResult"
                exit 0
             fi
@@ -1004,7 +1055,7 @@ if [ "$io" = "Get" ]; then
       # Makes the target Control Unit state the current Control Unit state.
       TargetHeatingCoolingState | CurrentHeatingCoolingState )
          # Updates global variable jqResult
-         parseMyAirDataWithJq ".aircons.$ac.info.state" "1"
+         parseMyAirDataWithJq ".aircons.$ac.info.state"
          state="$jqResult"
          # If the state of the Aircon is Off, set Main Thermostat to Off (0) and Zone Thermostat to Auto (3)
          if [  "$state" = '"off"' ]; then
@@ -1020,7 +1071,7 @@ if [ "$io" = "Get" ]; then
          fi
          # Get the current mode of the Thermostat; Heat=1, Cool=2, Dry(Auto)=3
          # Updates global variable jqResult
-         parseMyAirDataWithJq ".aircons.$ac.info.mode" "1"
+         parseMyAirDataWithJq ".aircons.$ac.info.mode"
          mode="$jqResult"
          case "$mode" in
             '"heat"' )
@@ -1059,7 +1110,7 @@ if [ "$io" = "Get" ]; then
       # (100=open, 0=close) (in Homekit 0=open, 1=close)
       TargetDoorState | CurrentDoorState )
          if [ $thingSpecified = true ]; then
-            parseMyAirDataWithJq ".myThings.things.\"${thingID}\".value" "1"
+            parseMyAirDataWithJq ".myThings.things.\"${thingID}\".value"
             if [ "$jqResult" = 100 ]; then
                if [ $flipEnabled = true ]; then echo 1; else echo 0; fi
                exit 0
@@ -1073,7 +1124,7 @@ if [ "$io" = "Get" ]; then
       # (100=open, 0=close) (in Homekit 0=open, 1=close)
       TargetPosition | CurrentPosition )
          if [ $thingSpecified = true ]; then
-            parseMyAirDataWithJq ".myThings.things.\"${thingID}\".value" "1"
+            parseMyAirDataWithJq ".myThings.things.\"${thingID}\".value"
             echo "${jqResult}"
             exit 0
          fi
@@ -1082,7 +1133,7 @@ if [ "$io" = "Get" ]; then
          # use Fanv2 Active characteristic for zone open or close
          if [ $zoneSpecified = true ]; then
             # Damper open/closed = Switch on/off = 1/0
-            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.state" "1"
+            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.state"
             if [ "$jqResult" = '"open"' ]; then
                echo 1
                exit 0
@@ -1097,7 +1148,7 @@ if [ "$io" = "Get" ]; then
          if [ $zoneSpecified = true ]; then
             # Check which zone is myZone
             myZoneValue=$(( 10#$( echo "${zone}" | cut -d'z' -f2 ) ))
-            parseMyAirDataWithJq ".aircons.$ac.info.myZone" "1"
+            parseMyAirDataWithJq ".aircons.$ac.info.myZone"
             if [ "$jqResult" = "$myZoneValue" ]; then
                echo 0
                exit 0
@@ -1112,7 +1163,7 @@ if [ "$io" = "Get" ]; then
             # Return value of Off if the zone is closed or the Control Unit is Off.
             # fanSpecified is true when no zone (z01) given or timer given
             # Updates global variable jqResult
-            parseMyAirDataWithJq ".aircons.$ac.info.state" "1"
+            parseMyAirDataWithJq ".aircons.$ac.info.state"
             if [  "$jqResult" = '"off"' ]; then
                echo 0
                exit 0
@@ -1120,7 +1171,7 @@ if [ "$io" = "Get" ]; then
                # Get the current mode of the Control Unit. Fan can only be On
                # or Off; if not Vent, set all other modes to Off.
                # Updates global variable jqResult
-               parseMyAirDataWithJq ".aircons.$ac.info.mode" "1"
+               parseMyAirDataWithJq ".aircons.$ac.info.mode"
                mode="$jqResult"
                case "$mode" in
                   '"heat"' )
@@ -1152,7 +1203,7 @@ if [ "$io" = "Get" ]; then
             fi
          elif [ $zoneSpecified = true ]; then
             # Damper open/closed = Switch on/off = 1/0
-            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.state" "1"
+            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.state"
             if [ "$jqResult" = '"open"' ]; then
                echo 1
                exit 0
@@ -1162,7 +1213,7 @@ if [ "$io" = "Get" ]; then
             fi
          # get the fan timer current setting
          elif [ $fanTimerSpecified = true ]; then
-            queryTimerStateFile "${FANTIMER_STATE_FILE}"
+            queryTimerStateFile "fan"
             if [[ "$timeToOn" = "0" && "$timeToOff" = "0" ]]; then
                echo 0
                exit 0
@@ -1175,7 +1226,7 @@ if [ "$io" = "Get" ]; then
             fi
          # get the cool timer current setting
          elif [ $coolTimerSpecified = true ]; then
-            queryTimerStateFile "${COOLTIMER_STATE_FILE}"
+            queryTimerStateFile "cool"
             if [[ "$timeToOn" = "0" && "$timeToOff" = "0" ]]; then
                echo 0
                exit 0
@@ -1188,7 +1239,7 @@ if [ "$io" = "Get" ]; then
             fi
          # get the heat timer current setting
          elif [ $heatTimerSpecified = true ]; then
-            queryTimerStateFile "${HEATTIMER_STATE_FILE}"
+            queryTimerStateFile "heat"
             if [[ "$timeToOn" = "0" && "$timeToOff" = "0" ]]; then
                echo 0
                exit 0
@@ -1201,11 +1252,11 @@ if [ "$io" = "Get" ]; then
             fi
          # get the timer current setting
          elif [ $timerEnabled = true ]; then
-            parseMyAirDataWithJq ".aircons.$ac.info.state" "1"
+            parseMyAirDataWithJq ".aircons.$ac.info.state"
             airconState=$jqResult
-            parseMyAirDataWithJq ".aircons.$ac.info.countDownToOn" "1"
+            parseMyAirDataWithJq ".aircons.$ac.info.countDownToOn"
             countDownToOn=$jqResult
-            parseMyAirDataWithJq ".aircons.$ac.info.countDownToOff" "1"
+            parseMyAirDataWithJq ".aircons.$ac.info.countDownToOff"
             countDownToOff=$jqResult
 
             if [[ "$countDownToOn" = "0" && "$countDownToOff" = "0" ]]; then
@@ -1235,7 +1286,7 @@ if [ "$io" = "Get" ]; then
                echo 1
                exit 0
          elif [ $lightSpecified = true ]; then
-            parseMyAirDataWithJq ".myLights.lights.\"${lightID}\".state" "1"
+            parseMyAirDataWithJq ".myLights.lights.\"${lightID}\".state"
             if [ "$jqResult" = '"on"' ]; then
                echo 1
                exit 0
@@ -1250,46 +1301,46 @@ if [ "$io" = "Get" ]; then
          # get the zone damper % information
          if [ $zoneSpecified = true ]; then
             # Get the zone damper % open
-            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.value" "1"
+            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.value"
             echo "$jqResult"
             exit 0
          # Get the fan timer setting - 10% = 1 hour
          elif [ $fanTimerSpecified = true ]; then
-            queryTimerStateFile "${FANTIMER_STATE_FILE}"
-            updateTimer "${fanState}" "vent" "${FANTIMER_STATE_FILE}"
+            queryTimerStateFile "fan"
+            updateTimer "${fanState}" "vent"
             value=$((timeToOn > timeToOff? timeToOn : timeToOff))
             value=$(((value / 360) + (value % 360 > 0)))
             echo $((value > 1? value : 1))
             exit 0
          # Get the cool timer setting - 10% = 1 hour
          elif [ $coolTimerSpecified = true ]; then
-            queryTimerStateFile "${COOLTIMER_STATE_FILE}"
-            updateTimer "${coolState}" "cool" "${COOLTIMER_STATE_FILE}"
+            queryTimerStateFile "cool"
+            updateTimer "${coolState}" "cool"
             value=$((timeToOn > timeToOff? timeToOn : timeToOff))
             value=$(((value / 360) + (value % 360 > 0)))
             echo $((value > 1? value : 1))
             exit 0
          # Get the heat timer setting - 10% = 1 hour
          elif [ $heatTimerSpecified = true ]; then
-            queryTimerStateFile "${HEATTIMER_STATE_FILE}"
-            updateTimer "${heatState}" "heat" "${HEATTIMER_STATE_FILE}"
+            queryTimerStateFile "heat"
+            updateTimer "${heatState}" "heat"
             value=$((timeToOn > timeToOff? timeToOn : timeToOff))
             value=$(((value / 360) + (value % 360 > 0)))
             echo $((value > 1? value : 1))
             exit 0
          # Get the AA timer setting - 10% = 1 hour
          elif [ $timerEnabled = true ]; then
-            parseMyAirDataWithJq ".aircons.$ac.info.state" "1"
+            parseMyAirDataWithJq ".aircons.$ac.info.state"
             # Get the timer countDowqnToOff value if the state of the aircon is "on"
             if [ "$jqResult" = '"on"' ]; then
-               parseMyAirDataWithJq ".aircons.$ac.info.countDownToOff" "1"
+               parseMyAirDataWithJq ".aircons.$ac.info.countDownToOff"
                timerInPercentage=$(((jqResult / 6) + (jqResult % 6 > 0)))
                timerInPercentage=$((timerInPercentage < 100? timerInPercentage : 100)) 
                echo $((timerInPercentage > 1? timerInPercentage : 1))
                exit 0
             # Get the timer countDownToOn value if the state of the aircon is "off"
             else
-               parseMyAirDataWithJq ".aircons.$ac.info.countDownToOn" "1"
+               parseMyAirDataWithJq ".aircons.$ac.info.countDownToOn"
                timerInPercentage=$(((jqResult / 6) + (jqResult % 6 > 0)))
                timerInPercentage=$((timerInPercentage < 100? timerInPercentage : 100)) 
                echo $timerInPercentage
@@ -1297,7 +1348,7 @@ if [ "$io" = "Get" ]; then
             fi
          # get the lights dim level
          elif [ $lightSpecified = true ]; then
-            parseMyAirDataWithJq ".myLights.lights.\"${lightID}\".value" "1"
+            parseMyAirDataWithJq ".myLights.lights.\"${lightID}\".value"
             echo "$jqResult"
             exit 0
          fi
@@ -1307,12 +1358,12 @@ if [ "$io" = "Get" ]; then
          # get the zone damper % information
          if [ $zoneSpecified = true ]; then
             # Get the zone damper % open
-            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.value" "1"
+            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.value"
             echo "$jqResult"
             exit 0
          else
             # Update the current fan speed
-            parseMyAirDataWithJq ".aircons.$ac.info.fan" "1"
+            parseMyAirDataWithJq ".aircons.$ac.info.fan"
             if [ "$jqResult" = '"low"' ]; then
                #25% as low speed
                echo 25
@@ -1369,7 +1420,7 @@ if [ "$io" = "Set" ]; then
          fi
       ;;
       TargetTemperature )
-         parseMyAirDataWithJq ".aircons.$ac.info.myZone" "1"
+         parseMyAirDataWithJq ".aircons.$ac.info.myZone"
          myZone=$( printf "z%02d" "$jqResult" )
          if [ $zoneSpecified = true ]; then
             setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$zone:{setTemp:$value}}}}"
@@ -1384,11 +1435,11 @@ if [ "$io" = "Set" ]; then
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$myZone:{setTemp:$value}}}}"
             elif [ $noOtherThermostat = true ]; then
                # if myZone is not defined and noOtherThermostat=true, set the target temperature to all zones with temperature sensors
-               parseMyAirDataWithJq ".aircons.$ac.info.noOfZones" "1"
+               parseMyAirDataWithJq ".aircons.$ac.info.noOfZones"
                nZones="${jqResult}"
                for (( a=1;a<=nZones;a++ )); do
                   zoneStr=$( printf "z%02d" "$a" )
-                  parseMyAirDataWithJq ".aircons.$ac.zones.$zoneStr.rssi" "1"
+                  parseMyAirDataWithJq ".aircons.$ac.zones.$zoneStr.rssi"
                   rssi="${jqResult}"
                   if [ "${rssi}" != "0" ]; then
                      setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$zoneStr:{setTemp:$value}}}}"
@@ -1419,103 +1470,19 @@ if [ "$io" = "Set" ]; then
             exit 0
          fi
       ;;
-      Active )
-         # Uses the Fanv2 Active characteristic for zone switches.
-         if [ $zoneSpecified = true ]; then
-            if [ "$value" = "1" ]; then
-               setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$zone:{state:open}}}}"
-               rm -f "$ZONEOPEN_FILE"
-               exit 0
-            else
-               # Ensures that at least ${noOfConstants} zone is/are open at all time to protect
-               # the aircon system before closing any zone:
-               # > if the only zone(s) open is/are the constant zone(s), leave it open (and set it to 100%).
-               # > if the constant zone(s) is/are in close state, and to close this zone will reduce the number
-               # > of zones open below ${noOfConstants}, then one constant zone will open (and set to 100%) before
-               # > closing this zone.
-
-               # retrieve myZone, nZones, noOfConstants, cZone1, cZone2 and cZone3 from $myAirData
-               parseMyAirDataWithJq ".aircons.$ac.info.myZone" "1"
-               myZone=$( printf "z%02d" "$jqResult" )
-               parseMyAirDataWithJq ".aircons.$ac.info.noOfZones" "1"
-               nZones="${jqResult}"
-               parseMyAirDataWithJq ".aircons.$ac.info.noOfConstants" "1"
-               noOfConstants="${jqResult}"
-               parseMyAirDataWithJq ".aircons.$ac.info.constant1" "1"
-               cZone1=$( printf "z%02d" "$jqResult" )
-               parseMyAirDataWithJq ".aircons.$ac.info.constant2" "1"
-               cZone2=$( printf "z%02d" "$jqResult" )
-               parseMyAirDataWithJq ".aircons.$ac.info.constant3" "1"
-               cZone3=$( printf "z%02d" "$jqResult" )
-
-               # Check how many zones are currently open
-               if [ -f "$ZONEOPEN_FILE" ]; then
-                  getFileStatDt "$ZONEOPEN_FILE"
-                  if [ "$dt" -ge 10 ]; then rm "$ZONEOPEN_FILE"; fi
-               fi
-               if [ -f "$ZONEOPEN_FILE" ]; then
-                  zoneOpen=$( cat "$ZONEOPEN_FILE" )
-               else
-                  for (( a=1;a<=nZones;a++ ))
-                  do
-                     zoneStr=$( printf "z%02d" "$a" )
-                     parseMyAirDataWithJq ".aircons.$ac.zones.$zoneStr.state" "1"
-                     if [ "$jqResult" = '"open"' ]; then
-                        zoneOpen=$((zoneOpen + 1))
-                     fi
-                  done
-               fi
-
-               if [ "$zoneOpen" -gt "${noOfConstants}" ]; then
-                  # If there are more than "$noOfConstants" zones open, it is safe to close this zone.
-                  # BUT if this zone is myZone then set myZone to an open cZone or if all cZones are
-                  # closed, set myZone to a next open zone before closing this zone.
-                  if [ "${zone}" = "${myZone}" ]; then
-                     setMyZoneToAnOpenedZoneWithTempSensorWithPriorityToCzones
-                     if [ "$myZoneAssigned" = false ]; then
-                        openAclosedZoneWithTempSensorWithPriorityToCzones
-                        setMyZoneToAnOpenedZoneWithTempSensorWithPriorityToCzones
-                     fi
-                  fi
-                  closeZoneWithZoneOpenCounter "${zone}"
-                  exit 0
-               elif [[ "$zone" = "$cZone1" || "$zone" = "$cZone2" || "$zone" = "$cZone3" ]]; then
-                  # If only "$noOfConstants" zones open and the zone to close is one of the constant zones, do not
-                  # close but set to 100%
-                  parseMyAirDataWithJq ".aircons.$ac.zones.$zone.rssi" "1"
-                  if [ "${jqResult}" = "0" ]; then
-                     setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$zone:{value:100}}}}"
-                  fi
-                  exit 0
-               else
-                  # If only "$noOfConstants" zones open and the zone to close is not a cZone but a myZone, then open a
-                  # closed zone with temperature sensor with priority to cZones and set myZone to it before closing this
-                  # zone. If the zone to close is also not a myZone, then just open a closed cZone before closing this zone.
-                  if [ "${zone}" = "${myZone}" ]; then
-                     openAclosedZoneWithTempSensorWithPriorityToCzones
-                     setMyZoneToAnOpenedZoneWithTempSensorWithPriorityToCzones
-                  else
-                     openAclosedCzone
-                  fi
-                  closeZoneWithZoneOpenCounter "${zone}"
-                  exit 0
-               fi
-            fi
-         fi
-      ;;
       RotationDirection )
          # Uses the Fanv2 RotationDirection characteristic for myZone switches.
          if [ $zoneSpecified = true ]; then
             if [ "$value" = "0" ]; then
                # Before setting myZone open the zone if it is currently closed
                myZoneValue=$(( 10#$( echo "${zone}" | cut -d'z' -f2 ) ))
-               parseMyAirDataWithJq ".aircons.$ac.zones.$zone.state" "1"
+               parseMyAirDataWithJq ".aircons.$ac.zones.$zone.state"
                if [ "${jqResult}" = '"close"' ]; then
                   setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$zone:{state:open}}}}"
                fi
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{myZone:$myZoneValue}}}"
                # when the myZone is changed, update the setTemp of the aircon to be same as active myZone
-               parseMyAirDataWithJq ".aircons.$ac.zones.$zone.setTemp" "1"
+               parseMyAirDataWithJq ".aircons.$ac.zones.$zone.setTemp"
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{setTemp:$jqResult}}}"
                exit 0
             else
@@ -1524,7 +1491,7 @@ if [ "$io" = "Set" ]; then
             fi
          fi
       ;;
-      On )
+      On | Active )
          # Uses the On characteristic for Fan/Vent mode.
          if [ $fanSpecified = true ]; then
             if [ "$value" = "1" ]; then
@@ -1537,7 +1504,7 @@ if [ "$io" = "Set" ]; then
             fi
             exit 0
 
-         # Uses the On characteristic for zone switches.
+         # Uses the fan/On or fanv2/Active characteristic for zone switches.
          elif [ $zoneSpecified = true ]; then
             if [ "$value" = "1" ]; then
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$zone:{state:open}}}}"
@@ -1552,31 +1519,34 @@ if [ "$io" = "Set" ]; then
                # > closing this zone.
 
                # retrieve myZone, nZones, noOfConstants, cZone1, cZone2 and cZone3 from $myAirData
-               parseMyAirDataWithJq ".aircons.$ac.info.myZone" "1"
+               parseMyAirDataWithJq ".aircons.$ac.info.myZone"
                myZone=$( printf "z%02d" "$jqResult" )
-               parseMyAirDataWithJq ".aircons.$ac.info.noOfZones" "1"
+               parseMyAirDataWithJq ".aircons.$ac.info.noOfZones"
                nZones="${jqResult}"
-               parseMyAirDataWithJq ".aircons.$ac.info.noOfConstants" "1"
+               parseMyAirDataWithJq ".aircons.$ac.info.noOfConstants"
                noOfConstants="${jqResult}"
-               parseMyAirDataWithJq ".aircons.$ac.info.constant1" "1"
+               parseMyAirDataWithJq ".aircons.$ac.info.constant1"
                cZone1=$( printf "z%02d" "$jqResult" )
-               parseMyAirDataWithJq ".aircons.$ac.info.constant2" "1"
+               parseMyAirDataWithJq ".aircons.$ac.info.constant2"
                cZone2=$( printf "z%02d" "$jqResult" )
-               parseMyAirDataWithJq ".aircons.$ac.info.constant3" "1"
+               parseMyAirDataWithJq ".aircons.$ac.info.constant3"
                cZone3=$( printf "z%02d" "$jqResult" )
 
-               # Check how many zones are currently open
+               # Check how many zones are currently open for this $ac
                if [ -f "$ZONEOPEN_FILE" ]; then
+                  thisZoneOpen=$( jq ".$ac" "$ZONEOPEN_FILE" )
                   getFileStatDt "$ZONEOPEN_FILE"
                   if [ "$dt" -ge 10 ]; then rm "$ZONEOPEN_FILE"; fi
                fi
-               if [ -f "$ZONEOPEN_FILE" ]; then
-                  zoneOpen=$( cat "$ZONEOPEN_FILE" )
+
+               if [[ -f "$ZONEOPEN_FILE" && "${thisZoneOpen}" != "null" ]]; then
+                  zoneOpen="${thisZoneOpen}"
                else
+                  if [ ! -f "$ZONEOPEN_FILE" ]; then echo "{}" > "$ZONEOPEN_FILE"; fi
                   for (( a=1;a<=nZones;a++ ))
                   do
                      zoneStr=$( printf "z%02d" "$a" )
-                     parseMyAirDataWithJq ".aircons.$ac.zones.$zoneStr.state" "1"
+                     parseMyAirDataWithJq ".aircons.$ac.zones.$zoneStr.state"
                      if [ "$jqResult" = '"open"' ]; then
                         zoneOpen=$((zoneOpen + 1))
                      fi
@@ -1599,7 +1569,7 @@ if [ "$io" = "Set" ]; then
                elif [[ "$zone" = "$cZone1" || "$zone" = "$cZone2" || "$zone" = "$cZone3" ]]; then
                   # If only "$noOfConstants" zones open and the zone to close is one of the constant zones, do not
                   # close but set to 100%
-                  parseMyAirDataWithJq ".aircons.$ac.zones.$zone.rssi" "1"
+                  parseMyAirDataWithJq ".aircons.$ac.zones.$zone.rssi"
                   if [ "${jqResult}" = "0" ]; then
                      setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{zones:{$zone:{value:100}}}}"
                   fi
@@ -1627,7 +1597,7 @@ if [ "$io" = "Set" ]; then
                timeToOn=0
                timeToOff=0
                setTime=${t0}
-               updateTimerStateFile "${FANTIMER_STATE_FILE}"
+               updateTimerStateFile "fan"
                exit 0
             fi
          # setting the cool timer
@@ -1635,11 +1605,11 @@ if [ "$io" = "Set" ]; then
             if [ "$value" = "1" ]; then # do nothing
                exit 0
             else
-               fanState=0
+               coolState=0
                timeToOn=0
                timeToOff=0
                setTime=${t0}
-               updateTimerStateFile "${COOLTIMER_STATE_FILE}"
+               updateTimerStateFile "cool"
                exit 0
             fi
          # setting the heat timer
@@ -1647,11 +1617,11 @@ if [ "$io" = "Set" ]; then
             if [ "$value" = "1" ]; then # do nothing
                exit 0
             else
-               fanState=0
+               heatState=0
                timeToOn=0
                timeToOff=0
                setTime=${t0}
-               updateTimerStateFile "${HEATTIMER_STATE_FILE}"
+               updateTimerStateFile "heat"
                exit 0
             fi
          # setting the AA timer
@@ -1684,7 +1654,7 @@ if [ "$io" = "Set" ]; then
       #Light Bulb service for used controlling damper % open and timer
       Brightness )
          if [ $zoneSpecified = true ]; then
-            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.rssi" "1"
+            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.rssi"
             rssi="${jqResult}"
             if [ "${rssi}" = "0" ]; then
                # Round the $value to its nearest 5%
@@ -1694,7 +1664,7 @@ if [ "$io" = "Set" ]; then
             exit 0
          # settting the fan timer - 10% = 1 hr
          elif [ $fanTimerSpecified = true ]; then
-            queryTimerStateFile "${FANTIMER_STATE_FILE}"
+            queryTimerStateFile "fan"
             if [ "$fanState" = "1" ]; then
                timeToOn=0
                timeToOff=$((value * 360))
@@ -1704,11 +1674,11 @@ if [ "$io" = "Set" ]; then
                timeToOff=0
                setTime=${t0}
             fi
-            updateTimerStateFile "${FANTIMER_STATE_FILE}"
+            updateTimerStateFile "fan"
             exit 0
          # settting the cool timer - 10% = 1 hr
          elif [ $coolTimerSpecified = true ]; then
-            queryTimerStateFile "${COOLTIMER_STATE_FILE}"
+            queryTimerStateFile "cool"
             if [ "$coolState" = "1" ]; then
                timeToOn=0
                timeToOff=$((value * 360))
@@ -1718,11 +1688,11 @@ if [ "$io" = "Set" ]; then
                timeToOff=0
                setTime=${t0}
             fi
-            updateTimerStateFile "${COOLTIMER_STATE_FILE}"
+            updateTimerStateFile "cool"
             exit 0
          # settting the heat timer - 10% = 1 hr
          elif [ $heatTimerSpecified = true ]; then
-            queryTimerStateFile "${HEATTIMER_STATE_FILE}"
+            queryTimerStateFile "heat"
             if [ "$heatState" = "1" ]; then
                timeToOn=0
                timeToOff=$((value * 360))
@@ -1732,13 +1702,13 @@ if [ "$io" = "Set" ]; then
                timeToOff=0
                setTime=${t0}
             fi
-            updateTimerStateFile "${HEATTIMER_STATE_FILE}"
+            updateTimerStateFile "heat"
             exit 0
          # settting the AA timer - 10% = 1 hr
          elif [ $timerEnabled = true ]; then
             # Make 10% to 1 hour (1% = 6 minutes) and capped at a max of 600 minutes
             timerInMinutes=$((value * 6))
-            parseMyAirDataWithJq ".aircons.$ac.info.state" "1"
+            parseMyAirDataWithJq ".aircons.$ac.info.state"
             if [ "$jqResult" = '"on"' ]; then
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{countDownToOff:$timerInMinutes}}}"
             else
@@ -1755,7 +1725,7 @@ if [ "$io" = "Set" ]; then
       # Fan service for controlling fan speed (0-33%:low, 34-67%:medium, 68-99%:high, 100%:autoAA/auto)
       RotationSpeed )
          if [ $zoneSpecified = true ]; then
-            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.rssi" "1"
+            parseMyAirDataWithJq ".aircons.$ac.zones.$zone.rssi"
             rssi="${jqResult}"
             if [ "${rssi}" = "0" ]; then
                # Round the $value to its nearest 5%
