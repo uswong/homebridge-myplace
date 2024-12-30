@@ -60,7 +60,7 @@
                "number":2,
                "rssi":42,
                "setTemp":23.0,
-               "state":"close",
+               "state":"open",
                "value":100,
                "type":1,
                "tempSensorClash":false
