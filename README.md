@@ -91,7 +91,7 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
      <img width="400px" src="Screenshots/MyPlaceInstall3.png">
      </p>
 
-     Once install, `Config: homebridge-myplace` UI will pop up, then follow the steps shown in Step 4 below.
+     Once installed, `Config: homebridge-myplace` UI will pop up, then follow the steps shown in Step 4 below.
 
      If for some reasons, the `Config: homebridge-myplace` UI did not pop up, locate your newly installed `Homebridge Myplace` plugin and click on the three dots at the bottom right and select `Plugin Config` to get the `Config: homebridge-myplace` UI.
    
@@ -104,7 +104,7 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
 
    In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the self-explanatory checkboxes for `Include extra timers` and `Enable detailed debug log`, then click `SAVE`. This is to save your system parameters. Click `CLOSE` if a pop up urging you to `RESTART`.
      
-   Go back to `Config: homebridge-myplace` UI agina (by clicking the the 3 dots at the bottom right and click `Plugin Config`) and press the `CREATE CONFIGURATION` button to create the required configuration file.
+   Go back to `Config: homebridge-myplace` UI again (by clicking the the 3 dots at the bottom right and click `Plugin Config`) and press the `CREATE CONFIGURATION` button to create the required configuration file.
 
    On a sucess, you may click `CHECK CONFIGURATION`to check the configuration file just created is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed.
 
