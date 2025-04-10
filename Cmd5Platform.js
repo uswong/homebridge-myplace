@@ -289,7 +289,7 @@ class Cmd5Platform
             throw new Error( `definition.props.format at index: ${ definitionIndex } is not a String.` );
 
          // Need to check if format is correct
-         let formatIndex = CMD5_FORMAT_TYPE_ENUM.properties.indexOfEnum( i => i.type === definition.props.format );
+         let formatIndex = CMD5_FORMAT_TYPE_ENUM.properties.Cmd5indexOfEnum( i => i.type === definition.props.format );
          if ( formatIndex < 0 )
             throw new Error( `definition.props.format at index: ${ definitionIndex } is not a valid format.` );
 
@@ -300,7 +300,7 @@ class Cmd5Platform
                throw new Error( `definition.props.units at index: ${ definitionIndex } is not a String.` );
 
             // Need to check if units is correct
-            let unitsIndex = CMD5_UNITS_TYPE_ENUM.properties.indexOfEnum( i => i.type === definition.props.units );
+            let unitsIndex = CMD5_UNITS_TYPE_ENUM.properties.Cmd5indexOfEnum( i => i.type === definition.props.units );
             if ( unitsIndex < 0 )
                throw new Error( `definition.props.units at index: ${ definitionIndex } is not a valid unit.` );
 
@@ -326,7 +326,7 @@ class Cmd5Platform
 
          definition.props.perms.forEach( ( perm ) =>
          {
-            let permIndex = CMD5_PERMS_TYPE_ENUM.properties.indexOfEnum( i => i.type === perm );
+            let permIndex = CMD5_PERMS_TYPE_ENUM.properties.Cmd5indexOfEnum( i => i.type === perm );
             if ( permIndex < 0 )
                throw new Error( `definition.props.perms at index: ${ definitionIndex } ${ perm } is not a valid perm.` );
 

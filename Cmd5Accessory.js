@@ -21,9 +21,9 @@ let lcFirst = require( "./utils/lcFirst" );
 let trueTypeOf = require( "./utils/trueTypeOf" );
 
 // The sObject.defineProperty is to resolve a lint issue.
-// See utils/indexOfEnumLintTest.js for further information.
-let indexOfEnum = require( "./utils/indexOfEnum" );
-Object.defineProperty( exports, "indexOfEnum", { enumerable: true, get: function ( ){ return indexOfEnum.indexOfEnum; } });
+// See utils/Cmd5indexOfEnumLintTest.js for further information.
+let Cmd5indexOfEnum = require( "./utils/Cmd5indexOfEnum" );
+Object.defineProperty( exports, "Cmd5indexOfEnum", { enumerable: true, get: function ( ){ return Cmd5indexOfEnum.Cmd5indexOfEnum; } });
 
 // For changing validValue Constants to Values and back again
 var { transposeConstantToValidValue,
@@ -389,7 +389,7 @@ class Cmd5Accessory
          let devProperties = CMD5_DEVICE_TYPE_ENUM.properties[ this.typeIndex ];
 
          // See if the characteristic index is in the required characteristics of the device
-         let requiredIndex = devProperties.requiredCharacteristics.indexOfEnum( i => i.type === accTypeEnumIndex );
+         let requiredIndex = devProperties.requiredCharacteristics.Cmd5indexOfEnum( i => i.type === accTypeEnumIndex );
 
          let format = CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].props.format;
 
@@ -506,7 +506,7 @@ class Cmd5Accessory
                default:
                {
                   // Is this still useful?
-                  accTypeEnumIndex = CMD5_ACC_TYPE_ENUM.indexOfEnum( key );
+                  accTypeEnumIndex = CMD5_ACC_TYPE_ENUM.Cmd5indexOfEnum( key );
 
                   if ( accTypeEnumIndex < 0  )
                      // throw new Error( `OOPS: "${ key }" not found while parsing for characteristic polling. There something wrong with your config.json file?` );
