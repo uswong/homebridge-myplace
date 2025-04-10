@@ -31,7 +31,7 @@ function isAccDirective( type, allowUpper = false )
    let accTypeEnumIndex;
 
    // We want lower case to be correct
-   accTypeEnumIndex = CMD5_ACC_TYPE_ENUM.properties.indexOfEnum( i => i.sche === type )
+   accTypeEnumIndex = CMD5_ACC_TYPE_ENUM.properties.Cmd5indexOfEnum( i => i.sche === type )
    if ( accTypeEnumIndex >= 0 )
       return { "type": type,
                "accTypeEnumIndex": accTypeEnumIndex };
@@ -39,7 +39,7 @@ function isAccDirective( type, allowUpper = false )
    // Note: There are othes like WiFi ... but nobody uses them thankfully !
    if ( allowUpper == true )
    {
-       accTypeEnumIndex = CMD5_ACC_TYPE_ENUM.properties.indexOfEnum( i => i.type === type );
+       accTypeEnumIndex = CMD5_ACC_TYPE_ENUM.properties.Cmd5indexOfEnum( i => i.type === type );
 
       // We return the correct lower case
       if ( accTypeEnumIndex >= 0 )

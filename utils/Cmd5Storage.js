@@ -93,7 +93,7 @@ class Cmd5Storage
 
    getStoredValueForCharacteristic( characteristicString )
    {
-      let accTypeEnumIndex = CMD5_ACC_TYPE_ENUM.indexOfEnum( characteristicString );
+      let accTypeEnumIndex = CMD5_ACC_TYPE_ENUM.Cmd5indexOfEnum( characteristicString );
 
       return this.getStoredValueForIndex( accTypeEnumIndex );
    }
@@ -106,7 +106,7 @@ class Cmd5Storage
    }
    setStoredValueForCharacteristic( characteristicString, value )
    {
-      let accTypeEnumIndex = CMD5_ACC_TYPE_ENUM.indexOfEnum( characteristicString );
+      let accTypeEnumIndex = CMD5_ACC_TYPE_ENUM.Cmd5indexOfEnum( characteristicString );
 
       this.setStoredValueForIndex( accTypeEnumIndex, value );
    }
@@ -123,7 +123,7 @@ class Cmd5Storage
    }
    testStoredValueForCharacteristic( characteristicString )
    {
-      let accTypeEnumIndex = CMD5_ACC_TYPE_ENUM.indexOfEnum( characteristicString );
+      let accTypeEnumIndex = CMD5_ACC_TYPE_ENUM.Cmd5indexOfEnum( characteristicString );
 
       return this.testStoredValueForIndex( accTypeEnumIndex );
    }

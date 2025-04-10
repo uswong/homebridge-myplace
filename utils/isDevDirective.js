@@ -34,7 +34,7 @@ function isDevDirective( deviceName, allowUpper = false )
    let devEnumIndex;
 
    // We want lower case to be correct
-   devEnumIndex = CMD5_DEVICE_TYPE_ENUM.indexOfEnum( deviceName );
+   devEnumIndex = CMD5_DEVICE_TYPE_ENUM.Cmd5indexOfEnum( deviceName );
    if ( devEnumIndex >= 0 )
       return { "deviceName": deviceName,
                "devEnumIndex": devEnumIndex };
@@ -43,7 +43,7 @@ function isDevDirective( deviceName, allowUpper = false )
    if ( allowUpper == true )
    {
       let ucDeviceName = ucFirst( deviceName );
-      devEnumIndex = CMD5_DEVICE_TYPE_ENUM.indexOfEnum( ucDeviceName );
+      devEnumIndex = CMD5_DEVICE_TYPE_ENUM.Cmd5indexOfEnum( ucDeviceName );
 
       // We return the correct upper case
       if ( devEnumIndex >= 0 )
