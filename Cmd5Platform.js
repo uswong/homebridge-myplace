@@ -5,9 +5,6 @@ const { getAccessoryName,
         getAccessoryDisplayName } = require( "./utils/getAccessoryNameFunctions" );
 const { parseAddQueueTypes } = require( "./Cmd5PriorityPollingQueue" );
 
-
-
-
 let Logger = require( "./utils/Logger" );
 let getAccessoryUUID = require( "./utils/getAccessoryUUID" );
 let lcFirst = require( "./utils/lcFirst" );
@@ -17,6 +14,8 @@ let trueTypeOf = require( "./utils/trueTypeOf" );
 // Hierarchy variables
 let HV = require( "./utils/HV" );
 
+// Essential variables
+const { spawnSync } = require('child_process');
 let createAccessorysInformationService = require( "./utils/createAccessorysInformationService" );
 
 // Pretty Colors
@@ -37,6 +36,8 @@ const Cmd5Accessory = require( "./Cmd5Accessory" ).Cmd5Accessory;
 // Settings, Globals and Constants
 let settings = require( "./cmd5Settings" );
 const constants = require( "./cmd5Constants" );
+const path = require('path');
+const fs = require('fs');
 
 // Platform definition
 class Cmd5Platform
@@ -102,23 +103,85 @@ class Cmd5Platform
       // Create the hierarhy variables
       this.hV = new HV();
 
-      this.parseConfigForCmd5Directives( this.config );
-
-      // Update the namespace for stored variables
-      // like timeout, stateChangeResponseTime ... As it may require
-      // changes from parseConfig.
-      this.hV.update( this );
-
-      this.processNewCharacteristicDefinitions( );
-
-
       // didFinishLaunching is only called after the
       // registerPlatform completes.
       api.on( "didFinishLaunching", ( ) =>
       {
-         this.log.info( chalk.blue( "Cmd5Platform didFinishLaunching" ) );
+         this.log.info( chalk.green( "MyPlace Platform didFinishLaunching" ) );
 
-         this.log.info( chalk.magenta( "Scanning config.json and the cache for devices to be removed/restored from cache" ) );
+         // Remove MyPlace shell script temporary working directories on Homebridge RESTART
+         this.log.info( chalk.yellow( "Removing temporary working directories" ) );
+         try {
+            const directoryPath = process.env.TMPDIR || "/tmp";
+            const files = fs.readdirSync(directoryPath);
+            const filteredFiles = files.filter(file => file.match(/^(AA|BB)-\d{3}$/));
+
+            filteredFiles.forEach(file => {
+               const sdir = `${directoryPath}/${file}`;
+
+               try {
+                  fs.rmSync(sdir, { recursive: true, force: true });
+                  this.log.info(`Temporary working directory ${sdir} removed`);
+               } catch (err) {
+                  this.log.error(` Unable to remove temporary working directory ${sdir}: [${err}]`);
+               }
+            });
+         } catch (err) {
+            this.log.error(`Unable to scan and remove temporary working directory: [${err}]`);
+         }
+
+         // Run ConfigCreator to update/refresh the MyPlace config
+         this.log.info( chalk.yellow( "Running createMyPlacConfig..." ) );
+         try {
+            // Build args for up to 3 devices
+            let args = [];
+            for (let i = 0; i < 3; i++) {
+               const device = this.config.devices[i];
+               if (device) {
+                  const ipPort = `${device.ipAddress || ''}:${device.port || ''}`;
+                  const name = device.name || '';
+                  const extraTimers = device.extraTimers ?? false;
+                  const debug = device.debug ?? false;
+                  args.push(ipPort, name, extraTimers, debug);
+               } else {
+                  // If device is missing, push empty args
+                  args.push('', '', '', '');
+               }
+            }
+
+            // Add __dirname and "homebridge" as last two arguments
+            args.push(`${__dirname}/MyPlace.sh`);
+
+            // Run the createMyPlaceconfig.js script
+            const scriptPath = path.resolve(__dirname, 'utils', 'createMyPlaceConfig.js');
+            this.log.debug('Running script:', scriptPath, args);
+
+            const result = spawnSync('node', [scriptPath, ...args], { encoding: 'utf8' });
+            const feedback = result.stdout.trim();
+
+            const lines = feedback.split('\n');
+            const status = lines.shift();
+            const jsonText = lines.join('\n').trim();
+
+            if (status.includes('DONE')) {
+               this.config = JSON.parse(jsonText);
+               this.log.info(status);
+               this.log.debug('Updated config:\n' + JSON.stringify(this.config, null, 2));
+            } else {
+               this.log.error('ERROR: Errors encountered running createMyPlaceConfig', status);
+               this.log.warn('Proceeding with original config — no accessories will be created.');
+            }
+         } catch (err) {
+            this.log.warn('ERROR: createMyPlaceConfig failed:', err);
+            this.log.warn('Proceeding with original config — no accessories will be created.');
+         }
+
+         // Now process these using the updated config
+         this.parseConfigForCmd5Directives( this.config );
+         this.hV.update( this );
+         this.processNewCharacteristicDefinitions( );
+
+         this.log.info( chalk.yellow( "Scanning the config and the cache for devices to be removed or restored from cache" ) );
          // scan the platform devices to identify which ones to be restored from cache
          this.scanToBeRestoredDevices( this.log );
 

@@ -9,11 +9,12 @@
     "properties": {
       "name": {
         "type": "string",
-        "default": "MyPlace",
-        "required": true
+        "default": "MyPlace"
       },
       "devices": {
         "type": "array",
+        "minItems": 1,
+        "maxItems": 3,
         "items": {
           "title": "AdvantageAir device",
           "type": "object",
@@ -22,7 +23,6 @@
               "title": "Name",
               "description": "The name of the AdvantageAir device, default=Aircon",
               "type": "string",
-              "required": true,
               "default": "Aircon"
             },
             "ipAddress": {
@@ -30,357 +30,32 @@
               "description": "The device's IP address. It is recommended to set a static IP for this device.",
               "type": "string",
               "format": "ipv4",
-              "required": true,
               "placeholder": "192.168.0.1"
             },
             "port": {
               "title": "PORT used",
               "description": "The PORT number used for this device, default=2025.",
               "type": "number",
-              "required": true,
-              "default": "2025"
+              "default": 2025
             },
             "extraTimers": {
               "title": "Include extra timers",
               "description": "Include extra timers to turn on the Aircon in specific mode: Cool, Heat or Vent.",
               "type": "boolean",
-              "required": false,
               "default": false
             },
             "debug": {
               "title": "Enable detailed debug log",
               "description": "Enables a detailed debug log. Useful when trying to figure out issues with the plugin.",
               "type": "boolean",
-              "required": false,
               "default": false
             }
-          }
-        }
-      },
-      "title": {
-        "type": "string"
-      },
-      "debug": {
-        "type": "boolean"
-      },
-      "outputConstants": {
-        "type": "boolean"
-      },
-      "statusMsg": {
-        "type": "boolean"
-      },
-      "timeout": {
-        "type": "number"
-      },
-      "stateChangeResponseTime": {
-        "type": "number"
-      },
-      "constants": {
-        "type": "array",
-        "required": false,
-        "items": {
-          "type": "object",
-          "properties": {
-            "key": {
-              "type": "string"
-            },
-            "value": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "queueTypes": {
-        "type": "array",
-        "required": false,
-        "items": {
-          "type": "object",
-          "properties": {
-            "queue": {
-              "type": "string"
-            },
-            "queueType": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "accessories": {
-        "type": "array",
-        "required": false,
-        "items": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string"
-            },
-            "displayName": {
-              "type": "string"
-            },
-            "active": {
-              "type": "number"
-            },
-            "brightness": {
-              "type": "number"
-            },
-            "on": {
-              "type": "boolean"
-            },
-            "rotationSpeed": {
-              "type": "number"
-            },
-            "rotationDirection": {
-              "type": "number"
-            },
-            "currentHeatingCoolingState": {
-              "type": "string"
-            },
-            "targetHeatingCoolingState": {
-              "type": "string"
-            },
-            "currentDoorState": {
-              "type": "number"
-            },
-            "targetDoorState": {
-              "type": "number"
-            },
-            "currentPosition": {
-              "type": "number"
-            },
-            "targetPosition": {
-              "type": "number"
-            },
-            "currentTemperature": {
-              "type": "number"
-            },
-            "targetTemperature": {
-              "type": "number"
-            },
-            "temperatureDisplayUnits": {
-              "type": "string"
-            },
-            "obstructionDetected": {
-              "type": "boolean"
-            },
-            "name": {
-              "type": "string"
-            },
-            "manufacturer": {
-              "type": "string"
-            },
-            "model": {
-              "type": "string"
-            },
-            "positionState": {
-              "type": "number"
-            },
-            "serialNumber": {
-              "type": "string"
-            },
-            "queue": {
-              "type": "string"
-            },
-            "polling": {
-              "type": "boolean"
-            },
-            "polling": {
-              "type": "array",
-              "required": false,
-              "items": {
-                "type": "object",
-                "properties": {
-                  "characteristic": {
-                    "type": "string"
-                  }
-                }
-              }
-            },
-            "props": {
-              "type": "object",
-              "required": false,
-              "properties": {
-                "brightness": {
-                  "type": "object",
-                  "properties": {
-                    "minStep": {
-                      "type": "number"
-                    }
-                  }
-                },
-                "currentTemperature": {
-                  "type": "object",
-                  "properties": {
-                    "maxValue": {
-                      "type": "number"
-                    },
-                    "minValue": {
-                      "type": "number"
-                    },
-                    "minStep": {
-                      "type": "number"
-                    }
-                  }
-                },
-                "rotationSpeed": {
-                  "type": "object",
-                  "properties": {
-                    "minStep": {
-                      "type": "number"
-                    }
-                  }
-                },
-                "targetTemperature": {
-                  "type": "object",
-                  "properties": {
-                    "maxValue": {
-                      "type": "number"
-                    },
-                    "minValue": {
-                      "type": "number"
-                    },
-                    "minStep": {
-                      "type": "number"
-                    }
-                  }
-                }
-              }
-            },
-            "state_cmd": {
-              "type": "string"
-            },
-            "state_cmd_suffix": {
-              "type": "string"
-            },
-            "linkedTypes": {
-              "type": "array",
-              "required": false,
-              "items": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  },
-                  "displayName": {
-                    "type": "string"
-                  },
-                  "active": {
-                    "type": "number"
-                  },
-                  "on": {
-                    "type": "boolean"
-                  },
-                  "brightness": {
-                    "type": "number"
-                  },
-                  "currentTemperature": {
-                    "type": "number"
-                  },
-                  "targetTemperature": {
-                    "type": "number"
-                  },
-                  "currentHeatingCoolingState": {
-                    "type": "string"
-                  },
-                  "targetHeatingCoolingState": {
-                    "type": "string"
-                  },
-                  "temperatureDisplayUnits": {
-                    "type": "string"
-                  },
-                  "rotationSpeed": {
-                    "type": "number"
-                  },
-                  "rotationDirection": {
-                    "type": "number"
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "manufacturer": {
-                    "type": "string"
-                  },
-                  "model": {
-                    "type": "string"
-                  },
-                  "serialNumber": {
-                    "type": "string"
-                  },
-                  "queue": {
-                    "type": "string"
-                  },
-                  "polling": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "characteristic": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
-                  "props": {
-                    "type": "object",
-                    "properties": {
-                      "brightness": {
-                        "type": "object",
-                        "properties": {
-                          "minStep": {
-                            "type": "number"
-                          }
-                        }
-                      },
-                      "currentTemperature": {
-                        "type": "object",
-                        "properties": {
-                          "maxValue": {
-                            "type": "number"
-                          },
-                          "minValue": {
-                            "type": "number"
-                          },
-                          "minStep": {
-                            "type": "number"
-                          }
-                        }
-                      },
-                      "rotationSpeed": {
-                        "type": "object",
-                        "properties": {
-                          "minStep": {
-                            "type": "number"
-                          }
-                        }
-                      },
-                      "targetTemperature": {
-                        "type": "object",
-                        "properties": {
-                          "maxValue": {
-                            "type": "number"
-                          },
-                          "minValue": {
-                            "type": "number"
-                          },
-                          "minStep": {
-                            "type": "number"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "state_cmd": {
-                    "type": "string"
-                  },
-                  "state_cmd_suffix": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
+          },
+          "required": ["name", "ipAddress", "port"]
         }
       }
-    }
+    },
+    "required": ["name", "devices"]
   },
   "layout": [
     {
