@@ -636,7 +636,7 @@ async function main({
   const myPlaceConfig = assembleMyPlaceConfig();
 
   console.log("DONE! createMyPlaceConfig completed successfully!");
-  console.log(JSON.stringify(myPlaceConfig, null, 2));
+  console.log(JSON.stringify(myPlaceConfig));
   process.exit(0);
 }
 
