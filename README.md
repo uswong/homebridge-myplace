@@ -25,99 +25,43 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
   * [Fujitsu anywAIR](https://apps.apple.com/au/app/anywair/id1509639853)
 
 ## Installation
-### Raspbian/HOOBS/macOS/NAS
 1. Install Homebridge via these instructions for [Raspbian](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian), [HOOBS](https://support.hoobs.org/docs) or [macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS), if you have not already.
 
-2. Check if <B>jq</B> and <B>curl</B> are installed (<B>curl</B> should already be):
-   ```shell
-   jq --version
-   curl --version
-   ```
-   If they are installed, the above command should return a version number. If not, install them:
-   ##### For Raspbian/Hoobs:
-   ```shell
-   sudo apt-get install <jq or curl>
-   ```
-   ##### For MacOS:
-   ```shell
-   brew install <jq or curl>
-   ```
-   ##### For Synology NAS:
-   ```shell
-   apt-get install <jq or curl>
-   ```
-   ##### For QNAP NAS:
-   ```shell
-   apk add <jq or curl>
-   ```
-   #### Important note:
-   At the time of updating this README, the `apt-get insatall` only allow jq-1.6 to be installed, which is notorously slow! To install the lastest and **MUCH faster** version of jq-1.7.1, please follow the step-by-step guide below:
-   1. Download the Source Code:
-   
-      You can download the source code "jq-1.7.1.tar.gz" for jq 1.7.1 from the official GitHub releases page (https://github.com/jqlang/jq/releases) or use the link below:
-      ```shell
-      wget https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-1.7.1.tar.gz
-      ```
-   2. Install Dependencies:
-   
-      Ensure you have the necessary build tools and dependencies installed. You can do this by running:
-      ```shell
-      sudo apt-get update
-      sudo apt-get install -y autoconf automake libtool make gcc
-      ```
-   3. Extract and Build:
-   
-      Extract the downloaded tarball and navigate to the directory:
-      ```shell
-      tar -xvzf jq-1.7.1.tar.gz
-      cd jq-1.7.1
-      chmod +x configure
-      ```
-   4. Run the following commands to build and install jq:
-      ```shell
-      ./configure
-      make
-      sudo make install
-      ```
-   5. Verify Installation:
+2. Make sure that <B>jq</B> and <B>curl</B> are installed.  Try to install <B>jq-1.7</B> if you can.  It is much faster.
 
-      After installation, you can verify that jq is installed correctly by running:
-      ```shell
-      jq --version
-      ```
 3. Find the `homebridge-myplace` plugin via the Homebridge UI 'Plugins' tab search function, once found, click the blue *down-arrow* at the bottom right to install.  
   
      <p align="left">
      <img width="400px" src="Screenshots/MyPlaceInstall3.png">
      </p>
 
-     Once installed, `Config: homebridge-myplace` UI will pop up, then follow the steps shown in Step 4 below.
+     Once installed, `Config: homebridge-myplace` UI will pop up, then follow the steps outlined in Step 4 below.
+
+     ![MyPlace_setting_UI](https://github.com/user-attachments/assets/49d49852-908b-4479-aebc-81337c820b1a)
 
      If for some reasons, the `Config: homebridge-myplace` UI did not pop up, locate your newly installed `Homebridge Myplace` plugin and click on the three dots at the bottom right and select `Plugin Config` to get the `Config: homebridge-myplace` UI.
    
-4. Create MyPlace configuration file:
+5. Configuring MyPlace plugin:
    
-   This is the `Config: homebridge-myplace` UI where you register your system parameters and create/check the required configuration file to run this plugin. 
-        <p align="left">
-        <img width="600px" src="Screenshots/MyPlaceConfigCreator.png">
-        </p>
-
-   In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the self-explanatory checkboxes for `Include extra timers` and `Enable detailed debug log`, then click `SAVE`. This is to save your system parameters. Click `CLOSE` if a pop up urging you to `RESTART`.
+   In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the self-explanatory checkboxes for `Include extra timers` and `Enable detailed debug log`, click `SAVE` then `RESTART`. 
      
-   Go back to `Config: homebridge-myplace` UI again (by clicking the the 3 dots at the bottom right and click `Plugin Config`) and press the `CREATE CONFIGURATION` button to create the required configuration file.
-
-   On a sucess, you may click `CHECK CONFIGURATION`to check the configuration file just created is in order. On a success it will say `Passed`; if something is incorrect, an error message will pop up telling you what needs to be fixed.
-
-   Otherwise, click `SAVE` then `RESTART`.
-
-   **HOOBS** users who do not have access to Homebridge UI (for now!) will have to run the Config Creator on a terminal:
-   ```shell
-      cd
-      <Plugin Path>/node_modules/homebridge-myplace/ConfigCreator.sh
+   For users who do not have access to Homebridge UI have to make sure that a config, as shown in the example below, is in the homebridge config.json:
+   
    ```
-     then follow the on-screen instructions.
-  
-     *typical `<Plugin Path>` is `/var/lib/hoobs/<bridge>` 
+   {
+    "name": "MyPlace",
+    "devices": [
+        {
+            "name": "Aircon",
+            "ipAddress": "192.168.1.3",
+            "port": 2025,
+            "extraTimers": true,
+            "debug": false
+        }
+    ],
+    "platform": "MyPlace"
+   }
+   ```
 
 ## How it Looks and Works
 ### (A) Aircon System (MyAir, E-zone, etc) has the following typical Homekit tiles:
