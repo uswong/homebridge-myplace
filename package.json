@@ -1,7 +1,7 @@
 {
    "name": "homebridge-myplace",
    "description": "Exec Plugin bringing Advanatge Air MyPlace system to Homekit",
-   "version": "2.2.1",
+   "version": "2.2.2",
    "license": "MIT",
    "author": {
       "name": "Ung Sing"
@@ -24,7 +24,7 @@
       "fakegato-history": ">=0.6.1",
       "github-version-checker": ">=2.2.0",
       "latest-version": "^5.1.0",
-      "moment": ">=2.29.2",
+      "moment": ">=2.29.4",
       "path": "^0.12.7",
       "userid": "^1.0.0",
       "which": "^2.0.2"
@@ -60,7 +60,7 @@
       "tools": "tools",
       "Screenshots": "Screenshots",
       "lib": "lib",
-      "utils": "utils" 
+      "utils": "utils"
    },
    "engines": {
       "homebridge": "^1.8.0 || ^2.0.0-beta.0",
@@ -94,7 +94,7 @@
       "pretest": "if [ ! -d 'node_modules' ];then printf ' test is only done in a development environment\n';exit 1; fi",
       "precheck": "if [ ! -d 'node_modules' ];then printf ' check is only done in a development environment\n';exit 1; fi",
       "check": "shellcheck MyPlace.sh test/*.bats test/StartServer test/StopServer",
-      "testjs": "node_modules/.bin/mocha ",
+      "testjs": "mocha ",
       "allBats": "a(){ npm run doBats test/StartServer test/*.bats test/StopServer; };a",
       "doBats": "export PORT=2025; bats",
       "bats": "a(){ npm run doBats test/StartServer $* test/StopServer; };a",
