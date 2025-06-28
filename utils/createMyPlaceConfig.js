@@ -5,10 +5,10 @@
 
 // Read CLI args
 // Input arguments (typically from process.argv)
-let AAIP = process.argv[2];
-let AAname = process.argv[3];
+let AAIP1 = process.argv[2];
+let AAname1 = process.argv[3];
 let extraTimers1 = process.argv[4];
-let AAdebug = process.argv[5];
+let AAdebug1 = process.argv[5];
 let AAIP2 = process.argv[6];
 let AAname2 = process.argv[7];
 let extraTimers2 = process.argv[8];
@@ -25,11 +25,6 @@ let myPlaceModelQueue = {};
 let myPlaceConstants = { constants: [] };
 let myPlaceQueueTypes = { queueTypes: [] };
 let myPlaceAccessories = { accessories: [] };
-
-// Set some BOOLEAN variables
-let hasAircons = false;
-let hasLights = false;
-let hasThings = false;
 
 // Declare an ID array
 let id = [];
@@ -139,7 +134,7 @@ function createLinkedTypesFanSpeed(name, motherAcc, ac, ip) {
   myPlaceAccessories.accessories.push(motherAcc);
 }
 
-function createFanSwitch(name, nameA, ac, ip) {
+function createFanSwitch(name, AAname, ac, ip) {
   let ac_l = ` ${ac}`;
   if (ac_l === " ac1") ac_l = "";
 
@@ -158,7 +153,7 @@ function createFanSwitch(name, nameA, ac, ip) {
   };
 
   // Attach the fan speed type to this switch as a linkedType
-  createLinkedTypesFanSpeed(`${nameA} FanSpeed`, myPlaceFanSwitch, ac, ip);
+  createLinkedTypesFanSpeed(`${AAname} FanSpeed`, myPlaceFanSwitch, ac, ip);
 }
 
 function createTimerLightbulb(name, suffix, ac, ip) {
@@ -217,7 +212,7 @@ function createZoneFan(name, zoneStr, ac, ip) {
   myPlaceAccessories.accessories.push(myPlaceZoneFan);
 }
 
-function createZoneFanv2(name, nameZ, zoneStr, ac, ip) {
+function createZoneFanv2(name, thisZoneName, zoneStr, ac, ip) {
   let ac_l = ` ${ac}`;
   if (ac_l === " ac1") ac_l = "";
 
@@ -246,7 +241,7 @@ function createZoneFanv2(name, nameZ, zoneStr, ac, ip) {
   };
 
   // Call the external function to generate the linked thermostat accessory
-  const myPlaceZoneThermostatLinkedTypes = createZoneThermostat(`${nameZ} Thermostat`, zoneStr, ac, ip);
+  const myPlaceZoneThermostatLinkedTypes = createZoneThermostat(`${thisZoneName} Thermostat`, zoneStr, ac, ip);
 
   // Append linked thermostat
   myPlaceZoneFanv2.linkedTypes.push(myPlaceZoneThermostatLinkedTypes);
@@ -261,7 +256,7 @@ function createZoneThermostat(name, zone, ac, ip) {
   if (zone !== "") zone = `${zone} `;
 
   // Construct the thermostat object
-  const myPlaceZoneThermostat = {
+  return {
     type: "Thermostat",
     displayName: name,
     currentHeatingCoolingState: "OFF",
@@ -286,11 +281,9 @@ function createZoneThermostat(name, zone, ac, ip) {
     state_cmd: `'${MYPLACE_SH_PATH}'`,
     state_cmd_suffix: `${zone}${ip}${ac_l}`
   };
-
-  return myPlaceZoneThermostat;
 }
 
-function createZoneFanv2noRotationDirection(name, nameZ, zoneStr, ac, ip) {
+function createZoneFanv2noRotationDirection(name, thisZoneName, zoneStr, ac, ip) {
   let ac_l = ` ${ac}`;
   if (ac_l === " ac1") ac_l = "";
 
@@ -317,7 +310,7 @@ function createZoneFanv2noRotationDirection(name, nameZ, zoneStr, ac, ip) {
   };
 
   // Generate linked thermostat accessory
-  const myPlaceZoneThermostatLinkedtypes = createZoneThermostat(`${nameZ} Thermostat`, zoneStr, ac, ip);
+  const myPlaceZoneThermostatLinkedTypes = createZoneThermostat(`${thisZoneName} Thermostat`, zoneStr, ac, ip);
 
   // Add linked thermostat
   myPlaceZoneFanv2noRotationDirection.linkedTypes.push(myPlaceZoneThermostatLinkedTypes);
@@ -451,7 +444,7 @@ function assembleMyPlaceConfig() {
 }
 
 async function main({
-  AAIP, AAname, extraTimers1, AAdebug,
+  AAIP1, AAname1, extraTimers1, AAdebug1,
   AAIP2, AAname2, extraTimers2, AAdebug2,
   AAIP3, AAname3, extraTimers3, AAdebug3,
   MYPLACE_SH_PATH
@@ -469,7 +462,7 @@ async function main({
   }
 
   try {
-    AAIP = normalizeIP(AAIP);
+    AAIP1 = normalizeIP(AAIP1);
     AAIP2 = normalizeIP(AAIP2);
     AAIP3 = normalizeIP(AAIP3);
   } catch (err) {
@@ -479,7 +472,7 @@ async function main({
 
   // Determine number of tablets/devices
   let noOfTablets = 0;
-  if (AAIP) noOfTablets = 1;
+  if (AAIP1) noOfTablets = 1;
   if (AAIP2) noOfTablets = 2;
   if (AAIP3) noOfTablets = 3;
 
@@ -487,26 +480,26 @@ async function main({
   // createBasicKeys, myPlaceConstants, myPlaceQueueTypes, myPlaceModelQueue, myPlaceAccessories, myPlaceConfig
 
   for (let n = 1; n <= noOfTablets; n++) {
-    let ip, IPA, nameA, extraTimers, debug, queue;
+    let ip, IPA, AAname, extraTimers, debug, queue;
 
     if (n === 1) {
-      ip = "\${AAIP}";
-      IPA = AAIP;
-      nameA = AAname;
+      ip = "\${AAIP1}";
+      IPA = AAIP1;
+      AAname = AAname1;
       extraTimers = extraTimers1;
-      debug = AAdebug;
+      debug = AAdebug1;
       queue = "AAA";
     } else if (n === 2) {
       ip = "\${AAIP2}";
       IPA = AAIP2;
-      nameA = AAname2;
+      AAname = AAname2;
       extraTimers = extraTimers2;
       debug = AAdebug2;
       queue = "AAB";
     } else if (n === 3) {
       ip = "\${AAIP3}";
       IPA = AAIP3;
-      nameA = AAname3;
+      AAname = AAname3;
       extraTimers = extraTimers3;
       debug = AAdebug3;
       queue = "AAC";
@@ -538,7 +531,7 @@ async function main({
     const hasThings = myAirData.system?.hasThings ?? false;
 
     // Set debugMyPlace flag based on any debug true
-    const debugMyPlace = (AAdebug === "true" || AAdebug2 === "true" || AAdebug3 === "true");
+    const debugMyPlace = (AAdebug1 === "true" || AAdebug2 === "true" || AAdebug3 === "true");
 
     // Create basic keys, constants and queueTypes
     createBasicKeys(debugMyPlace);
@@ -566,32 +559,34 @@ async function main({
         }
 
         if (a >= 2) {
-          nameA = `${nameA} ${ac}`;
+          thisAAname = `${AAname}${a}`;
+        } else {
+          thisAAname = AAname;
         }
-        const zoneA = zoneSetTemp ? "" : "noOtherThermostat";
+        const AAzone = zoneSetTemp ? "" : "noOtherThermostat";
 
         // Create aircon configs
-        createThermostat(nameA, zoneA, ac, ip);
-        createFanSwitch(`${nameA} Fan`, nameA, ac, ip);
-        createTimerLightbulb(`${nameA} Timer`, "timer", ac, ip);
+        createThermostat(thisAAname, AAzone, ac, ip);
+        createFanSwitch(`${thisAAname} Fan`, AAname, ac, ip);
+        createTimerLightbulb(`${thisAAname} Timer`, "timer", ac, ip);
         if (extraTimers === "true") {
-          createTimerLightbulb(`${nameA} Fan Timer`, "fanTimer", ac, ip);
-          createTimerLightbulb(`${nameA} Cool Timer`, "coolTimer", ac, ip);
-          createTimerLightbulb(`${nameA} Heat Timer`, "heatTimer", ac, ip);
+          createTimerLightbulb(`${thisAAname} Fan Timer`, "fanTimer", ac, ip);
+          createTimerLightbulb(`${thisAAname} Cool Timer`, "coolTimer", ac, ip);
+          createTimerLightbulb(`${thisAAname} Heat Timer`, "heatTimer", ac, ip);
         }
 
         // Create zone configs
         const myZoneValue = aircon.myZone ?? 0;
         for (let b = 1; b <= nZones; b++) {
           const zoneStr = `z${String(b).padStart(2, "0")}`;
-          const nameZ = myAirData.aircons?.[ac]?.zones?.[zoneStr]?.name ?? "";
+          const thisZoneName = myAirData.aircons?.[ac]?.zones?.[zoneStr]?.name ?? "";
           const rssi = myAirData.aircons?.[ac]?.zones?.[zoneStr]?.rssi ?? 0;
           if (rssi === 0) {
-            createZoneFan(`${nameZ} Zone`, zoneStr, ac, ip);
+            createZoneFan(`${thisZoneName} Zone`, zoneStr, ac, ip);
           } else if (myZoneValue !== 0) {
-            createZoneFanv2(`${nameZ} Zone`, nameZ, zoneStr, ac, ip);
+            createZoneFanv2(`${thisZoneName} Zone`, thisZoneName, zoneStr, ac, ip);
           } else {
-            createZoneFanv2noRotationDirection(`${nameZ} Zone`, nameZ, zoneStr, ac, ip);
+            createZoneFanv2noRotationDirection(`${thisZoneName} Zone`, thisZoneName, zoneStr, ac, ip);
           }
         }
       }
@@ -641,7 +636,7 @@ async function main({
 }
 
 main({
-  AAIP, AAname, extraTimers1, AAdebug,
+  AAIP1, AAname1, extraTimers1, AAdebug1,
   AAIP2, AAname2, extraTimers2, AAdebug2,
   AAIP3, AAname3, extraTimers3, AAdebug3,
   MYPLACE_SH_PATH
