@@ -39,7 +39,7 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
 
      ![MyPlace_setting_UI](https://github.com/user-attachments/assets/49d49852-908b-4479-aebc-81337c820b1a)
 
-     If for some reasons, the `Config: homebridge-myplace` UI did not pop up, locate your newly installed `Homebridge Myplace` plugin and click on the three dots at the bottom right and select `Plugin Config` to get the `Config: homebridge-myplace` UI.
+     If for some reasons, the `Config: homebridge-myplace` UI did not pop up, locate your newly installed `Homebridge Myplace` plugin and click on the three dots at the bottom right and select `Plugin Config` to get to the `Homebridge MyPlace` UI.
    
 5. Configuring MyPlace plugin:
    
