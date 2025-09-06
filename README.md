@@ -161,8 +161,11 @@ Garage Door is either Opened or Closed, hence it appears as a simple switch whil
 
 
 ## Special Thanks
+
+This project would not have been possible without the work of others in the Homebridge community.
+
 1. Many thanks to [Mitch Williams](https://github.com/mitch7391) who has created the wonderful [homebridge-cmd4-AdvantageAir](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir) plugin and has allowed me to participate in its development and in the process I have leant a lot about GitHub and on **bash** and **javascript** coding in homebridge environment.
-2. Many thanks also to [John Talbot](https://github.com/ztalbot2000) for his fantastic [homebridge-cmd4](https://github.com/ztalbot2000/homebridge-cmd4) plugin which I have forked and used it as the main engine for this plugin.
+2. Many thanks also to [John Talbot](https://github.com/ztalbot2000) for his fantastic [homebridge-cmd4](https://github.com/ztalbot2000/homebridge-cmd4) plugin which I have forked and reused most of the original logic, with some modifications and adjustments to meet the requirements of this plugin.
 3. And never forget to thank my beautiful wife who has put up with my obsession on this.....
 
 
