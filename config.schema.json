@@ -11,6 +11,13 @@
         "type": "string",
         "default": "MyPlace"
       },
+      "debug": {
+        "title": "Enable detailed debug log for this plugin",
+        "description": "Enables a detailed debug log. Useful when trying to figure out issues with the plugin.",
+        "type": "boolean",
+        "default": false
+      },
+
       "devices": {
         "type": "array",
         "minItems": 1,
@@ -45,8 +52,8 @@
               "default": false
             },
             "debug": {
-              "title": "Enable detailed debug log",
-              "description": "Enables a detailed debug log. Useful when trying to figure out issues with the plugin.",
+              "title": "Enable detailed debug log for this device",
+              "description": "Enables a detailed debug log. Useful when trying to figure out issues with this device.",
               "type": "boolean",
               "default": false
             }
@@ -76,6 +83,11 @@
         "devices[].extraTimers",
         "devices[].debug"
       ]
+    },
+    {
+      "type": "fieldset",
+      "title": "Global Plugin Settings",
+      "items": ["debug"]
     }
   ]
 }

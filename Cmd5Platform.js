@@ -157,18 +157,16 @@ class Cmd5Platform
             this.log.debug('Running script:', scriptPath, args);
 
             const result = spawnSync('node', [scriptPath, ...args], { encoding: 'utf8' });
-            const feedback = result.stdout.trim();
 
-            const lines = feedback.split('\n');
-            const status = lines.shift();
-            const jsonText = lines.join('\n').trim();
+            const status = result.stderr.trim();
+            const jsonText = result.stdout.trim();
 
             if (status.includes('DONE')) {
                this.config = JSON.parse(jsonText);
                this.log.info(status);
-               this.log.debug('Updated config:\n' + JSON.stringify(this.config, null, 2));
+               this.log.debug('Updated config:\n' + JSON.stringify(this.config));
             } else {
-               this.log.error('ERROR: Errors encountered running createMyPlaceConfig', status);
+               this.log.error(status);
                this.log.warn('Proceeding with original config — no accessories will be created.');
             }
          } catch (err) {
