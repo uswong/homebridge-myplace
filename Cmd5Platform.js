@@ -156,7 +156,7 @@ class Cmd5Platform
             const scriptPath = path.resolve(__dirname, 'utils', 'createMyPlaceConfig.js');
             this.log.debug('Running script:', scriptPath, args);
 
-            const result = spawnSync('node', [scriptPath, ...args], { encoding: 'utf8' });
+            const result = spawnSync('node', [scriptPath, ...args], { encoding: 'utf8', maxBuffer: 5 * 1024 * 1024 });
 
             const status = result.stderr.trim();
             const jsonText = result.stdout.trim();
