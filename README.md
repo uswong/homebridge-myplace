@@ -37,23 +37,26 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
 
      Once installed, `Config: homebridge-myplace` UI will pop up, then follow the steps outlined in Step 4 below.
 
-     <img width="800px" alt="image" src="https://github.com/user-attachments/assets/e89031c0-946a-43a3-806c-e36f7992813d" />
+     <img width="650px" alt="image" src="https://github.com/user-attachments/assets/8cc67168-ee66-4445-a019-cb5ca7b04afb" />
 
      If for some reasons, the `Config: homebridge-myplace` UI did not pop up, locate your newly installed `Homebridge Myplace` plugin and click on the three dots at the bottom right and select `Plugin Config` to get to the `Homebridge MyPlace` UI.
    
 5. Configuring MyPlace plugin:
    
-   In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the self-explanatory checkboxes for `Include extra timers` and `Enable detailed debug log`, click `SAVE` then `RESTART`. 
+   In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the self-explanatory checkboxes for `Include extra timers` and `Enable detailed debug log for this device`, click `SAVE` then `RESTART`.
+
+   For advanced users, you could check the `Enable detailed debug log for this plugin` under <B>Global Plugin Settings</B> if you want to see the detailed log of the plugin to diagnose any issue with the plugin.
      
    For users who do not have access to Homebridge UI have to make sure that a config, as shown in the example below, is in the homebridge config.json:
    
    ```
    {
     "name": "MyPlace",
+    "debug": false,
     "devices": [
         {
             "name": "Aircon",
-            "ipAddress": "192.168.1.3",
+            "ipAddress": "192.168.50.117",
             "port": 2025,
             "extraTimers": true,
             "debug": false
