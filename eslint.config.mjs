@@ -54,7 +54,7 @@ export default [
         document: "readonly",
       },
       ecmaVersion: 12,
-      sourceType: "commonjs",
+      sourceType: "module",
     },
 
     rules: {
