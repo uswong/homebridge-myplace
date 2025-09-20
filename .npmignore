@@ -1,7 +1,9 @@
 # This file is inclusive of .gitignore
 
-# test does not get distributed to the client
+# test etc does not get distributed to the client
 test
+.github
+.husky
 
 # tools does not get distributed to the client
 tools
