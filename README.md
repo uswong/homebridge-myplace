@@ -68,7 +68,7 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
    }
    ```
 
-   From version 2.3.0 onwards, if the `ipAddress` is missing, incorrectly formatted, or inaccessible, the plugin will automatically discover your connected AdvantageAir systems and configure them.
+   From version 2.3.0 onwards, any light switch whose name ends with ‘ Fan’ or ‘ Ex’, or begins with ‘Fan ’ or ‘Ex ’, will be treated as a fan accessory. In HomeKit, its icon will appear as a fan instead of a lightbulb..
 
 ## How it Looks and Works
 ### (A) Aircon System (MyAir, E-zone, etc) has the following typical Homekit tiles:
