@@ -37,7 +37,8 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
 
      Once installed, `Config: homebridge-myplace` UI will pop up, then follow the steps outlined in Step 4 below.
 
-     <img width="650px" alt="image" src="https://github.com/user-attachments/assets/8cc67168-ee66-4445-a019-cb5ca7b04afb" />
+     <img width="750px" alt="image" src="https://github.com/user-attachments/assets/0f60e1ee-b7d6-46de-959b-5e42a8ede80f" />
+
 
      If for some reasons, the `Config: homebridge-myplace` UI did not pop up, locate your newly installed `Homebridge Myplace` plugin and click on the three dots at the bottom right and select `Plugin Config` to get to the `Homebridge MyPlace` UI.
    
@@ -45,7 +46,7 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
    
    In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the self-explanatory checkboxes for `Include extra timers` and `Enable detailed debug log for this device`, click `SAVE` then `RESTART`.
 
-   For advanced users, you could check the `Enable detailed debug log for this plugin` under <B>Global Plugin Settings</B> if you want to see the detailed log of the plugin to diagnose any issue with the plugin.
+   For advanced users, you could expand the **Advanced Plugin Settings** to `Specify the maximum number of accessories (between 1 to 149) to be configured for this plugin`. Homebridge have a grand limit of 149 accessories which can be bridged.  Homebridge will crash if the number of accessories of all your installed plugins exceed 149.  You can also check the `Enable detailed debug log for this plugin` if you want to see the detailed log to diagnose any issue with the plugin.
      
    For users who do not have access to Homebridge UI have to make sure that a config, as shown in the example below, is in the homebridge config.json:
    
@@ -53,6 +54,7 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
    {
     "name": "MyPlace",
     "debug": false,
+    "maxAccessories": 120,
     "devices": [
         {
             "name": "Aircon",
@@ -65,6 +67,8 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
     "platform": "MyPlace"
    }
    ```
+
+   From version 2.3.0 onwards, if the `ipAddress` is missing, incorrectly formatted, or inaccessible, the plugin will automatically discover your connected AdvantageAir systems and configure them.
 
 ## How it Looks and Works
 ### (A) Aircon System (MyAir, E-zone, etc) has the following typical Homekit tiles:
@@ -143,7 +147,7 @@ Light with dimmer has a slider to control its brightness while a light without d
 <img width="240px" src="Screenshots/Fan_homekit_UI.jpg">
 </p>
 
-From version 1.1.6 onwards, if a light switch has a name ending with " Fan", it is regarded as a switch for turning ON or OFF a fan.  The icon on Homekit will then be a fan instead of a lightbulb. 
+From version 2.3.0 onwards, if a light switch has a name ending with " Fan" or " Ex" and that begins with "Fan " or "Ex " is regarded as a fan accessory.  The icon on Homekit will then be a fan instead of a lightbulb. 
 
 ### (D) Garage Door and Blinds
 <p align="left">
