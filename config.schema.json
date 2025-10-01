@@ -11,6 +11,14 @@
         "type": "string",
         "default": "MyPlace"
       },
+      "maxAccessories": {
+        "title": "Specify a maximum number accessories (between 1 to 149) to be configured for this plugin",
+        "description": "Note: Homebridge can only bridge a GRAND TOTAL of 149 accessories to HomeKit per bridge",
+        "type": "number",
+        "default": 149,
+        "minimum": 1,
+        "maximum": 149
+      },
       "debug": {
         "title": "Enable detailed debug log for this plugin",
         "description": "Enables a detailed debug log. Useful when trying to figure out issues with the plugin.",
@@ -34,7 +42,7 @@
             },
             "ipAddress": {
               "title": "IP Address",
-              "description": "The device's IP address. It is recommended to set a static IP for this device.",
+              "description": "The device's IP address. Leave it blank will trigger device auto-discovery.",
               "type": "string",
               "format": "ipv4",
               "placeholder": "192.168.0.1"
@@ -86,8 +94,10 @@
     },
     {
       "type": "fieldset",
-      "title": "Global Plugin Settings",
-      "items": ["debug"]
+      "title": "Advanced Plugin Settings",
+      "expandable": true,
+      "expanded": false,
+      "items": ["maxAccessories","debug"]
     }
   ]
 }
