@@ -46,7 +46,7 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
    
    In <B>Device Settings</B> area, fill out the `Name`, `IP Address` and `PORT used` fields (default PORT is `2025` for most users, Fujitsu anywAIR users set this to `10211` ) and check/uncheck the self-explanatory checkboxes for `Include extra timers` and `Enable detailed debug log for this device`, click `SAVE` then `RESTART`.
 
-   For advanced users, you could expand the **Advanced Plugin Settings** to `Specify the maximum number of accessories (between 1 to 149) to be configured for this plugin`. Homebridge have a grand limit of 149 accessories which can be bridged.  Homebridge will crash if the number of accessories of all your installed plugins exceed 149.  You can also check the `Enable detailed debug log for this plugin` if you want to see the detailed log to diagnose any issue with the plugin.
+   For advanced users, you can expand the **Advanced Plugin Settings** to `Specify the maximum number of accessories (between 1 to 149) to be configured for this plugin`. Homebridge has a grand limit of 149 accessories that can be bridged; it may crash if the total number of accessories from all installed plugins exceeds this limit. You can also check `Enable detailed debug log for this plugin` to view detailed logs and help diagnose any plugin issues.
      
    For users who do not have access to Homebridge UI have to make sure that a config, as shown in the example below, is in the homebridge config.json:
    
@@ -147,7 +147,7 @@ Light with dimmer has a slider to control its brightness while a light without d
 <img width="240px" src="Screenshots/Fan_homekit_UI.jpg">
 </p>
 
-From version 2.3.0 onwards, any light switch whose name ends with ‘ Fan’ or ‘ Ex’, or begins with ‘Fan ’ or ‘Ex ’, will be treated as a fan accessory. In HomeKit, its icon will appear as a fan instead of a lightbulb. 
+From version 2.3.0 onwards, any light switch whose name ends with ‘ Fan’ or ‘ Ex’, or begins with ‘Fan ’ or ‘Ex ’, will be treated as a fan accessory. In HomeKit, its icon will appear as a fan (as shown above) instead of a lightbulb. 
 
 ### (D) Garage Door and Blinds
 <p align="left">
