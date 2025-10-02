@@ -2,22 +2,28 @@
 // It can handle up to 3 independent myPlace (BB) systems
 
 async function createMyPlaceConfig(config, pluginPath) {
-
   const path = require("path");
 
-  let AAIP1 = config.devices[0]?.ipAddress;
   let AAname1 = config.devices[0]?.name || "Aircon";
+  let AAIP1 = config.devices[0]?.ipAddress;
+  let AAport1 = config.devices[0]?.port || 2025;
   let extraTimers1 = config.devices[0]?.extraTimers || false;
   let AAdebug1 = config.devices[0]?.debug || false;
-  let AAIP2 = config.devices[1]?.ipAddress;
   let AAname2 = config.devices[1]?.name || "Aircon2";
+  let AAIP2 = config.devices[1]?.ipAddress;
+  let AAport2 = config.devices[1]?.port || 2025;
   let extraTimers2 = config.devices[1]?.extraTimers || false;
   let AAdebug2 = config.devices[1]?.debug || false;
-  let AAIP3 = config.devices[2]?.ipAddress;
   let AAname3 = config.devices[2]?.name || "Aircon3";
+  let AAIP3 = config.devices[2]?.ipAddress;
+  let AAport3 = config.devices[2]?.port || 2025;
   let extraTimers3 = config.devices[2]?.extraTimers || false;
   let AAdebug3 = config.devices[2]?.debug || false;
   let MYPLACE_SH_PATH = path.join(pluginPath, "MyPlace.sh");
+
+  // store the original value in an array
+  const AAIPs = [AAIP1, AAIP2, AAIP3];
+  const AAports = [AAport1, AAport2, AAport3];
 
   // Define variables
   let myPlaceModelQueue = {};
@@ -433,16 +439,16 @@ async function createMyPlaceConfig(config, pluginPath) {
   const ipPortRegex = /^(\d{1,3}\.){3}\d{1,3}:\d+$/;
 
   // Validate and normalize IPs
-  function normalizeIP(ip) {
+  function normalizeIP( ip, port = 2025 ) {
     if (!ip || ip === "undefined" ) return "";
-    if (ipRegex.test(ip)) return `${ip}:2025`;
+    if (ipRegex.test(ip)) return `${ip}:${port}`;
     if (ipPortRegex.test(ip)) return ip;
     throw new Error(`ERROR: the specified IP address ${ip} is in wrong format`);
   }
 
-  AAIP1 = normalizeIP(AAIP1);
-  AAIP2 = normalizeIP(AAIP2);
-  AAIP3 = normalizeIP(AAIP3);
+  AAIP1 = normalizeIP(AAIP1, AAport1);
+  AAIP2 = normalizeIP(AAIP2, AAport2);
+  AAIP3 = normalizeIP(AAIP3, AAport3);
 
   // Determine number of tablets/devices
   let noOfTablets = 0;
@@ -486,7 +492,7 @@ async function createMyPlaceConfig(config, pluginPath) {
       if (!response.ok) throw new Error(`HTTP error ${response.status}`);
       myAirData = await response.json();
     } catch {
-      throw new Error(`ERROR: AdvantageAir system is inaccessible - not power ON or wrong IP address ${IPA}`);
+      throw new Error(`ERROR: AdvantageAir system is inaccessible - not power ON or wrong IP address ${AAIPs[n-1]} or wrong port ${AAports[n-1]}`);
     }
 
     // Extract system info (use safe chaining or checks as needed)
