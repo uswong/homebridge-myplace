@@ -3,6 +3,11 @@ const { devicesAutoDiscovery } = require("./devicesAutoDiscovery");
 const { createMyPlaceConfig } = require("./createMyPlaceConfig");
 const chalk = require("chalk");
 
+// Helper function to delay execution
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function updateConfig(config, log, pluginPath) {
   // Enforce maxAccessories: default 149 (Homebridge hard limit)
   const maxAccessories = (typeof config.maxAccessories === "number"
@@ -80,12 +85,61 @@ async function updateConfig(config, log, pluginPath) {
       return myplaceConfig;
     } catch (err) {
       const autoDiscoveryErrors = ["wrong format", "inaccessible"];
+      const isInaccessibleError = err.message.toLowerCase().includes("inaccessible");
+
       doDevicesAutoDiscovery = autoDiscoveryErrors.some(e =>
         err.message.toLowerCase().includes(e)
       );
 
       if (doDevicesAutoDiscovery && portsToTry.length > 0) {
         log.warn(`⚠️ ${err.message}`);
+
+        // Special handling for "inaccessible" errors - wait 5 seconds and retry up to 5 times
+        if (isInaccessibleError) {
+          const maxRetries = 5;
+          let retryCount = 0;
+          let retrySuccess = false;
+          let lastRetryError = err;
+
+          while (retryCount < maxRetries && !retrySuccess) {
+            retryCount++;
+            log.info(chalk.yellow(`⏳ Device inaccessible, waiting 5 seconds before retry (${retryCount}/${maxRetries})...`));
+            await delay(5000);
+
+            // Retry createMyPlaceConfig immediately without auto-discovery
+            try {
+              log.info(chalk.yellow(`🔄 Retrying createMyPlaceConfig (attempt ${retryCount}/${maxRetries})...`));
+              const myplaceConfig = await createMyPlaceConfig(config, pluginPath);
+              log.info(chalk.green(`✅ SUCCESS! createMyPlaceConfig completed after ${retryCount} retry attempt(s)!`));
+
+              // Enforce accessories limit on retry success
+              if (Array.isArray(myplaceConfig.accessories) &&
+                  myplaceConfig.accessories.length > maxAccessories) {
+                log.warn(`⚠️ Configured accessories exceed limit of ${maxAccessories}. ` +
+                         `Only the first ${maxAccessories} will be bridged, ` +
+                         `${myplaceConfig.accessories.length - maxAccessories} ignored.`);
+                myplaceConfig.accessories = myplaceConfig.accessories.slice(0, maxAccessories);
+              }
+
+              return myplaceConfig;
+            } catch (retryErr) {
+              lastRetryError = retryErr;
+              log.warn(`⚠️ Retry attempt ${retryCount}/${maxRetries} failed: ${retryErr.message}`);
+
+              // Check if it's still an "inaccessible" error for the next retry
+              if (!retryErr.message.toLowerCase().includes("inaccessible")) {
+                log.warn("⚠️ Error type changed, stopping retries and proceeding to auto-discovery...");
+                break;
+              }
+            }
+          }
+
+          // If we exhausted all retries and still failed, log the final error
+          if (!retrySuccess) {
+            log.warn(`❌ All ${maxRetries} retry attempts failed. Last error: ${lastRetryError.message}`);
+          }
+        }
+
         if (devicesAutoDiscoveryCounter === 0) {
           log.info(chalk.yellow("🔍 Starting devices auto-discovery..."));
         } else {
