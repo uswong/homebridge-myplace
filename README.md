@@ -25,7 +25,7 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
   * [Fujitsu anywAIR](https://apps.apple.com/au/app/anywair/id1509639853)
 
 ## Installation
-1. Install Homebridge via these instructions for [Raspbian](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian), [HOOBS](https://support.hoobs.org/docs) or [macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS), if you have not already.
+1. Install Homebridge via these instructions for [Raspbian](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian), [HOOBS](https://support.hoobs.org/docs), [macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS) or [Windows](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Virtual-Machine), if you have not already.
 
 2. Make sure that <B>jq</B> and <B>curl</B> are installed.  Try to install <B>jq-1.7</B> if you can.  It is much faster.
 
