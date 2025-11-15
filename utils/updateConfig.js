@@ -1,6 +1,7 @@
 // Update myplaceConfig
 const { devicesAutoDiscovery } = require("./devicesAutoDiscovery");
 const { createMyPlaceConfig } = require("./createMyPlaceConfig");
+const { readConfig } = require("./readConfig");
 const chalk = require("chalk");
 
 // Helper function to delay execution
@@ -8,7 +9,7 @@ function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function updateConfig(config, log, pluginPath) {
+async function updateConfig(config, log, storgePath, pluginPath) {
   // Enforce maxAccessories: default 149 (Homebridge hard limit)
   const maxAccessories = (typeof config.maxAccessories === "number"
     && config.maxAccessories > 0 && config.maxAccessories < 150)
@@ -54,8 +55,15 @@ async function updateConfig(config, log, pluginPath) {
         log.info("Devices config:\n" + JSON.stringify(config.devices, null, 2));
       } else {
         log.warn("⚠️  No devices found on any ports.");
-        log.warn("⚠️  Proceeding with original config — no accessories will be created and cached accessories will be removed!");
-        return config;
+        // check if an existing config.json is present in this.storagePath/.myplace, if so use it
+        existingConfig = readConfig( storagePath, log );
+        if (existingConfig) {
+          log.warn("⚠️  Proceeding with existing config — all cached accessories will be restored.");
+          return existingConfig;
+        } else {
+          log.warn("⚠️  Proceeding with original config — no accessories will be created and cached accessories will be removed!");
+          return config;
+        }
       }
     }
 
@@ -101,9 +109,17 @@ async function updateConfig(config, log, pluginPath) {
           let retrySuccess = false;
           let lastRetryError = err;
 
+          let deviceNumber = 1;
+          let ipAddress;
+          const match = err.message.match(/Device (\d+).*?IP ([\d.]+)/);
+          if (match) {
+            deviceNumber = parseInt(match[1], 10);
+            ipAddress = match[2];
+          }
+
           while (retryCount < maxRetries && !retrySuccess) {
             retryCount++;
-            log.info(chalk.yellow(`⏳ Device inaccessible, waiting 5 seconds before retry (${retryCount}/${maxRetries})...`));
+            log.info(chalk.yellow(`⏳ Device ${deviceNumber} with IP ${ipAddress} is inaccessible, waiting 5 seconds before retry (${retryCount}/${maxRetries})...`));
             await delay(5000);
 
             // Retry createMyPlaceConfig immediately without auto-discovery
@@ -136,7 +152,7 @@ async function updateConfig(config, log, pluginPath) {
 
           // If we exhausted all retries and still failed, log the final error
           if (!retrySuccess) {
-            log.warn(`❌ All ${maxRetries} retry attempts failed. Last error: ${lastRetryError.message}`);
+            log.error(`❌ All ${maxRetries} retry attempts failed. Last error: ${lastRetryError.message}`);
           }
         }
 
@@ -148,6 +164,12 @@ async function updateConfig(config, log, pluginPath) {
       } else {
         log.error(`❌ ${err.message}`);
         log.warn("⚠️  No devices found in your network!");
+        // check if an existing config.json is present in this.storagePath/.myplace, if so use it
+        existingConfig = readConfig( storagePath, log );
+        if (existingConfig) {
+          log.warn("⚠️  Proceeding with existing config — all cached accessories will be restored.");
+          return existingConfig;
+        }
         log.warn("⚠️  Proceeding with original config — no accessories will be created and cached accessories will be removed!");
         return config;
       }
