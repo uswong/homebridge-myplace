@@ -37,8 +37,7 @@
             "name": {
               "title": "Name",
               "description": "The name of the AdvantageAir device, default=Aircon",
-              "type": "string",
-              "default": "Aircon"
+              "type": "string"
             },
             "ipAddress": {
               "title": "IP Address",
@@ -65,12 +64,10 @@
               "type": "boolean",
               "default": false
             }
-          },
-          "required": ["name", "ipAddress", "port"]
+          }
         }
       }
-    },
-    "required": ["name", "devices"]
+    }
   },
   "layout": [
     {
