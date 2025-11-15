@@ -1,7 +1,7 @@
 {
    "name": "homebridge-myplace",
    "description": "Exec Plugin bringing Advanatge Air MyPlace system to Homekit",
-   "version": "2.3.1",
+   "version": "2.3.2",
    "license": "MIT",
    "author": {
       "name": "Ung Sing"
@@ -66,7 +66,7 @@
    },
    "engines": {
       "homebridge": "^1.8.0 || ^2.0.0-beta.0",
-      "node": "^18.20.4 || ^20.15.1 || ^22.10.0"
+      "node": "^18.20.4 || ^20.15.1 || ^22.10.0 || ^24.11.0"
    },
    "keywords": [
       "AdvantageAir",
