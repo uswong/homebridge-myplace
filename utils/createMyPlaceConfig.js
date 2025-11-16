@@ -4,26 +4,7 @@
 async function createMyPlaceConfig(config, pluginPath) {
   const path = require("path");
 
-  let AAname1 = config.devices[0]?.name || "Aircon";
-  let AAIP1 = config.devices[0]?.ipAddress;
-  let AAport1 = config.devices[0]?.port || 2025;
-  let extraTimers1 = config.devices[0]?.extraTimers || false;
-  let AAdebug1 = config.devices[0]?.debug || false;
-  let AAname2 = config.devices[1]?.name || "Aircon2";
-  let AAIP2 = config.devices[1]?.ipAddress;
-  let AAport2 = config.devices[1]?.port || 2025;
-  let extraTimers2 = config.devices[1]?.extraTimers || false;
-  let AAdebug2 = config.devices[1]?.debug || false;
-  let AAname3 = config.devices[2]?.name || "Aircon3";
-  let AAIP3 = config.devices[2]?.ipAddress;
-  let AAport3 = config.devices[2]?.port || 2025;
-  let extraTimers3 = config.devices[2]?.extraTimers || false;
-  let AAdebug3 = config.devices[2]?.debug || false;
-  let MYPLACE_SH_PATH = path.join(pluginPath, "MyPlace.sh");
-
-  // store the original value in an array
-  const AAIPs = [AAIP1, AAIP2, AAIP3];
-  const AAports = [AAport1, AAport2, AAport3];
+  const MYPLACE_SH_PATH = path.join(pluginPath, "MyPlace.sh");
 
   // Define variables
   let myPlaceModelQueue = {};
@@ -45,8 +26,8 @@ async function createMyPlaceConfig(config, pluginPath) {
     const debugA = debug == true ? "-debug" : "";
 
     const constant = {
-      key: ip,
-      value: `${IPA}${debugA}`
+      key: IPA,
+      value: `${ip}${debugA}`
     };
     myPlaceConstants.constants.push(constant);
   }
@@ -59,7 +40,7 @@ async function createMyPlaceConfig(config, pluginPath) {
     myPlaceQueueTypes.queueTypes.push(queueType);
   }
 
-  function createThermostat(name, zone, ac, ip) {
+  function createThermostat(name, zone, ac, IPA) {
     let ac_l = ` ${ac}`;
     if (zone !== "") zone = `${zone} `;
     if (ac_l === " ac1") ac_l = "";
@@ -88,14 +69,14 @@ async function createMyPlaceConfig(config, pluginPath) {
         }
       },
       state_cmd: `'${MYPLACE_SH_PATH}'`,
-      state_cmd_suffix: `${zone}${ip}${ac_l}`
+      state_cmd_suffix: `${zone}${IPA}${ac_l}`
     };
 
     // Attach the fan speed type to this switch as a linkedType
-    createLinkedTypesFanSpeed(`${name} FanSpeed`, myPlaceThermostat, ac, ip);
+    createLinkedTypesFanSpeed(`${name} FanSpeed`, myPlaceThermostat, ac, IPA);
   }
 
-  function createLinkedTypesFanSpeed(name, motherAcc, ac, ip) {
+  function createLinkedTypesFanSpeed(name, motherAcc, ac, IPA) {
     let ac_l = ` ${ac}`;
     if (ac_l === " ac1") ac_l = "";
 
@@ -117,7 +98,7 @@ async function createMyPlaceConfig(config, pluginPath) {
         }
       },
       state_cmd: `'${MYPLACE_SH_PATH}'`,
-      state_cmd_suffix: `fanSpeed ${ip}${ac_l}`
+      state_cmd_suffix: `fanSpeed ${IPA}${ac_l}`
     };
 
     // Attach the fan accessory to the Thermostat's `linkedTypes`
@@ -126,7 +107,7 @@ async function createMyPlaceConfig(config, pluginPath) {
     myPlaceAccessories.accessories.push(motherAcc);
   }
 
-  function createFanSwitch(name, AAname, ac, ip) {
+  function createFanSwitch(name, AAname, ac, IPA) {
     let ac_l = ` ${ac}`;
     if (ac_l === " ac1") ac_l = "";
 
@@ -141,14 +122,14 @@ async function createMyPlaceConfig(config, pluginPath) {
         { characteristic: "on" }
       ],
       state_cmd: `'${MYPLACE_SH_PATH}'`,
-      state_cmd_suffix: `${ip}${ac_l}`
+      state_cmd_suffix: `${IPA}${ac_l}`
     };
 
     // Attach the fan speed type to this switch as a linkedType
-    createLinkedTypesFanSpeed(`${AAname} FanSpeed`, myPlaceFanSwitch, ac, ip);
+    createLinkedTypesFanSpeed(`${AAname} FanSpeed`, myPlaceFanSwitch, ac, IPA);
   }
 
-  function createTimerLightbulb(name, suffix, ac, ip) {
+  function createTimerLightbulb(name, suffix, ac, IPA) {
     let ac_l = ` ${ac}`;
     if (ac_l === " ac1") ac_l = "";
 
@@ -170,13 +151,13 @@ async function createMyPlaceConfig(config, pluginPath) {
         }
       },
       state_cmd: `'${MYPLACE_SH_PATH}'`,
-      state_cmd_suffix: `${suffix} ${ip}${ac_l}`
+      state_cmd_suffix: `${suffix} ${IPA}${ac_l}`
     };
 
     myPlaceAccessories.accessories.push(myPlaceTimerLightbulb);
   }
 
-  function createZoneFan(name, zoneStr, ac, ip) {
+  function createZoneFan(name, zoneStr, ac, IPA) {
     let ac_l = ` ${ac}`;
     if (ac_l === " ac1") ac_l = "";
 
@@ -198,13 +179,13 @@ async function createMyPlaceConfig(config, pluginPath) {
         }
       },
       state_cmd: `'${MYPLACE_SH_PATH}'`,
-      state_cmd_suffix: `${zoneStr} ${ip}${ac_l}`
+      state_cmd_suffix: `${zoneStr} ${IPA}${ac_l}`
     };
 
     myPlaceAccessories.accessories.push(myPlaceZoneFan);
   }
 
-  function createZoneFanv2(name, thisZoneName, zoneStr, ac, ip) {
+  function createZoneFanv2(name, thisZoneName, zoneStr, ac, IPA) {
     let ac_l = ` ${ac}`;
     if (ac_l === " ac1") ac_l = "";
 
@@ -228,12 +209,12 @@ async function createMyPlaceConfig(config, pluginPath) {
         }
       },
       state_cmd: `'${MYPLACE_SH_PATH}'`,
-      state_cmd_suffix: `${zoneStr} ${ip}${ac_l}`,
+      state_cmd_suffix: `${zoneStr} ${IPA}${ac_l}`,
       linkedTypes: []
     };
 
     // Call the external function to generate the linked thermostat accessory
-    const myPlaceZoneThermostatLinkedTypes = createZoneThermostat(`${thisZoneName} Thermostat`, zoneStr, ac, ip);
+    const myPlaceZoneThermostatLinkedTypes = createZoneThermostat(`${thisZoneName} Thermostat`, zoneStr, ac, IPA);
 
     // Append linked thermostat
     myPlaceZoneFanv2.linkedTypes.push(myPlaceZoneThermostatLinkedTypes);
@@ -241,7 +222,7 @@ async function createMyPlaceConfig(config, pluginPath) {
     myPlaceAccessories.accessories.push(myPlaceZoneFanv2);
   }
 
-  function createZoneThermostat(name, zone, ac, ip) {
+  function createZoneThermostat(name, zone, ac, IPA) {
     let ac_l = ` ${ac}`;
     if (ac_l === " ac1") ac_l = "";
 
@@ -271,11 +252,11 @@ async function createMyPlaceConfig(config, pluginPath) {
         }
       },
       state_cmd: `'${MYPLACE_SH_PATH}'`,
-      state_cmd_suffix: `${zone}${ip}${ac_l}`
+      state_cmd_suffix: `${zone}${IPA}${ac_l}`
     };
   }
 
-  function createZoneFanv2noRotationDirection(name, thisZoneName, zoneStr, ac, ip) {
+  function createZoneFanv2noRotationDirection(name, thisZoneName, zoneStr, ac, IPA) {
     let ac_l = ` ${ac}`;
     if (ac_l === " ac1") ac_l = "";
 
@@ -297,12 +278,12 @@ async function createMyPlaceConfig(config, pluginPath) {
         }
       },
       state_cmd: `'${MYPLACE_SH_PATH}'`,
-      state_cmd_suffix: `${zoneStr} ${ip}${ac_l}`,
+      state_cmd_suffix: `${zoneStr} ${IPA}${ac_l}`,
       linkedTypes: []
     };
 
     // Generate linked thermostat accessory
-    const myPlaceZoneThermostatLinkedTypes = createZoneThermostat(`${thisZoneName} Thermostat`, zoneStr, ac, ip);
+    const myPlaceZoneThermostatLinkedTypes = createZoneThermostat(`${thisZoneName} Thermostat`, zoneStr, ac, IPA);
 
     // Add linked thermostat
     myPlaceZoneFanv2noRotationDirection.linkedTypes.push(myPlaceZoneThermostatLinkedTypes);
@@ -310,7 +291,7 @@ async function createMyPlaceConfig(config, pluginPath) {
     myPlaceAccessories.accessories.push(myPlaceZoneFanv2noRotationDirection);
   }
 
-  function createLightbulbNoDimmer(name, id, ip) {
+  function createLightbulbNoDimmer(name, id, IPA) {
     // Remove quotes from id, like Bash's ${id//\"/}
     id = id.replace(/"/g, "");
 
@@ -324,13 +305,13 @@ async function createMyPlaceConfig(config, pluginPath) {
         { characteristic: "on" }
       ],
       state_cmd: `'${MYPLACE_SH_PATH}'`,
-      state_cmd_suffix: `ligID:${id} ${ip}`
+      state_cmd_suffix: `ligID:${id} ${IPA}`
     };
 
     myPlaceAccessories.accessories.push(myPlaceLightbulbNoDimmer);
   }
 
-  function createLightbulbWithDimmer(name, id, ip) {
+  function createLightbulbWithDimmer(name, id, IPA) {
     // Remove quotes from id (like Bash's ${id//\"/})
     id = id.replace(/"/g, "");
 
@@ -351,13 +332,13 @@ async function createMyPlaceConfig(config, pluginPath) {
         }
       },
       state_cmd: `'${MYPLACE_SH_PATH}'`,
-      state_cmd_suffix: `ligID:${id} ${ip}`
+      state_cmd_suffix: `ligID:${id} ${IPA}`
     };
 
     myPlaceAccessories.accessories.push(myPlaceLightbulbWithDimmer);
   }
 
-  function createFanNoRotationSpeed(name, id, ip) {
+  function createFanNoRotationSpeed(name, id, IPA) {
     // Remove quotes from id
     id = id.replace(/"/g, "");
 
@@ -371,13 +352,13 @@ async function createMyPlaceConfig(config, pluginPath) {
         { characteristic: "on" }
       ],
       state_cmd: `'${MYPLACE_SH_PATH}'`,
-      state_cmd_suffix: `ligID:${id} ${ip}`
+      state_cmd_suffix: `ligID:${id} ${IPA}`
     };
 
     myPlaceAccessories.accessories.push(myPlaceFanNoRotationSpeed);
   }
 
-  function createGarageDoorOpener(name, id, ip) {
+  function createGarageDoorOpener(name, id, IPA) {
     // Remove quotes from id
     id = id.replace(/"/g, "");
 
@@ -394,13 +375,13 @@ async function createMyPlaceConfig(config, pluginPath) {
         { characteristic: "targetDoorState" }
       ],
       state_cmd: `'${MYPLACE_SH_PATH}'`,
-      state_cmd_suffix: `thiID:${id} ${ip}`
+      state_cmd_suffix: `thiID:${id} ${IPA}`
     };
 
     myPlaceAccessories.accessories.push(myPlaceGarageDoorOpener);
   }
 
-  function createWindowCovering(name, id, ip) {
+  function createWindowCovering(name, id, IPA) {
     // Remove quotes from id
     id = id.replace(/"/g, "");
 
@@ -418,7 +399,7 @@ async function createMyPlaceConfig(config, pluginPath) {
         { characteristic: "targetPosition" }
       ],
       state_cmd: `'${MYPLACE_SH_PATH}'`,
-      state_cmd_suffix: `thiID:${id} ${ip}`
+      state_cmd_suffix: `thiID:${id} ${IPA}`
     };
 
     myPlaceAccessories.accessories.push(myPlaceWindowCovering);
@@ -443,56 +424,41 @@ async function createMyPlaceConfig(config, pluginPath) {
     if (!ip || ip === "undefined" ) return "";
     if (ipRegex.test(ip)) return `${ip}:${port}`;
     if (ipPortRegex.test(ip)) return ip;
-    throw new Error(`ERROR: the specified IP address ${ip} is in wrong format`);
+    throw new Error(`ERROR: Device ${n + 1} - the specified IP address ${ip} is in wrong format`);
   }
 
-  AAIP1 = normalizeIP(AAIP1, AAport1);
-  AAIP2 = normalizeIP(AAIP2, AAport2);
-  AAIP3 = normalizeIP(AAIP3, AAport3);
-
   // Determine number of tablets/devices
-  let noOfTablets = 0;
-  if (AAIP1) noOfTablets = 1;
-  if (AAIP2) noOfTablets = 2;
-  if (AAIP3) noOfTablets = 3;
+  let noOfTablets = config.devices.length;
 
   // Initialize global config objects (assumed to be declared globally or passed)
   // myPlaceConstants, myPlaceQueueTypes, myPlaceModelQueue, myPlaceAccessories, myPlaceConfig
 
-  for (let n = 1; n <= noOfTablets; n++) {
-    let ip, IPA, AAname, extraTimers, debug, queue;
-
-    if (n === 1) {
-      ip = "${AAIP1}";
-      IPA = AAIP1;
-      AAname = AAname1;
-      extraTimers = extraTimers1;
-      debug = AAdebug1;
-      queue = "AAA";
-    } else if (n === 2) {
-      ip = "${AAIP2}";
-      IPA = AAIP2;
-      AAname = AAname2;
-      extraTimers = extraTimers2;
-      debug = AAdebug2;
-      queue = "AAB";
-    } else if (n === 3) {
-      ip = "${AAIP3}";
-      IPA = AAIP3;
-      AAname = AAname3;
-      extraTimers = extraTimers3;
-      debug = AAdebug3;
-      queue = "AAC";
+  for (let n = 0; n < noOfTablets; n++) {
+    let AAname
+    if (n == 0) {
+      AAname = config.devices[n]?.name || `Aircon`;
+    } else {
+      AAname = config.devices[n]?.name || `Aircon${n + 1}`;
     }
+    const AAIP = config.devices[n]?.ipAddress;
+    const AAport = config.devices[n]?.port || 2025;
+    const extraTimers = config.devices[n]?.extraTimers || false;
+    const debug = config.devices[n]?.debug || false;
+    const queue=["AAA", "AAB", "AAC"][n]
+
+    const ip = normalizeIP(AAIP, AAport);
+    const IPA = `\${AAIP${n + 1}}`
+
+    // if (!ip || ip === "undefined" || !ipRegex.test(ip)) continue;
 
     // Fetch system data
     let myAirData;
     try {
-      const response = await fetch(`http://${IPA}/getSystemData`, {timeout: 45000});
+      const response = await fetch(`http://${ip}/getSystemData`, {timeout: 45000});
       if (!response.ok) throw new Error(`HTTP error ${response.status}`);
       myAirData = await response.json();
     } catch {
-      throw new Error(`ERROR: AdvantageAir system is inaccessible - not power ON or wrong IP address ${AAIPs[n-1]} or wrong port ${AAports[n-1]}`);
+      throw new Error(`ERROR: Device ${n + 1} is inaccessible - not power ON or wrong IP ${AAIP} or wrong port ${AAport}`);
     }
 
     // Extract system info (use safe chaining or checks as needed)
@@ -540,13 +506,13 @@ async function createMyPlaceConfig(config, pluginPath) {
         const AAzone = zoneSetTemp ? "" : "noOtherThermostat";
 
         // Create aircon configs
-        createThermostat(thisAAname, AAzone, ac, ip);
-        createFanSwitch(`${thisAAname} Fan`, AAname, ac, ip);
-        createTimerLightbulb(`${thisAAname} Timer`, "timer", ac, ip);
+        createThermostat(thisAAname, AAzone, ac, IPA);
+        createFanSwitch(`${thisAAname} Fan`, AAname, ac, IPA);
+        createTimerLightbulb(`${thisAAname} Timer`, "timer", ac, IPA);
         if (extraTimers) {
-          createTimerLightbulb(`${thisAAname} Fan Timer`, "fanTimer", ac, ip);
-          createTimerLightbulb(`${thisAAname} Cool Timer`, "coolTimer", ac, ip);
-          createTimerLightbulb(`${thisAAname} Heat Timer`, "heatTimer", ac, ip);
+          createTimerLightbulb(`${thisAAname} Fan Timer`, "fanTimer", ac, IPA);
+          createTimerLightbulb(`${thisAAname} Cool Timer`, "coolTimer", ac, IPA);
+          createTimerLightbulb(`${thisAAname} Heat Timer`, "heatTimer", ac, IPA);
         }
 
         // Create zone configs
@@ -556,11 +522,11 @@ async function createMyPlaceConfig(config, pluginPath) {
           const thisZoneName = myAirData.aircons?.[ac]?.zones?.[zoneStr]?.name ?? "";
           const rssi = myAirData.aircons?.[ac]?.zones?.[zoneStr]?.rssi ?? 0;
           if (rssi === 0) {
-            createZoneFan(`${thisZoneName} Zone`, zoneStr, ac, ip);
+            createZoneFan(`${thisZoneName} Zone`, zoneStr, ac, IPA);
           } else if (myZoneValue !== 0) {
-            createZoneFanv2(`${thisZoneName} Zone`, thisZoneName, zoneStr, ac, ip);
+            createZoneFanv2(`${thisZoneName} Zone`, thisZoneName, zoneStr, ac, IPA);
           } else {
-            createZoneFanv2noRotationDirection(`${thisZoneName} Zone`, thisZoneName, zoneStr, ac, ip);
+            createZoneFanv2noRotationDirection(`${thisZoneName} Zone`, thisZoneName, zoneStr, ac, IPA);
           }
         }
       }
@@ -577,11 +543,11 @@ async function createMyPlaceConfig(config, pluginPath) {
         // All switches with names starting with "Fan " or "Ex " and those ending with " Fan" or " Ex" will consider to be Fan accessories
         const fanPattern = /^(Fan |Ex )|( Fan| Ex)$/;
         if (fanPattern.test(name)) {
-          createFanNoRotationSpeed(name, id, ip);
+          createFanNoRotationSpeed(name, id, IPA);
         } else if (value === null) {
-          createLightbulbNoDimmer(name, id, ip);
+          createLightbulbNoDimmer(name, id, IPA);
         } else {
-          createLightbulbWithDimmer(name, id, ip);
+          createLightbulbWithDimmer(name, id, IPA);
         }
       }
     }
@@ -595,9 +561,9 @@ async function createMyPlaceConfig(config, pluginPath) {
         const channelDipState = thing?.channelDipState ?? "";
 
         if (channelDipState == "3") {
-          createGarageDoorOpener(name, id, ip);
+          createGarageDoorOpener(name, id, IPA);
         } else if (channelDipState == "1" || channelDipState == "2") {
-          createWindowCovering(name, id, ip);
+          createWindowCovering(name, id, IPA);
         }
       }
     }
