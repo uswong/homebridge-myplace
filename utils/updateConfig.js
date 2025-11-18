@@ -9,7 +9,7 @@ function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function updateConfig(config, log, storgePath, pluginPath) {
+async function updateConfig(config, log, storagePath, pluginPath) {
   // Enforce maxAccessories: default 149 (Homebridge hard limit)
   const maxAccessories = (typeof config.maxAccessories === "number"
     && config.maxAccessories > 0 && config.maxAccessories < 150)
