@@ -123,7 +123,7 @@ class Cmd5Platform
          this.processNewCharacteristicDefinitions( );
 
          // scan the platform accessories (devices) to identify which ones to be restored from cache
-         this.log.info( chalk.yellow( "Scanning the config and the cache for accessories to be removed or restored from cache..." ) );
+         this.log.info( chalk.yellow( "***Scanning the config and the cache for accessories to be removed or restored from cache..." ) );
          this.scanToBeRemovedOrRestored( this.log );
 
          // Any accessory NOT to be restored should be removed, find them
