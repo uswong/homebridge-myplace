@@ -1,7 +1,7 @@
 // This async function is to generate a complete configuration file needed for the myPlace plugin
 // It can handle up to 3 independent myPlace (BB) systems
 
-async function createMyPlaceConfig(config, pluginPath) {
+async function createMyPlaceConfig(config, IPs, pluginPath, log) {
   const path = require("path");
 
   const MYPLACE_SH_PATH = path.join(pluginPath, "MyPlace.sh");
@@ -415,18 +415,6 @@ async function createMyPlaceConfig(config, pluginPath) {
     };
   }
 
-  // Helper regex to validate IP and IP:port
-  const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
-  const ipPortRegex = /^(\d{1,3}\.){3}\d{1,3}:\d+$/;
-
-  // Validate and normalize IPs
-  function normalizeIP( ip, port = 2025 ) {
-    if (!ip || ip === "undefined" ) return "";
-    if (ipRegex.test(ip)) return `${ip}:${port}`;
-    if (ipPortRegex.test(ip)) return ip;
-    throw new Error(`ERROR: Device ${n + 1} - the specified IP address ${ip} is in wrong format`);
-  }
-
   // Determine number of tablets/devices
   let noOfTablets = config.devices.length;
 
@@ -440,31 +428,40 @@ async function createMyPlaceConfig(config, pluginPath) {
     } else {
       AAname = config.devices[n]?.name || `Aircon${n + 1}`;
     }
-    const AAIP = config.devices[n]?.ipAddress;
-    const AAport = config.devices[n]?.port || 2025;
+
+    const ip = IPs[n];
+    if (ip === "undefined") continue;
+
     const extraTimers = config.devices[n]?.extraTimers || false;
     const debug = config.devices[n]?.debug || false;
     const queue=["AAA", "AAB", "AAC"][n]
 
-    const ip = normalizeIP(AAIP, AAport);
     const IPA = `\${AAIP${n + 1}}`
-
-    // if (!ip || ip === "undefined" || !ipRegex.test(ip)) continue;
 
     // Fetch system data
     let myAirData;
     try {
-      const response = await fetch(`http://${ip}/getSystemData`, {timeout: 45000});
+      const response = await fetch(`http://${ip}/getSystemData`);
       if (!response.ok) throw new Error(`HTTP error ${response.status}`);
       myAirData = await response.json();
     } catch {
-      throw new Error(`ERROR: Device ${n + 1} is inaccessible - not power ON or wrong IP ${AAIP} or wrong port ${AAport}`);
+      if (n === noOfTablets - 1) {
+        throw new Error(`Device ${n + 1} with IP ${ip} is inaccessible (power OFF or wrong IP or wrong port).`);
+      } else {
+        log.warn(`⚠️  Device ${n + 1} with IP ${ip} is inaccessible (power OFF or wrong IP or wrong port).`);
+        continue;
+      }
     }
 
     // Extract system info (use safe chaining or checks as needed)
     const sysName = (myAirData.system?.name ?? "").replace(/ /g, "_").replace(/['"]/g, "");
     if (!sysName) {
-      throw new Error("ERROR: failed to get system info from your AdvantageAir system!");
+      if (n === noOfTablets - 1) {
+        throw new Error("Failed to get system info from your device ${n + 1}!");
+      } else {
+        log.error("⚠️  Failed to get system info from your device ${n + 1}!");
+        continue;
+      }
     }
     const sysType = (myAirData.system?.sysType ?? "").replace(/ /g, "_").replace(/"/g, "");
     const tspModel = (myAirData.system?.tspModel ?? "").replace(/ /g, "_").replace(/"/g, "");

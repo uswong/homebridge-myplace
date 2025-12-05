@@ -37,17 +37,17 @@ async function devicesAutoDiscovery(config, log, portsToTry) {
       ].filter(d => d.ipAddress); // remove empty devices
 
       if (foundDevices.length > 0) {
-        log.info(chalk.blue(`✅ Found ${foundDevices.length} devices on port ${port}`));
+        log.info(`✅ Found ${foundDevices.length} devices on port ${port}`);
         break;
       } else {
-        log.warn(chalk.yellow(`⚠️ No devices found on port ${port}, trying next...`));
+        log.warn(`⚠️ No devices found on port ${port}, trying next...`);
       }
     } catch (err) {
-      log.error(chalk.red(`❌ Scan failed on port ${port}: ${err.message}`));
+      log.error(`❌ Scan failed on port ${port}: ${err.message}`);
     }
   }
 
-  return { foundDevices, portsToTry };
+  return foundDevices;
 }
 
 module.exports = { devicesAutoDiscovery };

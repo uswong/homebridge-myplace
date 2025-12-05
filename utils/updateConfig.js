@@ -1,4 +1,5 @@
 // Update myplaceConfig
+const { isIpAccessible } = require("./isIpAccessible");
 const { devicesAutoDiscovery } = require("./devicesAutoDiscovery");
 const { createMyPlaceConfig } = require("./createMyPlaceConfig");
 const { readConfig } = require("./readConfig");
@@ -8,6 +9,8 @@ const chalk = require("chalk");
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+const isValidIp = (value) => /^(?:\d{1,3}\.){3}\d{1,3}$/.test(value);
 
 async function updateConfig(config, log, storagePath, pluginPath) {
   // Enforce maxAccessories: default 149 (Homebridge hard limit)
@@ -35,145 +38,113 @@ async function updateConfig(config, log, storagePath, pluginPath) {
     });
   }
 
+  let IPs = [];
   if (!Array.isArray(config.devices) || devicesMissingIPs) {
-    log.warn(chalk.yellow("⚠️  No devices found in the original config — triggering auto-discovery..."));
+    log.warn(`⚠️  No devices found in the original config!`);
+    log.warn(`🔍 *** Triggering device auto-discovery...`);
     doDevicesAutoDiscovery = true;
-  }
-
-  while (portsToTry.length > 0) {
-    // Auto-discovery stage
-    if (doDevicesAutoDiscovery) {
-      log.info("🔍 Ports to scan for devices:", portsToTry);
-      const { foundDevices, portsToTry: remainingPorts } =
-        await devicesAutoDiscovery(config, log, portsToTry);
-
-      portsToTry = remainingPorts;
-      devicesAutoDiscoveryCounter++;
-
-      if (foundDevices.length > 0) {
-        config.devices = foundDevices;
-        log.info("Devices config:\n" + JSON.stringify(config.devices, null, 2));
-      } else {
-        log.warn("⚠️  No devices found on any ports.");
-        // check if an existing config.json is present in this.storagePath/.myplace, if so use it
-        existingConfig = readConfig( storagePath, log );
-        if (existingConfig) {
-          log.warn("⚠️  Proceeding with existing config — all cached accessories will be restored.");
-          return existingConfig;
+  } else {
+    // check if the device(s) in config is accessbile or not with retry up to 5 times, if not, set it to "undefined".
+    log.warn(`🕵️  *** Validating device IP address(es)...`);
+    const noOfDevices = config.devices.length;
+    for ( let i = 0; i < noOfDevices; i++ ) {
+      const ip = config.devices[i].ipAddress;
+      const port = config.devices[i].port || 2025;
+      if (ip) {
+        IPs.push(`${ip}:${port}`);
+        if ( !isValidIp(ip) ) {
+          log.warn(`⚠️  Device ${i + 1}/${noOfDevices} with IP ${ip}:${port} has its IP in wrong format!`);
+          log.warn(`⚠️  Device ${i + 1}/${noOfDevices} will NOT be processed!`);
+          IPs[i] = "undefined";
         } else {
-          log.warn("⚠️  Proceeding with original config — no accessories will be created and cached accessories will be removed!");
-          return config;
+          const isIpAccessibleTest = await isIpAccessible( `${ip}:${port}`, i, noOfDevices, log );
+          if ( !isIpAccessibleTest ) {
+            log.warn(`⚠️  Device ${i + 1}/${noOfDevices} with IP ${ip}:${port} is inaccessible! May be power OFF, wrong IP or wrong port.`);
+            log.warn(`⚠️  Device ${i + 1}/${noOfDevices} will NOT be processed!`);
+            IPs[i] = "undefined";
+          } else {
+            log.info(`✅ Device ${i + 1}/${noOfDevices} validated!`);
+          }
         }
+      } else {
+        IPs.push("undefined");
       }
     }
+    // check that not all IPs are "undefined", if so, do devucesAutoDiscovery...
+    if (IPs.every((el) => el === "undefined")) {
+      // final attempt to auto discover a Bond device
+      log.warn(`⚠️  No specified device is accessible on the LAN network!`);
+      log.warn(`🔍 *** Triggering device auto-discovery...`);
+      doDevicesAutoDiscovery = true;
+    }
+  }
 
-    // Run ConfigCreator
-    log.info(chalk.yellow(
-      devicesAutoDiscoveryCounter > 1
-        ? "Running createMyPlaceConfig again..."
-        : "Running createMyPlaceConfig..."
-    ));
+  // Auto-discovery stage
+  if ( doDevicesAutoDiscovery ) {
+    log.info("🔍 Ports to scan for devices:", portsToTry);
+    const foundDevices = await devicesAutoDiscovery(config, log, portsToTry);
 
-    try {
-      const myplaceConfig = await createMyPlaceConfig(config, pluginPath);
-      log.info(chalk.green("✅ DONE! createMyPlaceConfig completed successfully!"));
-      log.debug("Updated MyPlace config:\n" + JSON.stringify(myplaceConfig, null, 2));
+    const noOfDevices = foundDevices.length;
+    if (noOfDevices > 0) {
+      config.devices = foundDevices;
+      log.info("Devices config:\n" + JSON.stringify(config.devices, null, 2));
 
-      // Enforce accessories limit
-      if (Array.isArray(myplaceConfig.accessories) &&
-          myplaceConfig.accessories.length > maxAccessories) {
-        log.warn(`⚠️ Configured accessories exceed limit of ${maxAccessories}. ` +
-                 `Only the first ${maxAccessories} will be bridged, ` +
-                 `${myplaceConfig.accessories.length - maxAccessories} ignored.`);
-        log.info("Note: Homebridge only allows a maximum of 149 bridged accessories per bridge.");
-
-        myplaceConfig.accessories = myplaceConfig.accessories.slice(0, maxAccessories);
+      // Store found devices IPs
+      for ( let i = 0; i < noOfDevices; i++ ) {
+        IPs[i] = foundDevices[i].ipAddress + ':' + foundDevices[i].port;
       }
-
-      return myplaceConfig;
-    } catch (err) {
-      const autoDiscoveryErrors = ["wrong format", "inaccessible"];
-      const isInaccessibleError = err.message.toLowerCase().includes("inaccessible");
-
-      doDevicesAutoDiscovery = autoDiscoveryErrors.some(e =>
-        err.message.toLowerCase().includes(e)
-      );
-
-      if (doDevicesAutoDiscovery && portsToTry.length > 0) {
-        log.warn(`⚠️ ${err.message}`);
-
-        // Special handling for "inaccessible" errors - wait 5 seconds and retry up to 5 times
-        if (isInaccessibleError) {
-          const maxRetries = 5;
-          let retryCount = 0;
-          let retrySuccess = false;
-          let lastRetryError = err;
-
-          let deviceNumber = 1;
-          let ipAddress;
-          const match = err.message.match(/Device (\d+).*?IP ([\d.]+)/);
-          if (match) {
-            deviceNumber = parseInt(match[1], 10);
-            ipAddress = match[2];
-          }
-
-          while (retryCount < maxRetries && !retrySuccess) {
-            retryCount++;
-            log.info(chalk.yellow(`⏳ Device ${deviceNumber} with IP ${ipAddress} is inaccessible, waiting 5 seconds before retry (${retryCount}/${maxRetries})...`));
-            await delay(5000);
-
-            // Retry createMyPlaceConfig immediately without auto-discovery
-            try {
-              log.info(chalk.yellow(`🔄 Retrying createMyPlaceConfig (attempt ${retryCount}/${maxRetries})...`));
-              const myplaceConfig = await createMyPlaceConfig(config, pluginPath);
-              log.info(chalk.green(`✅ SUCCESS! createMyPlaceConfig completed after ${retryCount} retry attempt(s)!`));
-
-              // Enforce accessories limit on retry success
-              if (Array.isArray(myplaceConfig.accessories) &&
-                  myplaceConfig.accessories.length > maxAccessories) {
-                log.warn(`⚠️ Configured accessories exceed limit of ${maxAccessories}. ` +
-                         `Only the first ${maxAccessories} will be bridged, ` +
-                         `${myplaceConfig.accessories.length - maxAccessories} ignored.`);
-                myplaceConfig.accessories = myplaceConfig.accessories.slice(0, maxAccessories);
-              }
-
-              return myplaceConfig;
-            } catch (retryErr) {
-              lastRetryError = retryErr;
-              log.warn(`⚠️ Retry attempt ${retryCount}/${maxRetries} failed: ${retryErr.message}`);
-
-              // Check if it's still an "inaccessible" error for the next retry
-              if (!retryErr.message.toLowerCase().includes("inaccessible")) {
-                log.warn("⚠️ Error type changed, stopping retries and proceeding to auto-discovery...");
-                break;
-              }
-            }
-          }
-
-          // If we exhausted all retries and still failed, log the final error
-          if (!retrySuccess) {
-            log.error(`❌ All ${maxRetries} retry attempts failed. Last error: ${lastRetryError.message}`);
-          }
-        }
-
-        if (devicesAutoDiscoveryCounter === 0) {
-          log.info(chalk.yellow("🔍 Starting devices auto-discovery..."));
-        } else {
-          log.info(chalk.yellow(`🔄 Retrying devices auto-discovery (attempt #${devicesAutoDiscoveryCounter + 1})...`));
-        }
+    } else {
+      log.warn("⚠️  No devices found on any ports.");
+      // check if an existing config.json is present in this.storagePath/.myplace, if so use it
+      existingConfig = readConfig( storagePath, log );
+      if (existingConfig) {
+        log.warn("⚠️  Proceeding with existing config — all cached accessories will be restored.");
+        return existingConfig;
       } else {
-        log.error(`❌ ${err.message}`);
-        log.warn("⚠️  No devices found in your network!");
-        // check if an existing config.json is present in this.storagePath/.myplace, if so use it
-        existingConfig = readConfig( storagePath, log );
-        if (existingConfig) {
-          log.warn("⚠️  Proceeding with existing config — all cached accessories will be restored.");
-          return existingConfig;
-        }
         log.warn("⚠️  Proceeding with original config — no accessories will be created and cached accessories will be removed!");
         return config;
       }
     }
+  }
+
+  // Run CreateMyPlaceConfig
+  log.warn(`*** Running createMyPlaceConfig...`);
+  try {
+    const noOfDevices = IPs.length;
+    const noOfDevicesProcessed = IPs.filter(ip => ip !== "undefined").length;
+
+    const myplaceConfig = await createMyPlaceConfig(config, IPs, pluginPath, log);
+    if (doDevicesAutoDiscovery) {
+      log.info(`✅ DONE! createMyPlaceConfig completed successfully for ${noOfDevicesProcessed}/${noOfDevices} "auto-discovered" device(s)!`);
+    } else {
+      log.info(`✅ DONE! createMyPlaceConfig completed successfully for ${noOfDevicesProcessed}/${noOfDevices} device(s)!`);
+    }
+
+    log.debug("Updated MyPlace config:\n" + JSON.stringify(myplaceConfig));
+
+    // Enforce accessories limit
+    if (Array.isArray(myplaceConfig.accessories) &&
+        myplaceConfig.accessories.length > maxAccessories) {
+      log.warn(`⚠️  Configured accessories exceed limit of ${maxAccessories}. ` +
+               `Only the first ${maxAccessories} will be bridged, ` +
+               `${myplaceConfig.accessories.length - maxAccessories} ignored.`);
+      log.info("Note: Homebridge only allows a maximum of 149 bridged accessories per bridge.");
+
+      myplaceConfig.accessories = myplaceConfig.accessories.slice(0, maxAccessories);
+    }
+
+    return myplaceConfig;
+  } catch (err) {
+    log.warn(`⚠️  ${err.message}`);
+    log.warn(`⚠️  Config not updated!`);
+    // check if an existing config.json is present in this.storagePath/.myplace, if so use it
+    existingConfig = readConfig( storagePath, log );
+    if (existingConfig) {
+      log.warn(`⚠️  Proceeding with existing config — all cached accessories will be restored.`);
+      return existingConfig;
+    }
+    log.warn(`⚠️  Proceeding with original config — no accessories will be created and cached accessories will be removed!`);
+    return config;
   }
 
   return config; // fallback
