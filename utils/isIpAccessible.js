@@ -1,31 +1,60 @@
-// Fetch system data with real timeout
-async function isIpAccessible(ip, i, noOfDevices, log) {
-  let myAirData;
+const net = require("net");
+
+// Simple port check (returns true/false)
+function isPortReachable( ip ) {
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+
+    socket.setTimeout(1000);
+
+    socket.on("connect", () => {
+      socket.destroy();
+      resolve(true);
+    });
+
+    socket.on("timeout", () => {
+      socket.destroy();
+      resolve(false);
+    });
+
+    socket.on("error", () => {
+      resolve(false);
+    });
+
+    const [ipStr, portStr] = ip.split(":");
+    const port = Number(portStr);
+
+    socket.connect(port, ipStr);
+  });
+}
+
+// If port is not reachable, retry up to 5 times...
+async function isIpAccessible( ip, i, noOfDevices, log ) {
 
   for (let attempt = 0; attempt < 6; attempt++) {
 
     try {
-      const response = await fetch(`http://${ip}/getSystemData`);
+      const reachable = await isPortReachable( ip );
 
-      if (!response.ok) {
-        log.error(`HTTP error ${response.status}`);
-        return false;
+      if (reachable) {
+        return true;  // success
+      } else {
+        throw new Error("Port unreachable");
       }
-
-      myAirData = await response.json();
-      return true;
 
     } catch (err) {
 
-      // If this was the last attempt (attempt 5), stop retrying
       if (attempt === 5) {
-        log.warn(`⚠️  All 5 retry attempts on Device ${i +1} failed!`)
+        log.warn(`⚠️  All 5 retry attempts on Device ${i + 1} failed!`);
         return false;
       }
 
-      log.warn(`⚠️  Device ${i + 1}/${noOfDevices} with IP ${ip} is inaccessible - may be temporarily not available. Retying (${attempt + 1}/5) in 5s...`)
+      log.warn(
+        `⚠️  Device ${i + 1}/${noOfDevices} with IP ${ip} is inaccessible. ` +
+        `Retrying (${attempt + 1}/5) in 5s...`
+      );
 
-      // Wait 5 seconds before next retry
+      // wait 5 seconds before retry
       await new Promise(resolve => setTimeout(resolve, 5000));
     }
   }

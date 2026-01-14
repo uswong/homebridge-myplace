@@ -63,7 +63,7 @@ async function updateConfig(config, log, storagePath, pluginPath) {
             log.warn(`⚠️  Device ${i + 1}/${noOfDevices} will NOT be processed!`);
             IPs[i] = "undefined";
           } else {
-            log.info(`✅ Device ${i + 1}/${noOfDevices} validated!`);
+            log.info(`✅ Device ${i + 1}/${noOfDevices} is reachable!`);
           }
         }
       } else {
