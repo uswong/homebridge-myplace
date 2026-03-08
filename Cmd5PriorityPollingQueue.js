@@ -120,10 +120,10 @@ class Cmd5PriorityPollingQueue
          if ( this.state_cmd.match( /MyPlace.sh'$/ ) )
          {
             // Reject Set requests to change Fanv2 rotationSpeed or to turn off myZone for zones with temperature sensors
-            if ( this.typeIndex == 20 && this.displayName.match ( / Zone$/ ) && 
-                  ( characteristicString == 'RotationSpeed' || 
-                    ( characteristicString == 'RotationDirection' && value == 1 ) 
-                  ) 
+            if ( this.typeIndex == 20 && this.displayName.match ( / Zone$/ ) &&
+                  ( characteristicString == 'RotationSpeed' ||
+                    ( characteristicString == 'RotationDirection' && value == 1 )
+                  )
                )
             {
                let storedValue = this.cmd5Storage.getStoredValueForIndex( accTypeEnumIndex );
@@ -132,9 +132,17 @@ class Cmd5PriorityPollingQueue
                return;
             }
             // Reject Set requests to change Thermostat targetHeatingCoolingState for Zone Thermostat
-            if ( this.typeIndex == 57 && this.displayName.match ( / Thermostat$/ ) && 
-                  characteristicString == 'TargetHeatingCoolingState' 
+            if ( this.typeIndex == 57 && this.displayName.match ( / Thermostat$/ ) &&
+                  characteristicString == 'TargetHeatingCoolingState'
                )
+            {
+               let storedValue = this.cmd5Storage.getStoredValueForIndex( accTypeEnumIndex );
+               this.service.getCharacteristic( CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].characteristic ).updateValue( storedValue );
+               // Abort this Set request
+               return;
+            }
+            // Reject Set requests to change Thermostat targetHeatingCoolingState to "dry" for the main Thermostat
+            else if ( this.typeIndex == 57 && characteristicString == 'TargetHeatingCoolingState' && value == 3 )
             {
                let storedValue = this.cmd5Storage.getStoredValueForIndex( accTypeEnumIndex );
                this.service.getCharacteristic( CMD5_ACC_TYPE_ENUM.properties[ accTypeEnumIndex ].characteristic ).updateValue( storedValue );
@@ -143,13 +151,13 @@ class Cmd5PriorityPollingQueue
             }
             // Turn on the Zone when this Zone is set as myZone
             else if ( this.typeIndex == 20 && this.displayName.match ( / Zone$/ ) &&
-                      characteristicString == 'RotationDirection' && value == 0 
+                      characteristicString == 'RotationDirection' && value == 0
                  )
             {
                this.service.getCharacteristic( 'Active' ).updateValue( 1 );
             }
             else if ( this.displayName.match( / FanSpeed$/ ) )
-            {  
+            {
                // Abort if 'on' or 'rotationSpeed' value = 0, this accessory is always on
                if ( value == 0 )
                {

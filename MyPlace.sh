@@ -37,6 +37,7 @@ zone=""
 noOtherThermostat=false
 zoneSpecified=false
 fanSpecified=false
+drySpecified=false
 fanTimerSpecified=false
 coolTimerSpecified=false
 heatTimerSpecified=false
@@ -869,6 +870,12 @@ if [ $argEND -ge $argSTART ]; then
             # If only the control unit Thermostat is specified, ie no zone Thermostat is defined
             noOtherThermostat=true
             ;;
+         fanSwitch)
+            fanSpecified=true
+            ;;
+         drySwitch)
+            drySpecified=true
+            ;;
          fanSpeed)
             # If the accessory is used to control the fan speed
             fanSpeed=true
@@ -955,12 +962,6 @@ QUERY_IDBYNAME_LOG_FILE="${tmpSubDir}/${QUERY_IDBYNAME_LOG_FILE}"
 MY_AIRDATA_FILE="${tmpSubDir}/${MY_AIRDATA_FILE}"
 TIMER_STATE_FILE="${tmpSubDir}/${TIMER_STATE_FILE}"
 ZONEOPEN_FILE="${tmpSubDir}/${ZONEOPEN_FILE}"
-
-# Fan accessory is the only accessory without identification constant, hence
-# give it an identification "fanSpecified"
-if [[ $zoneSpecified = false && $fanSpeed = false && $timerEnabled = false && $lightSpecified = false && $thingSpecified = false && $fanTimerSpecified = false && $coolTimerSpecified = false && $heatTimerSpecified = false ]]; then
-   fanSpecified=true
-fi
 
 # set the current time
 t0=$(date '+%s')
@@ -1057,8 +1058,8 @@ if [ "$io" = "Get" ]; then
                echo 2
                exit 0
             ;;
-            "vent" )
-               # for Fan mode, set main Thermostat to Off (0) or zone Thermostat to Auto (3)
+            "vent" | "dry" )
+               # for Fan or Dry mode, set main Thermostat to Off (0) or zone Thermostat to Auto (3)
                if [ $zoneSpecified = true ]; then
                   echo 3
                   exit 0
@@ -1066,11 +1067,6 @@ if [ "$io" = "Get" ]; then
                   echo 0
                   exit 0
                fi
-            ;;
-            "dry" )
-               # Dry mode, set Thermostat to Auto Mode as a proxy.
-               echo 3
-               exit 0
             ;;
             * )
                # If anything unexpected is retruned than the above, return value Off.
@@ -1132,7 +1128,7 @@ if [ "$io" = "Get" ]; then
          fi
       ;;
       On )
-         if [ $fanSpecified = true ]; then
+         if [[ $fanSpecified = true || $drySpecified = true ]]; then
             # Return value of Off if the zone is closed or the Control Unit is Off.
             # fanSpecified is true when no zone (z01) given or timer given
             # Updates global variable jqResult
@@ -1140,35 +1136,38 @@ if [ "$io" = "Get" ]; then
             if [  "$jqResult" = "off" ]; then
                echo 0
                exit 0
-            else
-               # Get the current mode of the Control Unit. Fan can only be On
-               # or Off; if not Vent, set all other modes to Off.
+            elif [ $fanSpecified = true ]; then
+               # Get the current mode of the Control Unit.
+               # If mode is Vent, set it to 1, otherwise 0.
                # Updates global variable jqResult
                parseMyAirDataWithJq ".aircons.$ac.info.mode"
                mode="$jqResult"
                case "$mode" in
-                  "heat" )
-                     # Fan does not support Heat Mode.
-                     echo 0
-                     exit 0
-                  ;;
-                  "cool" )
-                     # Fan does not support Cool Mode.
-                     echo 0
-                     exit 0
-                  ;;
                   "vent" )
-                     # Set Fan to On.
+                     # Set fanSwitch to 1 (On).
                      echo 1
                      exit 0
                   ;;
-                  "dry" )
-                     # Fan does not support Dry Mode.
+                  * )
+                     # If anythin else is retruned than "vent", set to 0 (Off).
                      echo 0
                      exit 0
                   ;;
+               esac
+            elif [ $drySpecified = true ]; then
+               # Get the current mode of the Control Unit.
+               # If mode is Dry, set it to 1, otherwise 0.
+               # Updates global variable jqResult
+               parseMyAirDataWithJq ".aircons.$ac.info.mode"
+               mode="$jqResult"
+               case "$mode" in
+                  "dry" )
+                     # Set drySwitch to 1 (On).
+                     echo 1
+                     exit 0
+                  ;;
                   * )
-                     # If anything unexpected is retruned than the above, set to Off.
+                     # If anythin else is retruned than "vent", set to 0 (Off).
                      echo 0
                      exit 0
                   ;;
@@ -1465,12 +1464,22 @@ if [ "$io" = "Set" ]; then
          fi
       ;;
       On | Active )
-         # Uses the On characteristic for Fan/Vent mode.
+         # Uses the On characteristic for Fan/Vent/dry mode.
          if [ $fanSpecified = true ]; then
             if [ "$value" = "1" ]; then
-               # Sets Control Unit to On, sets to Fan mode aqnd fan speed will
+               # Sets Control Unit to On, sets to Fan mode and fan speed will
                # default to last used.
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:on,mode:vent}}}"
+            else
+               # Shut Off Control Unit.
+               setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:off}}}"
+            fi
+            exit 0
+         elif [ $drySpecified = true ]; then
+            if [ "$value" = "1" ]; then
+               # Sets Control Unit to On, sets to Dry mode and fan speed will
+               # default to last used.
+               setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:on,mode:dry}}}"
             else
                # Shut Off Control Unit.
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{state:off}}}"
