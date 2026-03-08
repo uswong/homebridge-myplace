@@ -85,9 +85,9 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
 
 <B>Thermostat</B> is where the desired target temperature can be set.  
 
-<B>Thermostat</B> has 4 modes- <B>Off</B>, <B>Cool</B>, <B>Heat</B> and <B>Auto</B>. It does not have <B>dry</B> and <B>fan</B> modes.  As such, dedicated <B>Fan</B> and <B>dry</B> switch accessories are used for <B>fan</B> and <B>dry</B> mode.
+<B>Thermostat</B> has 4 modes- <B>Off</B>, <B>Cool</B>, <B>Heat</B> and <B>Auto</B>. It does not have <B>dry</B> and <B>fan</B> modes.  As such, dedicated <B>Fan</B> and <B>Dry</B> switch accessories are used for <B>fan</B> and <B>dry</B> mode.
 
-Both the <B>Thermostat</B> and <B>Fan</B> switch has associated fan speed control and either one can be used to set the fan speed. It is duplicated only for convenience. The fan speed control has 4 tiers - <B>low</B>, <B>mid</B>, <B>high</B> and <B>auto</B> or <B>ezfan</B> and the %-rotationSpeed is snapped to 25% for <B>low</B>, 50% for <B>mid</B>, 90% for <B>high</B> and 100% for <B>auto</B> or <B>ezfan</B>.
+Both the <B>Fan</B> and <B>Dry</B> switch accessories have associated fan speed control and either one can be used to set the fan speed. It is duplicated only for convenience. The fan speed control has 4 tiers - <B>low</B>, <B>mid</B>, <B>high</B> and <B>auto</B> or <B>ezfan</B> and the %-rotationSpeed is snapped to 25% for <B>low</B>, 50% for <B>mid</B>, 90% for <B>high</B> and 100% for <B>auto</B> or <B>ezfan</B>.
 
 #### (ii) Timer
 <p align="left">
