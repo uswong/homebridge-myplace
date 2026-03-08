@@ -73,7 +73,8 @@ async function createMyPlaceConfig(config, IPs, pluginPath, log) {
     };
 
     // Attach the fan speed type to this switch as a linkedType
-    createLinkedTypesFanSpeed(`${name} FanSpeed`, myPlaceThermostat, ac, IPA);
+    // createLinkedTypesFanSpeed(`${name} FanSpeed`, myPlaceThermostat, ac, IPA);
+    myPlaceAccessories.accessories.push(myPlaceThermostat);
   }
 
   function createLinkedTypesFanSpeed(name, motherAcc, ac, IPA) {
@@ -122,11 +123,33 @@ async function createMyPlaceConfig(config, IPs, pluginPath, log) {
         { characteristic: "on" }
       ],
       state_cmd: `'${MYPLACE_SH_PATH}'`,
-      state_cmd_suffix: `${IPA}${ac_l}`
+      state_cmd_suffix: `fanSwitch ${IPA}${ac_l}`
     };
 
     // Attach the fan speed type to this switch as a linkedType
     createLinkedTypesFanSpeed(`${AAname} FanSpeed`, myPlaceFanSwitch, ac, IPA);
+  }
+
+  function createDrySwitch(name, AAname, ac, IPA) {
+    let ac_l = ` ${ac}`;
+    if (ac_l === " ac1") ac_l = "";
+
+    // Build the Dry switch object
+    const myPlaceDrySwitch = {
+      type: "Switch",
+      displayName: name,
+      on: false,
+      name: name,
+      ...myPlaceModelQueue,
+      polling: [
+        { characteristic: "on" }
+      ],
+      state_cmd: `'${MYPLACE_SH_PATH}'`,
+      state_cmd_suffix: `drySwitch ${IPA}${ac_l}`
+    };
+
+    // Attach the fan speed type to this switch as a linkedType
+    createLinkedTypesFanSpeed(`${AAname} FanSpeed`, myPlaceDrySwitch, ac, IPA);
   }
 
   function createTimerLightbulb(name, suffix, ac, IPA) {
@@ -505,6 +528,7 @@ async function createMyPlaceConfig(config, IPs, pluginPath, log) {
         // Create aircon configs
         createThermostat(thisAAname, AAzone, ac, IPA);
         createFanSwitch(`${thisAAname} Fan`, AAname, ac, IPA);
+        createDrySwitch(`${thisAAname} Dry`, AAname, ac, IPA);
         createTimerLightbulb(`${thisAAname} Timer`, "timer", ac, IPA);
         if (extraTimers) {
           createTimerLightbulb(`${thisAAname} Fan Timer`, "fanTimer", ac, IPA);
