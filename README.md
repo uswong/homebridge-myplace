@@ -79,7 +79,7 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
 
 #### (i) Thermostat, Fan Switch and Fan Speed Control
 <p align="left">
-<img width="240px" src="Screenshots/Thermostat_homekit_UI.png">
+<img width="248px" src="https://github.com/user-attachments/assets/81f87f33-7750-4b42-b178-acc062605d5d">
  <img width="240px" src="Screenshots/FanSwitch_homekit_UI.png">
 </p>
 
