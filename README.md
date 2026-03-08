@@ -73,7 +73,8 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
 ## How it Looks and Works
 ### (A) Aircon System (MyAir, E-zone, etc) has the following typical Homekit tiles:
 <p align="left">
-<img width="300px" src="Screenshots/Aircon_homekit_tiles.png">
+<img width="300px" src="https://github.com/user-attachments/assets/78d233cc-4046-479e-9f7a-f491ea61ada4">
+
 </p>
 
 #### (i) Thermostat, Fan Switch and Fan Speed Control
@@ -84,7 +85,7 @@ An independent plugin bringing [Advantage Air](https://www.advantageair.com.au/)
 
 <B>Thermostat</B> is where the desired target temperature can be set.  
 
-<B>Thermostat</B> has 4 modes- <B>Off</B>, <B>Cool</B>, <B>Heat</B> and <B>Auto</B>. It does not have <B>dry</B> and <B>fan</B> modes.  As such, the <B>Thermostat Auto</B> mode is repurposed as <B>dry</B> mode in this plugin and a separate <B>Fan</B> switch is used for <B>fan</B> mode.
+<B>Thermostat</B> has 4 modes- <B>Off</B>, <B>Cool</B>, <B>Heat</B> and <B>Auto</B>. It does not have <B>dry</B> and <B>fan</B> modes.  As such, dedicated <B>Fan</B> and <B>dry</B> switch accessories are used for <B>fan</B> and <B>dry</B> mode.
 
 Both the <B>Thermostat</B> and <B>Fan</B> switch has associated fan speed control and either one can be used to set the fan speed. It is duplicated only for convenience. The fan speed control has 4 tiers - <B>low</B>, <B>mid</B>, <B>high</B> and <B>auto</B> or <B>ezfan</B> and the %-rotationSpeed is snapped to 25% for <B>low</B>, 50% for <B>mid</B>, 90% for <B>high</B> and 100% for <B>auto</B> or <B>ezfan</B>.
 
@@ -147,7 +148,7 @@ Light with dimmer has a slider to control its brightness while a light without d
 <img width="240px" src="Screenshots/Fan_homekit_UI.jpg">
 </p>
 
-From version 2.3.0 onwards, any light switch whose name ends with ‘ Fan’ or ‘ Ex’, or begins with ‘Fan ’ or ‘Ex ’, will be treated as a fan accessory. In HomeKit, its icon will appear as a fan (as shown above) instead of a lightbulb. 
+From version 2.3.0 onwards, any light switch whose name ends with â€˜ Fanâ€™ or â€˜ Exâ€™, or begins with â€˜Fan â€™ or â€˜Ex â€™, will be treated as a fan accessory. In HomeKit, its icon will appear as a fan (as shown above) instead of a lightbulb. 
 
 ### (D) Garage Door and Blinds
 <p align="left">
@@ -171,7 +172,7 @@ Garage Door is either Opened or Closed, hence it appears as a simple switch whil
 
 This project would not have been possible without the work of others in the Homebridge community.
 
-1. Many thanks to [Mitch Williams](https://github.com/mitch7391) who has initiated the [homebridge-cmd4-AdvantageAir](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir) plugin and has allowed me to participate in its development and in the process I have leant a lot about GitHub and on **bash** and **javascript** coding in homebridge environment.
+1. Many thanks to [Mitch Williams](https://github.com/mitch7391) who has initiated [homebridge-cmd4-AdvantageAir](https://github.com/mitch7391/homebridge-cmd4-AdvantageAir) plugin and has allowed me to participate in its development and in the process I have leant a lot about GitHub and on **bash** and **javascript** coding in homebridge environment.
 2. Many thanks also to [John Talbot](https://github.com/ztalbot2000) for his fantastic [homebridge-cmd4](https://github.com/ztalbot2000/homebridge-cmd4) plugin which I forked and reused most of the original logic, with some modifications and adjustments to meet the requirements of this plugin.
 3. And never forget to thank my beautiful wife who has put up with my obsession on this.....
 
