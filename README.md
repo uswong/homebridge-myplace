@@ -148,7 +148,7 @@ Light with dimmer has a slider to control its brightness while a light without d
 <img width="240px" src="Screenshots/Fan_homekit_UI.jpg">
 </p>
 
-From version 2.3.0 onwards, any light switch whose name ends with â€˜ Fanâ€™ or â€˜ Exâ€™, or begins with â€˜Fan â€™ or â€˜Ex â€™, will be treated as a fan accessory. In HomeKit, its icon will appear as a fan (as shown above) instead of a lightbulb. 
+From version 2.3.0 onwards, any light switch whose name ends with " Fan" or " Ex", or begins with "Fan "  or "Ex ", will be treated as a fan accessory. In HomeKit, its icon will appear as a fan (as shown above) instead of a lightbulb. 
 
 ### (D) Garage Door and Blinds
 <p align="left">
