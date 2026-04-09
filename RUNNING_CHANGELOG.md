@@ -1,4 +1,8 @@
 ### Homebridge-myplace - An independent plugin for Homebridge bringing Advantage Air MyPlace system, its smaller siblings (E-zone, MyAir, MyAir4, etc) and its cousins (e.g. Fujitsu AnywAir) to Homekit
+
+##### v2.4.1 (09-04-2026)
+##### (1) Removed depreciated old "userid" dependency.
+
 ##### v2.4.0 (08-03-2026)
 ##### Resolved HomeKit crash when accessing the Thermostat after AUTO mode was previously set:                    
 ##### (1) Removed the use of Thermostat AUTO mode as a proxy for Dry mode.
