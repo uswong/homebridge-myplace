@@ -26,7 +26,6 @@
       "latest-version": "^9.0.0",
       "moment": ">=2.29.4",
       "path": "^0.12.7",
-      "userid": "^1.0.0",
       "which": "^2.0.2"
    },
    "devDependencies": {
