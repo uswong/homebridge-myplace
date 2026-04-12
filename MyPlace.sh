@@ -1235,20 +1235,20 @@ if [ "$io" = "Get" ]; then
                echo 0
                exit 0
             fi
-            if [[ "$countDownToOn" != "0" && "$airconState" = '"on"' ]]; then
+            if [[ "$countDownToOn" != "0" && "$airconState" = "on" ]]; then
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{countDownToOn:0}}}"
                echo 0
                exit 0
             fi
-            if [[ "$countDownToOff" != "0" && "$airconState" = '"on"' ]]; then
+            if [[ "$countDownToOff" != "0" && "$airconState" = "on" ]]; then
                echo 1
                exit 0
             fi
-            if [[ "$countDownToOn" != "0" && "$airconState" = '"off"' ]]; then
+            if [[ "$countDownToOn" != "0" && "$airconState" = "off" ]]; then
                echo 1
                exit 0
             fi
-            if [[ "$countDownToOff" != "0" && "$airconState" = '"off"' ]]; then
+            if [[ "$countDownToOff" != "0" && "$airconState" = "off" ]]; then
                setAirConUsingIteration "http://$IP:$PORT/setAircon?json={$ac:{info:{countDownToOff:0}}}"
                echo 0
                exit 0
